@@ -263,6 +263,9 @@
     <ClCompile Include="program\atlib\Utilities\AtlRandom.cpp">
       <Filter>program\[002] atlib\Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\Utilities\AtlAstar.cpp">
+      <Filter>program\[002] atlib\Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">
@@ -525,6 +528,9 @@
       <Filter>program\[002] atlib\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\Utilities\InputSystem.h">
+      <Filter>program\[002] atlib\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Utilities\AtlAstar.h">
       <Filter>program\[002] atlib\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
