@@ -24,10 +24,6 @@ namespace atl {
         Shared<PlayerPawn> player_;
         Shared<EnemyPawn> enemy_;
 
-        const float
-            PLAYER_MOVESPEED = 5,
-            CAMERA_ROT_SPEED = 0.3;
-
         void sceneUpdate(float deltaTime) override {
             seq_.update(deltaTime);
             render(deltaTime);
@@ -40,19 +36,19 @@ namespace atl {
 
             enemy_->renderObjects(camera);
 
+            player_->debug_displayPlayerParam(0, 15);
 
             DrawDefaultLightGuiController();
             DrawGridGround(player_->getPlayerCamera(), 50, 20);
             DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
         }
 
-
         // シーケンス
         SEQUENCE(Scene_Dummy, &Scene_Dummy::seqInit);
 
         bool seqInit(float deltaTime) {
             player_ = std::make_shared<PlayerPawn>();
-            enemy_ = std::make_shared<EnemyPawn>(tnl::Vector3{0, 0, 0},tnl::Vector3{ 100,100,100 },1000);
+            enemy_ = std::make_shared<EnemyPawn>(tnl::Vector3{ 0,50,0 }, tnl::Vector3{ 100,100,100 });
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
@@ -60,17 +56,16 @@ namespace atl {
 
         bool seqProcess(float deltaTime) {
 
-            {//
+            {// プレイヤーの移動
+                player_->playerUpdate(deltaTime);
+            }
+
+            {
                 enemy_->enemyUpdate(deltaTime);
             }
 
-            {// プレイヤーの移動
-                tnl::Vector3 beforePlayerPos = player_->getPlayerPos();
-                player_->moveControl(PLAYER_MOVESPEED);
-            }
-
             {// カメラコントロール ( 移動の後にやらないと、なんか変になる )
-                player_->getPlayerCamera()->cameraControl(CAMERA_ROT_SPEED);
+                player_->cameraControl(0.3f);
             }
 
             {// デバッグ用。ESCキーでウィンドウ落とす。

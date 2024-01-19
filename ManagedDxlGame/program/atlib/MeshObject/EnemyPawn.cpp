@@ -1,8 +1,9 @@
 #include "EnemyPawn.h"
+#include "../Scenes/DungeonScene.h"
 
 namespace atl {
 
-	EnemyPawn::EnemyPawn(const tnl::Vector3& enemyPos, const tnl::Vector3& enemySize, float cellLength) : enemySize_(enemySize), oneCellLength_(cellLength) {
+	EnemyPawn::EnemyPawn(const tnl::Vector3& enemyPos, const tnl::Vector3& enemySize) : enemySize_(enemySize){
 		auto rootMesh = dxe::Mesh::CreateBoxMV(
 			enemySize,
 			dxe::Texture::CreateFromFile("graphics/box/box_left.bmp"),
@@ -40,13 +41,6 @@ namespace atl {
 		seq_.update(deltaTime);
 	}
 
-	void EnemyPawn::registerTarget(const tnl::Vector3& target) {
-		tnl::Vector3 forward = tnl::Vector3::TransformCoord({ 0,0,1 }, getRootMesh()->rot_);
-		targetPos_ = tnl::Vector3::TransformCoord(tnl::Vector3::Normalize(target), getRootMesh()->rot_);
-		float mark = (target.x < 0) ? -1.0f : 1.0f;
-		targetRot_ = getRootMesh()->rot_ * tnl::Quaternion::RotationAxis({ 0,1,0 }, targetPos_.angle(forward) * mark);
-	}
-
 	/// --------------------------
 	/// シーケンス
 	/// --------------------------
@@ -61,65 +55,82 @@ namespace atl {
 	}
 
 	bool EnemyPawn::seqWandering(float deltaTime) {
-		{
-			// 目標地点に到達している（目標地点がない）時の処理
-			if (targetPos_.length() <= FLT_EPSILON) {// 未実装
-			}
-		}
 
 		{// デバッグ用インプット
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_NUMPAD6)) {
-				enemyRotateSpeed_ = 1.0f;
-				registerTarget({ 50,0,0 });
-				seq_.change(&EnemyPawn::seqRotate);
+			if (tnl::Input::IsKeyDown(eKeys::KB_NUMPAD8)) {
+				seq_.change(&EnemyPawn::seqMoveZplus);
 			}
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_NUMPAD4)) {
-				enemyRotateSpeed_ = -1.0f;
-				registerTarget({ -50,0,0 });
-				seq_.change(&EnemyPawn::seqRotate);
+			if (tnl::Input::IsKeyDown(eKeys::KB_NUMPAD2)) {
+				seq_.change(&EnemyPawn::seqMoveZminus);
 			}
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_NUMPAD8)) {
-				registerTarget({ 0,0,50 });
-				seq_.change(&EnemyPawn::seqRotate);
+			if (tnl::Input::IsKeyDown(eKeys::KB_NUMPAD6)) {
+				seq_.change(&EnemyPawn::seqMoveXplus);
 			}
-		}
-
-		// 目標地点に到達したら、目的地を {0,0,0} に
-		if (fabs(targetPos_.x - getRootMesh()->pos_.x) <= FLT_EPSILON &&
-			fabs(targetPos_.z - getRootMesh()->pos_.z) <= FLT_EPSILON
-			)
-		{
-			targetPos_ = { 0,0,0 };
-		}
-		
-		return true;
-	}
-
-	bool EnemyPawn::seqRotate(float deltaTime) {
-		tnl::Vector3 forward = tnl::Vector3::TransformCoord({ 0,0,1 }, getRootMesh()->rot_);
-
-		if (forward.angle(targetPos_) > 0) {
-			getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(enemyRotateSpeed_));
-		}
-
-		if (fabs(forward.angle(targetPos_)) < tnl::ToRadian(1.5f)) {
-			getRootMesh()->rot_ = targetRot_;
-			seq_.change(&EnemyPawn::seqMove);
+			if (tnl::Input::IsKeyDown(eKeys::KB_NUMPAD4)) {
+				seq_.change(&EnemyPawn::seqMoveXminus);
+			}
 		}
 
 		return true;
 	}
 
-	bool EnemyPawn::seqMove(float deltaTime) {
-		if (fabs(needMoveAmount_) <= FLT_EPSILON) {
+	bool EnemyPawn::seqMoveZplus(float deltaTime) {
+		if (seq_.isStart()) {
+			moveTarget_ = { getRootMesh()->pos_.x,getRootMesh()->pos_.y,getRootMesh()->pos_.z + DungeonScene::getCellLength()};
+			getRootMesh()->rot_ = tnl::Quaternion::LookAt({0,0,0}, {0,0,1}, {0,1,0});
+		}
+		getRootMesh()->pos_ = tnl::Vector3::DecelLerp(getRootMesh()->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
+		moveLerpTimeCount_ += deltaTime;
+
+		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
+			moveLerpTimeCount_ = 0;
 			seq_.change(&EnemyPawn::seqCheckCurrentState);
-			return true;
 		}
-		
-		float actualMoveAmount = (std::min)(fabs(enemyMoveSpeed_), fabs(needMoveAmount_));
-		getRootMesh()->pos_ += tnl::Vector3::TransformCoord({ 0,0,actualMoveAmount }, getRootMesh()->rot_);
-		needMoveAmount_ -= actualMoveAmount;
+		return true;
+	}
 
+	bool EnemyPawn::seqMoveZminus(float deltaTime) {
+		if (seq_.isStart()) {
+			moveTarget_ = { getRootMesh()->pos_.x,getRootMesh()->pos_.y,getRootMesh()->pos_.z - DungeonScene::getCellLength() };
+			getRootMesh()->rot_ = tnl::Quaternion::LookAt({0,0,0}, {0,0,-1}, {0,1,0});
+		}
+		getRootMesh()->pos_ = tnl::Vector3::DecelLerp(getRootMesh()->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
+		moveLerpTimeCount_ += deltaTime;
+
+		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
+			moveLerpTimeCount_ = 0;
+			seq_.change(&EnemyPawn::seqCheckCurrentState);
+		}
+		return true;
+	}
+
+	bool EnemyPawn::seqMoveXplus(float deltaTime) {
+		if (seq_.isStart()) {
+			moveTarget_ = { getRootMesh()->pos_.x + DungeonScene::getCellLength(),getRootMesh()->pos_.y,getRootMesh()->pos_.z  };
+			getRootMesh()->rot_ = tnl::Quaternion::LookAt({0,0,0}, {1,0,0}, {0,1,0});
+		}
+		getRootMesh()->pos_ = tnl::Vector3::DecelLerp(getRootMesh()->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
+		moveLerpTimeCount_ += deltaTime;
+
+		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
+			moveLerpTimeCount_ = 0;
+			seq_.change(&EnemyPawn::seqCheckCurrentState);
+		}
+		return true;
+	}
+
+	bool EnemyPawn::seqMoveXminus(float deltaTime) {
+		if (seq_.isStart()) {
+			moveTarget_ = { getRootMesh()->pos_.x - DungeonScene::getCellLength(),getRootMesh()->pos_.y,getRootMesh()->pos_.z };
+			getRootMesh()->rot_ = tnl::Quaternion::LookAt({0,0,0}, {-1,0,0}, {0,1,0});
+		}
+		getRootMesh()->pos_ = tnl::Vector3::DecelLerp(getRootMesh()->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
+		moveLerpTimeCount_ += deltaTime;
+
+		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
+			moveLerpTimeCount_ = 0;
+			seq_.change(&EnemyPawn::seqCheckCurrentState);
+		}
 		return true;
 	}
 

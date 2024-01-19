@@ -20,7 +20,7 @@ namespace atl {
         DungeonScene();
 
         // ゲッター
-        const float getCellLength() const { return CELL_FULL_LENGTH; }
+        static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
 
     private: 
         
@@ -29,7 +29,7 @@ namespace atl {
         
         // 汎用 ----------------------------------------
         // セル一辺の全長
-        const float CELL_FULL_LENGTH = 1000;
+        static const int32_t CELL_FULL_LENGTH = 1000;
         
         // 壁 用 ---------------------------------------
         Shared<Wall> originWall_ = nullptr;

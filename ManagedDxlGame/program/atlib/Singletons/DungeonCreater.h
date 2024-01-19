@@ -33,6 +33,8 @@ namespace atl {
 		inline const std::vector<std::vector<FieldCell>>& getFieldCells() const { return fieldCells_; }
 		inline Shared<const tnl::Vector2i> getPlayerSpawnPos() const { return playerSpawnPos_; }
 		inline Shared<const tnl::Vector2i> getStairsSpawnPos() const { return stairsSpawnPos_; }
+		inline static const int32_t getFieldWidth() { return FIELD_WIDTH; }
+		inline static const int32_t getFieldHeight() { return FIELD_HEIGHT; }
 
 		// fieldCells_ から、スポーン可能状態の空セルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 選ばれた XY地点の fieldCell は、スポーン不可状態に切り替わる
@@ -55,8 +57,8 @@ namespace atl {
 	private:
 
 		// 定数 ,Enum , インナークラス
-		const int32_t FIELD_WIDTH = 32;		// フィールド全体の横幅
-		const int32_t FIELD_HEIGHT = 32;		// フィールド全体の縦幅
+		static const int32_t FIELD_WIDTH = 32;		// フィールド全体の横幅
+		static const int32_t FIELD_HEIGHT = 32;		// フィールド全体の縦幅
 		const int32_t AREA_MAX = 8;			// 区域の最大数 , 部屋の最大数と等しくなる
 		const int32_t AREA_SIZE_MIN = 8;		// 区域の縦横最小サイズ
 		const int32_t ROOM_SIZE_MIN = 4;		// 部屋の縦横最小サイズ

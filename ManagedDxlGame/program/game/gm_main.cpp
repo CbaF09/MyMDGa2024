@@ -22,8 +22,8 @@ void gameStart() {
 	ChangeLightTypeDir(VGet(0.0f, -1.0f, 0.0f));
 	SetBackgroundColor(32, 32, 32);
 
-	atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
-	// atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
+	// atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
+	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
 }
 
 void gameMain(float delta_time) {

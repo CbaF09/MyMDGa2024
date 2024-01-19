@@ -61,9 +61,9 @@ namespace atl {
 
 		{// 各種スポーン
 			auto playerSpawnPos = DungeonCreater::getDungeonCreater()->getPlayerSpawnPos();
-			player_->setPlayerAndCameraPos({ playerSpawnPos->x * CELL_FULL_LENGTH , PLAYER_HEAD_LINE, playerSpawnPos->y * CELL_FULL_LENGTH });
+			player_->setPlayerAndCameraPos({ playerSpawnPos->x * static_cast<float>(CELL_FULL_LENGTH) , PLAYER_HEAD_LINE, playerSpawnPos->y * static_cast<float>(CELL_FULL_LENGTH) });
 			auto stairsSpawnPos = DungeonCreater::getDungeonCreater()->getStairsSpawnPos();
-			originStairs_ = std::make_shared<Stairs>(tnl::Vector3{ stairsSpawnPos->x * CELL_FULL_LENGTH,0,stairsSpawnPos->y * CELL_FULL_LENGTH }, tnl::Vector3{ CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2 });
+			originStairs_ = std::make_shared<Stairs>(tnl::Vector3{ stairsSpawnPos->x * static_cast<float>(CELL_FULL_LENGTH),0,stairsSpawnPos->y * static_cast<float>(CELL_FULL_LENGTH) }, tnl::Vector3{ CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2 });
 		}
 	}
 
@@ -93,27 +93,10 @@ namespace atl {
 
 	bool DungeonScene::seqProcess(float deltaTime) {
 		{// プレイヤーの移動
-			tnl::Vector3 beforePlayerPos = player_->getPlayerPos();
-			player_->moveControl(PLAYER_MOVE_SPEED);
+			player_->playerUpdate(deltaTime);
 
 			{// プレイヤーと壁の衝突判定
-				for (const auto& wall : walls_) {
-					if (tnl::IsIntersectAABB(player_->getPlayerPos(), player_->getPlayerSize(), wall->getMeshPos(), wall->getMeshSize())) {
-						// 衝突後の補正
-						tnl::CorrectPositionAABB(
-							beforePlayerPos,
-							wall->getMeshPos(),
-							player_->getPlayerSize(),
-							wall->getMeshSize(),
-							player_->getPlayerCamera()->pos_,
-							const_cast<tnl::Vector3&>(wall->getMeshPos()),
-							tnl::eCorrTypeAABB::PWRFL_B,
-							tnl::eCorrTypeAABB::PWRFL_B,
-							tnl::eCorrTypeAABB::PWRFL_B,
-							PLAYER_MOVE_SPEED
-						);
-					}
-				}
+
 			}
 		}
 
