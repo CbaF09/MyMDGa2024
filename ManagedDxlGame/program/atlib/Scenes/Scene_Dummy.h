@@ -22,7 +22,6 @@ namespace atl {
     private:
 
         Shared<PlayerPawn> player_;
-        Shared<EnemyPawn> enemy_;
 
         void sceneUpdate(float deltaTime) override {
             seq_.update(deltaTime);
@@ -34,7 +33,6 @@ namespace atl {
 
             camera->update();
 
-            enemy_->renderObjects(camera);
 
             player_->debug_displayPlayerParam(0, 15);
 
@@ -48,7 +46,6 @@ namespace atl {
 
         bool seqInit(float deltaTime) {
             player_ = std::make_shared<PlayerPawn>();
-            enemy_ = std::make_shared<EnemyPawn>(tnl::Vector3{ 0,50,0 }, tnl::Vector3{ 100,100,100 });
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
@@ -61,16 +58,20 @@ namespace atl {
             }
 
             {
-                enemy_->enemyUpdate(deltaTime);
+
             }
 
             {// カメラコントロール ( 移動の後にやらないと、なんか変になる )
-                player_->cameraControl(0.3f);
+                player_->cameraControl();
             }
 
             {// デバッグ用。ESCキーでウィンドウ落とす。
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) {
                     exit(1);
+                }
+
+                if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
+
                 }
             }
 

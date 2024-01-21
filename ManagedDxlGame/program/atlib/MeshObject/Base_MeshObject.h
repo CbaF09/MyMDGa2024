@@ -18,13 +18,18 @@ namespace atl {
 		inline const Shared<dxe::Mesh> getMesh() const { return mesh_; }
 		inline const tnl::Vector3& getMeshSize() const { return meshSize_; }
 		inline const tnl::Vector3& getMeshPos() const { return mesh_->pos_; }
+		inline const tnl::Vector2i& get2Dpos() const { return mesh2Dpos_; }
 
 		// セッター
 		inline void setMesh(const Shared<dxe::Mesh> mesh) { mesh_ = mesh; }
 		inline void setMeshPos(const tnl::Vector3& initPos) { mesh_->pos_ = initPos; }
 		inline void setMeshSizeVector3(const tnl::Vector3& initSize) { meshSize_ = initSize; }
+		inline void set2Dpos(const tnl::Vector2i& mesh2Dpos) { mesh2Dpos_ = mesh2Dpos; }
 		void setTexture(const Shared<dxe::Texture> texture);
 		void setMaterial(const std::string& filePath);
+
+		// 2Dpos操作メソッド
+		inline void add2Dpos(tnl::Vector2i addVec) { mesh2Dpos_ += addVec; }
 
 		// メッシュを描画する
 		void renderObject(const Shared<Atl3DCamera> camera) const;
@@ -32,6 +37,7 @@ namespace atl {
 	private:
 		Shared<dxe::Mesh> mesh_;
 		tnl::Vector3 meshSize_{0,0,0};
+		tnl::Vector2i mesh2Dpos_{ 0,0 };
 	};
 
 }

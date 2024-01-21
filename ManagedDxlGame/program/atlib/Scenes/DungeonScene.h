@@ -2,11 +2,14 @@
 
 #include "../dxlib_ext/dxlib_ext.h"
 #include "../../atlib/Singletons/DungeonCreater.h"
+#include "../../atlib/Singletons/ResourceManager.h"
 #include "../../atlib/MeshObject/Wall.h"
 #include "../../atlib/MeshObject/Stairs.h"
+#include "../../atlib/MeshObject/EnemyPawn.h"
 #include "../../atlib/MeshObject/GroundTile.h"
 #include "../../atlib/Object/PlayerPawn.h"
 #include "../../atlib/Utilities/Atl3DCamera.h"
+#include "../../atlib/Templates/make_shared_withInitFunc.h"
 #include "../../atlib/Collision/Collision.h"
 #include "Base_Scene.h"
 
@@ -18,19 +21,29 @@ namespace atl {
 
     public:
         DungeonScene();
-
+        
+        // ターン制御用 enum
+        enum class e_turnState {
+            PLAYER,
+            ENEMY,
+        };
+        
         // ゲッター
         static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
+        const e_turnState& getCurrentTurn() { return currentTurn_; }
+
+        // セッター
+        void setCurrenTurn(e_turnState nextTurn) { currentTurn_ = nextTurn; }
 
     private: 
-        
         //----------------------
         // 変数
         
         // 汎用 ----------------------------------------
         // セル一辺の全長
         static const int32_t CELL_FULL_LENGTH = 1000;
-        
+        e_turnState currentTurn_ = e_turnState::PLAYER;
+
         // 壁 用 ---------------------------------------
         Shared<Wall> originWall_ = nullptr;
         std::vector<Shared<Wall>> walls_;
@@ -43,11 +56,10 @@ namespace atl {
         Shared<Stairs> originStairs_ = nullptr;
 
         // プレイヤー関連 ------------------------------
-        const float PLAYER_MOVE_SPEED = 50;
-        const float PLAYER_CAMERA_ROT_SPEED = 0.3f;
-        const float PLAYER_HEAD_LINE = 500; // プレイヤーのY高さ（カメラ・目線の高さ）
         Shared<PlayerPawn> player_ = nullptr;
 
+        // エネミー関連 --------------------------------
+        std::vector<Shared<EnemyPawn>> enemies_;
 
         //----------------------
         // メソッド

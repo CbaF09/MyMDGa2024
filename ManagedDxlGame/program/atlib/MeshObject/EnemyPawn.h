@@ -8,7 +8,7 @@ namespace atl {
 		// arg1 ... エネミーを生成する位置
 		// arg2 ... エネミーの大きさ
 		// arg3 ... １セルの全長
-		EnemyPawn(const tnl::Vector3& enemyPos , const tnl::Vector3& enemySize);
+		EnemyPawn(const tnl::Vector2i& enemyPos , const tnl::Vector3& enemySize);
 
 		void adjustmentChildMeshes() override;
 
@@ -21,23 +21,28 @@ namespace atl {
 
 		// ゲッター
 		inline const e_EnemyState& getCurrentEnemyState() const { return currentState_; }
-		
+		inline const bool getIsAlreadyAction() const { return isAlreadyAction; }
+
 		// セッター
 		inline void setEnemySpeed(float enemyMoveSpeed) { enemyMoveSpeed_ = enemyMoveSpeed; }
 		
 		// エネミーの毎フレームの行動
-		void enemyUpdate(float deltaTime);
+		bool enemyUpdate(float deltaTime) {
+			return seq_.update(deltaTime);
+		}
 
 	private:
 
 		//----------------------
 		// メソッド
-		
-		inline void setNeedMoveAmount(float needMoveAmount) { needMoveAmount_ = needMoveAmount; }
+		// arg ... 現在位置からの移動量
+		bool checkIsCanMovePos(const tnl::Vector2i& moveToPos);
+		bool moveLerp(float deltaTime);
 
 		//-----------------------
 		// メンバ変数
-
+		
+		bool isAlreadyAction = false;
 		tnl::Vector3 enemySize_{ 0,0,0 };
 
 		// 移動用

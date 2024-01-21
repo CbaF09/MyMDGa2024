@@ -6,15 +6,15 @@ namespace atl {
 
 	PlayerPawn::PlayerPawn() {
 		playerCamera_ = std::make_shared<Atl3DCamera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);
-		playerPos_ = playerCamera_->pos_;
+		player3Dpos_ = playerCamera_->pos_;
 	}
 
-	void PlayerPawn::setPlayerAndCameraPos(const tnl::Vector3& newPos){
-		playerPos_ = newPos;
+	void PlayerPawn::setPlayerAndCamera3Dpos(const tnl::Vector3& newPos) {
+		player3Dpos_ = newPos;
 		playerCamera_->pos_ = newPos;
 	}
 
-	void PlayerPawn::cameraControl(float controlSpeed) {
+	void PlayerPawn::cameraControl() {
 		playerCamera_->target_ = playerCamera_->pos_ + playerCamera_->forward();
 		playerCamera_->up();
 
@@ -23,36 +23,53 @@ namespace atl {
 		tnl::Vector3 mvel = tnl::Input::GetMouseVelocity();
 
 		// 縦振り
-		playerCamera_->cameraRotateAxis(playerCamera_->right(), mvel.y * controlSpeed);
+		playerCamera_->cameraRotateAxis(playerCamera_->right(), mvel.y * CAMERA_ROT_SPEED_);
 		float newAngle = tnl::ToDegree(playerCamera_->forward().angle({ 0,1,0 }));
 		if (newAngle < playerCamera_->getMIN_PITCH() || playerCamera_->getMAX_PITCH() < newAngle) {
 			playerCamera_->setCameraRot(beforeRot);
 		}
 
 		// 横振り
-		playerCamera_->cameraRotateAxis({ 0, 1, 0 }, mvel.x * controlSpeed);
+		playerCamera_->cameraRotateAxis({ 0, 1, 0 }, mvel.x * CAMERA_ROT_SPEED_);
 	}
 
-	// ---------------------------
-	// シーケンス
-	// ---------------------------
+	void PlayerPawn::playerSpawn2Dpos(const tnl::Vector2i& spawn2Dpos) {
+		player2Dpos_ = spawn2Dpos;
 
-	const tnl::Vector3& PlayerPawn::calcMoveDir() {
-		tnl::Vector3 returnVec{ 0,0,0 };
-		return tnl::Vector3();
+		float cellLength = DungeonScene::getCellLength();
+		tnl::Vector3 initPos = { spawn2Dpos.x * cellLength, PLAYER_HEAD_LINE, spawn2Dpos.y * cellLength };
+
+		setPlayerAndCamera3Dpos(initPos);
 	}
 
-	bool PlayerPawn::seqIdle(float deltaTime) {
-
-		{// 移動入力
-			if (tnl::Input::IsKeyDown(eKeys::KB_A,eKeys::KB_D,eKeys::KB_W,eKeys::KB_S)) {
-				seq_.change(&PlayerPawn::seqCalcMoveDir);
-			}
+	bool PlayerPawn::checkIsCanMovePos(const tnl::Vector2i& moveToPos) {
+		auto cellLength = DungeonScene::getCellLength();
+		if (DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(player2Dpos_ + moveToPos)) {
+			moveTarget_ = { playerCamera_->pos_.x + (moveToPos.x * cellLength),playerCamera_->pos_.y,playerCamera_->pos_.z + (moveToPos.y * cellLength) };
+			player2Dpos_ += moveToPos;
+			return true;
 		}
-		return true;
+		else {
+			moveTarget_ = player3Dpos_;
+			return true;
+		}
+		return false;
 	}
 
-	bool PlayerPawn::seqCalcMoveDir(float deltaTime) {
+	bool PlayerPawn::moveLerp(float deltaTime) {
+		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
+		moveLerpTimeCount_ += deltaTime;
+
+		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
+			moveLerpTimeCount_ = 0;
+			seq_.change(&PlayerPawn::seqIdle);
+			return true;
+		}
+		player3Dpos_ = playerCamera_->pos_;
+		return false;
+	}
+
+	PlayerPawn::e_XZdir PlayerPawn::checkCurrentFowardDir() {
 		tnl::Vector3 cameraForward = playerCamera_->forward().xz();
 		cameraForward.normalize();
 
@@ -63,32 +80,55 @@ namespace atl {
 
 		float minAngle = (std::min)({ angleToZplus, angleToZminus, angleToXplus, angleToXminus });
 
-		bool(PlayerPawn::*relativeForward)(float) = &PlayerPawn::seqMoveZplus;
-		bool(PlayerPawn::*relativeBack)(float) = &PlayerPawn::seqMoveZminus;
-		bool(PlayerPawn::*relativeRight)(float) = &PlayerPawn::seqMoveXplus;
-		bool(PlayerPawn::*relativeLeft)(float) = &PlayerPawn::seqMoveXminus;
-
+		e_XZdir retV;
 		if (minAngle == angleToZplus) {
+			retV = e_XZdir::Zplus;
 		}
 		else if (minAngle == angleToZminus) {
+			retV = e_XZdir::Zminus;
+		}
+		else if (minAngle == angleToXplus) {
+			retV = e_XZdir::Xplus;
+		}
+		else if (minAngle == angleToXminus) {
+			retV = e_XZdir::Xminus;
+		}
+		else {
+			retV = e_XZdir::NONE;
+		}
+		return retV;
+	}	
+	
+	void PlayerPawn::calcDirAndMoveSeqChange() {
+		bool(PlayerPawn:: * relativeForward)(float) = &PlayerPawn::seqMoveZplus;
+		bool(PlayerPawn:: * relativeBack)(float) = &PlayerPawn::seqMoveZminus;
+		bool(PlayerPawn:: * relativeRight)(float) = &PlayerPawn::seqMoveXplus;
+		bool(PlayerPawn:: * relativeLeft)(float) = &PlayerPawn::seqMoveXminus;
+
+		// 現在の向きに応じて 関数ポインタの中身を変更
+		switch (checkCurrentFowardDir()) {
+		case e_XZdir::Zplus: break; // Z+ 向きならそのまま
+		case e_XZdir::Zminus:
 			relativeForward = &PlayerPawn::seqMoveZminus;
 			relativeBack = &PlayerPawn::seqMoveZplus;
 			relativeRight = &PlayerPawn::seqMoveXminus;
 			relativeLeft = &PlayerPawn::seqMoveXplus;
-		}
-		else if (minAngle == angleToXplus) {
+			break;
+		case e_XZdir::Xplus:
 			relativeForward = &PlayerPawn::seqMoveXplus;
 			relativeBack = &PlayerPawn::seqMoveXminus;
 			relativeRight = &PlayerPawn::seqMoveZminus;
 			relativeLeft = &PlayerPawn::seqMoveZplus;
-		}
-		else if (minAngle == angleToXminus) {
+			break;
+		case e_XZdir::Xminus:
 			relativeForward = &PlayerPawn::seqMoveXminus;
 			relativeBack = &PlayerPawn::seqMoveXplus;
 			relativeRight = &PlayerPawn::seqMoveZplus;
 			relativeLeft = &PlayerPawn::seqMoveZminus;
+			break;
 		}
 
+		// WASD で 関数ポインタの中身遷移
 		if (tnl::Input::IsKeyDown(eKeys::KB_W)) {
 			seq_.change(relativeForward);
 		}
@@ -101,81 +141,68 @@ namespace atl {
 		else if (tnl::Input::IsKeyDown(eKeys::KB_D)) {
 			seq_.change(relativeRight);
 		}
+	}
 
-		return true;
+
+	// ---------------------------
+	// シーケンス
+	// ---------------------------
+
+	bool PlayerPawn::seqIdle(float deltaTime) {
+		{// 移動入力
+			if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
+				calcDirAndMoveSeqChange();
+				return false;
+			}
+		}
+		return false;
 	}
 
 	bool PlayerPawn::seqMoveZplus(float deltaTime) {
 		if (seq_.isStart()) {
-			moveTarget_ = { playerCamera_->pos_.x,playerCamera_->pos_.y,playerCamera_->pos_.z + DungeonScene::getCellLength() };
+			checkIsCanMovePos({ 0,1 });
 		}
-		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
-		moveLerpTimeCount_ += deltaTime;
-
-		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
-			moveLerpTimeCount_ = 0;
-			seq_.change(&PlayerPawn::seqIdle);
-		}
-		playerPos_ = playerCamera_->pos_;
-
-		return true;
+		
+		return moveLerp(deltaTime);
 	}
 
 	bool PlayerPawn::seqMoveZminus(float deltaTime) {
 		if (seq_.isStart()) {
-			moveTarget_ = { playerCamera_->pos_.x, playerCamera_->pos_.y, playerCamera_->pos_.z - DungeonScene::getCellLength() };
+			checkIsCanMovePos({ 0,-1 });
 		}
-		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
-		moveLerpTimeCount_ += deltaTime;
 
-		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
-			moveLerpTimeCount_ = 0;
-			seq_.change(&PlayerPawn::seqIdle);
-		}
-		playerPos_ = playerCamera_->pos_;
-
-		return true;
+		return moveLerp(deltaTime);
 	}
 
 	bool PlayerPawn::seqMoveXplus(float deltaTime) {
 		if (seq_.isStart()) {
-			moveTarget_ = { playerCamera_->pos_.x + DungeonScene::getCellLength(), playerCamera_->pos_.y, playerCamera_->pos_.z };
+			checkIsCanMovePos({ 1,0 });
 		}
-		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
-		moveLerpTimeCount_ += deltaTime;
 
-		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
-			moveLerpTimeCount_ = 0;
-			seq_.change(&PlayerPawn::seqIdle);
-		}
-		playerPos_ = playerCamera_->pos_;
-
-		return true;
+		return moveLerp(deltaTime);
 	}
 
 	bool PlayerPawn::seqMoveXminus(float deltaTime) {
 		if (seq_.isStart()) {
-			moveTarget_ = { playerCamera_->pos_.x - DungeonScene::getCellLength(), playerCamera_->pos_.y, playerCamera_->pos_.z };
+			checkIsCanMovePos({ -1,0 });
 		}
-		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
-		moveLerpTimeCount_ += deltaTime;
-
-		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
-			moveLerpTimeCount_ = 0;
-			seq_.change(&PlayerPawn::seqIdle);
-		}
-		playerPos_ = playerCamera_->pos_;
-
-		return true;
+		
+		return moveLerp(deltaTime);
 	}
 
+	// ---------------------------
+	// デバッグ用
+	// ---------------------------
+
 	void PlayerPawn::debug_displayPlayerParam(int drawPosX, int drawPosY) {
-		DrawStringEx(drawPosX, drawPosY, -1,
-			"playerPos ... [ %.2f , %.2f , %.2f ]", playerPos_.x, playerPos_.y, playerPos_.z);
-		DrawStringEx(drawPosX, drawPosY + 15, -1,
-			"playerCameraPos ... [ %.2f , %.2f , %.2f ]", playerCamera_->pos_.x, playerCamera_->pos_.y, playerCamera_->pos_.z);
-		DrawStringEx(drawPosX, drawPosY + 32, -1,
-			"playerCameraAngle ... [ %.2f , %.2f, %.2f ]", tnl::ToDegree(playerCamera_->forward().angle({ 1,0,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,1,0 })),tnl::ToDegree(playerCamera_->forward().angle({0,0,1})));
+			DrawStringEx(drawPosX, drawPosY, -1,
+				"player3Dpos ... [ %.2f , %.2f , %.2f ]", player3Dpos_.x, player3Dpos_.y, player3Dpos_.z);
+			DrawStringEx(drawPosX, drawPosY + 15, -1,
+				"player2Dpos ... [ %d , %d ]", player2Dpos_.x, player2Dpos_.y);
+			DrawStringEx(drawPosX, drawPosY + 30, -1,
+				"playerCameraPos ... [ %.2f , %.2f , %.2f ]", playerCamera_->pos_.x, playerCamera_->pos_.y, playerCamera_->pos_.z);
+			DrawStringEx(drawPosX, drawPosY + 45, -1,
+				"playerCameraAngle ... [ %.2f , %.2f, %.2f ]", tnl::ToDegree(playerCamera_->forward().angle({ 1,0,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,1,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,0,1 })));
 	}
 
 }

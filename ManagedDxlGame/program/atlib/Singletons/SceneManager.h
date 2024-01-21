@@ -8,29 +8,30 @@ namespace atl {
     // シーン管理クラス ( シングルトン )
     // 役割 ... シーンの sceneUpdate 実行 , シーン遷移
     class SceneManager final {
+    // --------------------------
+    // シングルトン設計
     public:
-        
-        // インスタンス生成 既に生成されている場合はそのインスタンスを返す
-        // WARNING: 一番最初に呼び出す際は、起動時の初期シーンを引数に渡してください。std::make_shared< 初期シーンクラス名 >
+        // 一番最初に呼び出す際は、起動時の初期シーンを引数に渡してください。std::make_shared< 初期シーンクラス名 >
         static SceneManager* getSceneManager(std::shared_ptr<Base_Scene> startScene = nullptr);
-
-        // インスタンスがある場合、消去
         static void deleteSceneManager();
-        
+    private:
+        static SceneManager* p_instance_;
+    // --------------------------
+
+    public:
+        explicit SceneManager(std::shared_ptr<Base_Scene> startScene) { p_nowScene_ = std::move(startScene); };
+
         // 次フレームにて、指定したシーンに遷移（現在のシーンは消去されます）
-        // argu ... std::make_shared< 次のシーンクラス >()
+        // arg ... std::make_shared< 次のシーンクラス >()
         void changeScene(std::shared_ptr<Base_Scene> nextScene) { p_nextScene_ = std::move(nextScene); };
 
         // gameMain で毎フレーム実行。シーンクラスの sceneUpdate を呼び出すメソッド
-        // argu ... 経過時間。gameMain の引数をそのまま入れればOK
+        // arg ... 経過時間。gameMain の引数をそのまま入れればOK
         void nowSceneUpdate(float deltaTime);
 
+
+
     private:
-        explicit SceneManager(std::shared_ptr<Base_Scene> startScene) { p_nowScene_ = std::move(startScene); };
-        ~SceneManager() = default;
-
-        static SceneManager* p_instance_;
-
         std::shared_ptr<Base_Scene> p_nowScene_ = nullptr;
         std::shared_ptr<Base_Scene> p_nextScene_ = nullptr;
     };

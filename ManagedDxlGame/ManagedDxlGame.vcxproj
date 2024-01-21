@@ -159,6 +159,7 @@
     <ClCompile Include="program\atlib\Scenes\DungeonScene.cpp" />
     <ClCompile Include="program\atlib\Scenes\Scene_Dummy.cpp" />
     <ClCompile Include="program\atlib\Singletons\DungeonCreater.cpp" />
+    <ClCompile Include="program\atlib\Singletons\ResourceManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\SceneManager.cpp" />
     <ClCompile Include="program\atlib\Utilities\Atl3DCamera.cpp" />
     <ClCompile Include="program\atlib\Utilities\AtlAstar.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="program\atlib\Scenes\Scene_Dummy.h" />
     <ClInclude Include="program\atlib\Scenes\TitleScene.h" />
     <ClInclude Include="program\atlib\Singletons\DungeonCreater.h" />
+    <ClInclude Include="program\atlib\Singletons\ResourceManager.h" />
     <ClInclude Include="program\atlib\Singletons\SceneManager.h" />
     <ClInclude Include="program\atlib\Templates\make_shared_withInitFunc.h" />
     <ClInclude Include="program\atlib\Utilities\Atl3DCamera.h" />

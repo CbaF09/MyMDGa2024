@@ -7,6 +7,14 @@ namespace atl {
 	// ダンジョン生成管理クラス ( シングルトン )
 	// 役割 ... ダンジョン自動生成 , 生成したダンジョンデータの保持
 	class DungeonCreater final {
+	//------------------------------------------
+	// シングルトン設計
+	public:
+		static DungeonCreater* getDungeonCreater();
+		static void deleteDungeonCreater();
+	private:
+		static DungeonCreater* p_instance_;
+	//------------------------------------------
 
 		class Area;
 		class Room;
@@ -16,29 +24,28 @@ namespace atl {
 		// セルの状態用 enum
 		enum class e_FieldCellType {
 			CELL_TYPE_NONE = 0,
+			CELL_TYPE_ROOM,
+			CELL_TYPE_PATH,
 			CELL_TYPE_WALL,
-			CELL_TYPE_MAX,
 		};
-
-		// インスタンス生成 , 既に生成されている場合はそのインスタンスを返す
-		static DungeonCreater* getDungeonCreater();
-
-		// インスタンスがある場合、消去
-		static void deleteDungeonCreater();
 
 		// ダンジョンを生成。fieldCells_ に保存される
 		void createDungeon();
 
 		// ゲッター関数
-		inline const std::vector<std::vector<FieldCell>>& getFieldCells() const { return fieldCells_; }
-		inline Shared<const tnl::Vector2i> getPlayerSpawnPos() const { return playerSpawnPos_; }
-		inline Shared<const tnl::Vector2i> getStairsSpawnPos() const { return stairsSpawnPos_; }
 		inline static const int32_t getFieldWidth() { return FIELD_WIDTH; }
 		inline static const int32_t getFieldHeight() { return FIELD_HEIGHT; }
+		inline const std::vector<std::vector<FieldCell>>& getFieldCells() const { return fieldCells_; }
+		inline const tnl::Vector2i& getPlayerSpawnPos() const { return playerSpawnPos_; }
+		inline const tnl::Vector2i& getStairsSpawnPos() const { return stairsSpawnPos_; }
+		inline const std::vector<tnl::Vector2i>& getEnemySpawnPos() const { return enemySpawnPosArray_; }
 
 		// fieldCells_ から、スポーン可能状態の空セルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 選ばれた XY地点の fieldCell は、スポーン不可状態に切り替わる
-		const Shared<tnl::Vector2i> randomChoiceCanSpawnFieldCellPos();
+		const tnl::Vector2i& randomChoiceCanSpawnFieldCellPos();
+
+		// 移動先が、移動可能かどうかチェックする
+		bool isCanMoveFieldCellPos(const tnl::Vector2i& toMovePos);
 
 		// --- デバッグ用関数
 
@@ -52,7 +59,6 @@ namespace atl {
 
 		// ログにダンジョンの情報を出力
 		void debag_OutputLogGeneratedData() const;
-
 
 	private:
 
@@ -87,15 +93,13 @@ namespace atl {
 			e_FieldCellType cellType_ = e_FieldCellType::CELL_TYPE_NONE;
 			bool isAlreadySpawnSomething = false;
 		};
-
 		//----------------------- 
 		// メンバ変数
+		const int32_t ENEMY_SPAWN_NUM = 3; // 敵の数
 
-		static DungeonCreater* p_instance_;
-
-		Shared<tnl::Vector2i> playerSpawnPos_ = nullptr;
-		Shared<tnl::Vector2i> stairsSpawnPos_ = nullptr;
-		Shared<tnl::Vector2i> enemySpawnPos_ = nullptr;
+		tnl::Vector2i playerSpawnPos_{ 0,0 };
+		tnl::Vector2i stairsSpawnPos_{ 0,0 };
+		std::vector<tnl::Vector2i> enemySpawnPosArray_;
 
 		std::vector<Area> areas_;
 
@@ -108,7 +112,7 @@ namespace atl {
 
 		void fieldCellsInit();
 		void areaInit();
-		void everySpawnInit();
+
 		void areaSprit(int32_t areaID = 0);
 		void roomCreate();
 		void pathwayCreate();

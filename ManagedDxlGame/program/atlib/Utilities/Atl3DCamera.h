@@ -23,7 +23,6 @@ namespace atl {
 		inline tnl::Vector3 left() override { return tnl::Vector3::Cross(forward(), up()); }
 		inline tnl::Vector3 right() override { return tnl::Vector3::Cross(up(), forward()); }
 
-		// カメラをマウスで操作する
 		void cameraControl(float controlSpeed);
 
 		// カメラをX,Y,Z軸で回転させる

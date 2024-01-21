@@ -233,9 +233,6 @@
     <ClCompile Include="program\atlib\MeshObject\GroundTile.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
-    <ClCompile Include="ManagedDxlGame.cpp">
-      <Filter>program\[002] atlib\MeshObject</Filter>
-    </ClCompile>
     <ClCompile Include="program\atlib\MeshObject\Stairs.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
@@ -265,6 +262,12 @@
     </ClCompile>
     <ClCompile Include="program\atlib\Utilities\AtlAstar.cpp">
       <Filter>program\[002] atlib\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="ManagedDxlGame.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Singletons\ResourceManager.cpp">
+      <Filter>program\[002] atlib\Singletons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -532,6 +535,9 @@
     </ClInclude>
     <ClInclude Include="program\atlib\Utilities\AtlAstar.h">
       <Filter>program\[002] atlib\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Singletons\ResourceManager.h">
+      <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

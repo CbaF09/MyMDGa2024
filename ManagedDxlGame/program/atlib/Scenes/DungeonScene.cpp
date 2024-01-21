@@ -3,7 +3,6 @@
 namespace atl {
 
 	DungeonScene::DungeonScene() {
-		player_ = std::make_shared<PlayerPawn>();
 	}
 
 	void DungeonScene::sceneUpdate(float deltaTime) {
@@ -18,7 +17,9 @@ namespace atl {
 		{//MeshObject 群をレンダリング
 			for (const auto& wall : walls_) { wall->renderObject(camera); }
 			for (const auto& groundTile : groundTiles_) { groundTile->renderObject(camera); }
+			
 			originStairs_->renderObjects(camera);
+			for (const auto& enemy : enemies_) { enemy->renderObjects(camera); }
 		}
 
 		debug_displayDungeonParam(camera, deltaTime);
@@ -28,18 +29,21 @@ namespace atl {
 		DrawGridGround(player_->getPlayerCamera(), 50, 20);
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
-		camera->debug_displayCameraParam();
-		player_->debug_displayPlayerParam(0, 15);
+		player_->debug_displayPlayerParam(0, 0);
 
 		// 階段の位置
-		auto stairsPos = originStairs_->getRootMesh()->pos_;
-		DrawStringEx(0, 30, -1, "stairsPos ... { %.2f, %.2f, %.2f }", stairsPos.x, stairsPos.y, stairsPos.z);
+		auto& stairsPos = originStairs_->get2Dpos();
+		DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
+
+		for (int i = 0; i < 3; ++i) {
+			DrawStringEx(0, 115 + (15 * i), -1, "Enemy[%d] pos ... [ %d , %d ]", i, enemies_[i]->get2Dpos().x, enemies_[i]->get2Dpos().y);
+		}
 	}
 
 	void DungeonScene::initDungeon() {
 		walls_.clear();
 		groundTiles_.clear();
-		originStairs_ = nullptr;
+		enemies_.resize(3);
 	}
 
 	void DungeonScene::generateDungeon() {
@@ -60,18 +64,28 @@ namespace atl {
 		}
 
 		{// 各種スポーン
-			auto playerSpawnPos = DungeonCreater::getDungeonCreater()->getPlayerSpawnPos();
-			player_->setPlayerAndCameraPos({ playerSpawnPos->x * static_cast<float>(CELL_FULL_LENGTH) , PLAYER_HEAD_LINE, playerSpawnPos->y * static_cast<float>(CELL_FULL_LENGTH) });
-			auto stairsSpawnPos = DungeonCreater::getDungeonCreater()->getStairsSpawnPos();
-			originStairs_ = std::make_shared<Stairs>(tnl::Vector3{ stairsSpawnPos->x * static_cast<float>(CELL_FULL_LENGTH),0,stairsSpawnPos->y * static_cast<float>(CELL_FULL_LENGTH) }, tnl::Vector3{ CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2 });
+			auto& playerSpawnPos = DungeonCreater::getDungeonCreater()->getPlayerSpawnPos();
+			player_ = std::make_shared<PlayerPawn>();
+			player_->playerSpawn2Dpos(playerSpawnPos);
+			
+			auto& stairsSpawnPos = DungeonCreater::getDungeonCreater()->getStairsSpawnPos();
+			originStairs_ = std::make_shared<Stairs>(stairsSpawnPos, tnl::Vector3{ CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2 });
+
+			auto& enemySpawnPos = DungeonCreater::getDungeonCreater()->getEnemySpawnPos();
+			for (int i = 0; i < 3; ++i) {
+				enemies_[i] = std::make_shared<EnemyPawn>(enemySpawnPos[i], tnl::Vector3{ 200, 200, 200 });
+			}
 		}
+		
+		// テクスチャによるメモリリークが発生してる？っぽいので、実行
+		dxe::Texture::DestroyUnReferenceTextures();
 	}
 
 	void DungeonScene::generateWall(int generatePosX, int generatePosZ) {
 		if (!originWall_) originWall_ = std::make_shared<Wall>(tnl::Vector3{ CELL_FULL_LENGTH, CELL_FULL_LENGTH ,CELL_FULL_LENGTH });
 		Shared<Wall> newWall = std::make_shared<Wall>(originWall_->getMesh());
 		newWall->getMesh()->pos_.x = generatePosX * CELL_FULL_LENGTH;
-		newWall->getMesh()->pos_.y = CELL_FULL_LENGTH / 2;
+		newWall->getMesh()->pos_.y = static_cast<float>(CELL_FULL_LENGTH) / 2;
 		newWall->getMesh()->pos_.z = generatePosZ * CELL_FULL_LENGTH;
 		newWall->setMeshSizeVector3(tnl::Vector3{ CELL_FULL_LENGTH, CELL_FULL_LENGTH, CELL_FULL_LENGTH });
 		walls_.emplace_back(newWall);
@@ -92,16 +106,23 @@ namespace atl {
 	}
 
 	bool DungeonScene::seqProcess(float deltaTime) {
-		{// プレイヤーの移動
-			player_->playerUpdate(deltaTime);
-
-			{// プレイヤーと壁の衝突判定
-
+		switch (currentTurn_) {
+		case e_turnState::PLAYER:
+			if (player_->playerUpdate(deltaTime)) currentTurn_ = e_turnState::ENEMY;
+			break;
+		case e_turnState::ENEMY:
+			bool allEnemyAction = true;
+			for (auto& enemy : enemies_) {
+				enemy->enemyUpdate(deltaTime);
+				if(enemy->getIsAlreadyAction() == false) allEnemyAction = false;
 			}
+			
+			if(allEnemyAction) currentTurn_ = e_turnState::PLAYER;
+			break;
 		}
 
 		{// カメラコントロール ( 移動の後にやらないと、なんか変になる )
-			player_->getPlayerCamera()->cameraControl(PLAYER_CAMERA_ROT_SPEED);
+			player_->cameraControl();
 		}
 
 		{// デバッグ用操作
