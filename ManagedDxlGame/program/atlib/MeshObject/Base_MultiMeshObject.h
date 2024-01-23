@@ -7,7 +7,7 @@ namespace atl {
 
 	// メッシュオブジェクト用クラス
 	// 3D空間に実際に描画される物体で、複数のメッシュで構成されているものはこれを継承する
-	class Base_MultiMeshObject {
+	class Base_MultiMeshObject  {
 	public:
 		virtual ~Base_MultiMeshObject() {};
 
@@ -22,6 +22,7 @@ namespace atl {
 		// 引数を子メッシュ配列の末尾に追加する
 		void addChildMesh(const Shared<dxe::Mesh> childMesh);
 		inline void set2Dpos(const tnl::Vector2i& mesh2Dpos) { mesh2Dpos_ = mesh2Dpos; }
+		// 2D座標{x,y}を指定すると、その座標にあたる3D空間上の位置に設定される。Y はそのまま
 		void set2DposAnd3Dpos(const tnl::Vector2i& mesh2Dpos);
 
 		// 子メッシュ群の座標と回転を設定。renderObjects内で、render前に実行される

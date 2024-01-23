@@ -8,6 +8,7 @@
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/EnemyPawn.h"
 #include "../MeshObject/Stairs.h"
+#include "../MeshObject/MagicWand.h"
 #include "../Collision/Collision.h"
 
 namespace atl {
@@ -22,6 +23,7 @@ namespace atl {
     private:
 
         Shared<PlayerPawn> player_;
+        Shared<MagicWand> wand_;
 
         void sceneUpdate(float deltaTime) override {
             seq_.update(deltaTime);
@@ -33,8 +35,7 @@ namespace atl {
 
             camera->update();
 
-
-            player_->debug_displayPlayerParam(0, 15);
+            wand_->renderObjects(camera);
 
             DrawDefaultLightGuiController();
             DrawGridGround(player_->getPlayerCamera(), 50, 20);
@@ -46,6 +47,8 @@ namespace atl {
 
         bool seqInit(float deltaTime) {
             player_ = std::make_shared<PlayerPawn>();
+            player_->playerSpawn2Dpos({ 0,0 });
+            wand_ = std::make_shared<MagicWand>(tnl::Vector2i{ 0,0 }, 50.f);
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;

@@ -1,10 +1,11 @@
 #pragma once
 #include "../dxlib_ext/dxlib_ext.h"
 #include "../../atlib/Utilities/Atl3DCamera.h"
+#include "../MeshObject/MagicWand.h"
 
 namespace atl {
 
-	class PlayerPawn final {
+	class PlayerPawn final : public std::enable_shared_from_this<PlayerPawn> {
 	public:
 		PlayerPawn();
 
@@ -23,7 +24,9 @@ namespace atl {
 		void debug_displayPlayerParam(int drawPosX = 0, int drawPosY = 0);
 
 		bool playerUpdate(float deltaTime) {
-			return seq_.update(deltaTime);
+			bool retV = seq_.update(deltaTime);
+			playerHaveMagicWand->renderObjects(playerCamera_);
+			return retV;
 		}
 
 	private:
@@ -47,6 +50,7 @@ namespace atl {
 		tnl::Vector3 player3Dpos_{ 0,0,0 };
 		tnl::Vector3 moveTarget_{ 0,0,0 };
 		Shared<Atl3DCamera> playerCamera_ = nullptr;
+		Shared<MagicWand> playerHaveMagicWand = nullptr;
 
 		// --------------------------------------------------
 		// メソッド
@@ -60,8 +64,9 @@ namespace atl {
 		// --------------------------------------------------
 		// シーケンス用
 		
-		SEQUENCE(PlayerPawn, &PlayerPawn::seqIdle);
+		SEQUENCE(PlayerPawn, &PlayerPawn::seqInit);
 		
+		bool seqInit(float deltaTime);
 		bool seqIdle(float deltaTime);
 		bool seqMoveZplus(float deltaTime);
 		bool seqMoveZminus(float deltaTime);

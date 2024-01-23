@@ -36,7 +36,7 @@ namespace atl {
 	void PlayerPawn::playerSpawn2Dpos(const tnl::Vector2i& spawn2Dpos) {
 		player2Dpos_ = spawn2Dpos;
 
-		float cellLength = DungeonScene::getCellLength();
+		float cellLength = static_cast<float>(DungeonScene::getCellLength());
 		tnl::Vector3 initPos = { spawn2Dpos.x * cellLength, PLAYER_HEAD_LINE, spawn2Dpos.y * cellLength };
 
 		setPlayerAndCamera3Dpos(initPos);
@@ -147,6 +147,13 @@ namespace atl {
 	// ---------------------------
 	// シーケンス
 	// ---------------------------
+
+	bool PlayerPawn::seqInit(float deltaTime) {
+		playerHaveMagicWand = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+
+		seq_.change(&PlayerPawn::seqIdle);
+		return false;
+	}
 
 	bool PlayerPawn::seqIdle(float deltaTime) {
 		{// 移動入力

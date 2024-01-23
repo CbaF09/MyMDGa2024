@@ -10,7 +10,7 @@ namespace atl {
 	void Base_MultiMeshObject::set2DposAnd3Dpos(const tnl::Vector2i& mesh2Dpos) {
 		auto cellLength = DungeonScene::getCellLength();
 		mesh2Dpos_ = mesh2Dpos;
-		rootMesh_->pos_ = { static_cast<float>(mesh2Dpos_.x * cellLength),static_cast<float>(mesh2Dpos_.y),static_cast<float>(mesh2Dpos_.y * cellLength) };
+		rootMesh_->pos_ = { static_cast<float>(mesh2Dpos_.x * cellLength),static_cast<float>(rootMesh_->pos_.y),static_cast<float>(mesh2Dpos_.y * cellLength) };
 	}
 
 	void Base_MultiMeshObject::renderObjects(const Shared<Atl3DCamera> camera){

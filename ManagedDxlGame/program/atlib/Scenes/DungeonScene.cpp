@@ -20,6 +20,7 @@ namespace atl {
 			
 			originStairs_->renderObjects(camera);
 			for (const auto& enemy : enemies_) { enemy->renderObjects(camera); }
+
 		}
 
 		debug_displayDungeonParam(camera, deltaTime);
@@ -132,8 +133,5 @@ namespace atl {
 
 		return true;
 	}
-
-
-
 
 }
