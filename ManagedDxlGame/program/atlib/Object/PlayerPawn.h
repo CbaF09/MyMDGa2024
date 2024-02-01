@@ -8,16 +8,13 @@ namespace atl {
 
 	class PlayerPawn final : public std::enable_shared_from_this<PlayerPawn> {
 	public:
-		PlayerPawn();
 
 		// ゲッター
 		inline const Shared<Atl3DCamera> getPlayerCamera() const { return playerCamera_; }
 		inline const tnl::Vector3& getPlayerPos() const { return player3Dpos_; }
+		inline bool getIsAlreadyAction() const { return isAlreadyAction; }
 		
 		void setPlayerAndCamera3Dpos(const tnl::Vector3& newPos);
-
-		// マウスでカメラを操作する
-		void cameraControl();
 
 		// 2D座標上の位置で Spawn する
 		void playerSpawn2Dpos(const tnl::Vector2i& spawn2Dpos);
@@ -26,8 +23,8 @@ namespace atl {
 
 		// シーケンス管理実行用
 		bool playerUpdate(float deltaTime) {
-			bool retV = seq_.update(deltaTime);
-			return retV;
+			seq_.update(deltaTime);
+			return false;
 		}
 
 		// render系
@@ -39,6 +36,7 @@ namespace atl {
 		void initialize() {
 			playerHaveMagicWand = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
 			playerHaveMagicBook = std::make_shared<MagicBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+			player3Dpos_ = playerCamera_->pos_;
 		}
 
 	private:
@@ -54,22 +52,26 @@ namespace atl {
 		// --------------------------------------------------
 		// メンバー変数
 
-		const float CAMERA_ROT_SPEED = 0.3f;	// カメラ回転速度
+		Shared<Atl3DCamera> playerCamera_ = std::make_shared<Atl3DCamera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);;
+		Shared<MagicWand> playerHaveMagicWand = nullptr;
+		Shared<MagicBook> playerHaveMagicBook = nullptr;
+
+		tnl::Vector2i player2Dpos_{ 0,0 };
+		tnl::Vector3 player3Dpos_{ 0,0,0 };
+
+		// moveLerp用
 		const float MOVE_LERP_SPEED = 3.0f;		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
 		const float PLAYER_HEAD_LINE = 500;		// プレイヤーのY高さ（カメラ・目線の高さ）
 		float moveLerpTimeCount_ = 0;
-		tnl::Vector2i player2Dpos_{ 0,0 };
-		tnl::Vector3 player3Dpos_{ 0,0,0 };
 		tnl::Vector3 moveTarget_{ 0,0,0 };
 		
-		Shared<Atl3DCamera> playerCamera_ = nullptr;
-		Shared<MagicWand> playerHaveMagicWand = nullptr;
-		Shared<MagicBook> playerHaveMagicBook = nullptr;
+		// ターン制御用
+		bool isAlreadyAction = false;
 
 		// --------------------------------------------------
 		// メソッド
 		
-		// arg ... 現在位置からの移動量
+		// arg ... 現在位置からの移動先
 		bool checkIsCanMovePos(const tnl::Vector2i& moveToPos);
 		bool moveLerp(float deltaTime);
 		e_XZdir checkCurrentFowardDir();

@@ -62,7 +62,7 @@ namespace atl {
             }
 
             {// カメラコントロール ( 移動の後にやらないと、なんか変になる )
-                player_->cameraControl();
+                player_->getPlayerCamera()->cameraControl(0.3f);
             }
 
             {// デバッグ用。ESCキーでウィンドウ落とす。

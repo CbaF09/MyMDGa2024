@@ -1,19 +1,16 @@
 #pragma once
-
 #include "../dxlib_ext/dxlib_ext.h"
-#include "../../atlib/Singletons/DungeonCreater.h"
-#include "../../atlib/Singletons/ResourceManager.h"
-#include "../../atlib/MeshObject/Wall.h"
-#include "../../atlib/MeshObject/Stairs.h"
-#include "../../atlib/MeshObject/EnemyPawn.h"
-#include "../../atlib/MeshObject/GroundTile.h"
-#include "../../atlib/Object/PlayerPawn.h"
-#include "../../atlib/Utilities/Atl3DCamera.h"
-#include "../../atlib/Templates/make_shared_withInitFunc.h"
-#include "../../atlib/Collision/Collision.h"
 #include "Base_Scene.h"
 
 namespace atl {
+
+    class Stairs;
+    class EnemyPawn;
+    class Wall;
+    class GroundTile;
+    class PlayerPawn;
+    class DungeonCreater;
+    class Atl3DCamera;
 
     // ダンジョンシーン
     // 役割 ... ダンジョン探索シーン
@@ -56,6 +53,7 @@ namespace atl {
 
         // プレイヤー関連 ------------------------------
         Shared<PlayerPawn> player_ = nullptr;
+        const float CAMERA_ROT_SPEED = 0.3f;	// カメラ回転速度
 
         // エネミー関連 --------------------------------
         std::vector<Shared<EnemyPawn>> enemies_;
@@ -73,7 +71,11 @@ namespace atl {
         // シーケンス
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);
         bool seqInit(float deltaTime);
-        bool seqProcess(float deltaTime);
+        bool seqTurnStateProcess(float deltaTime);
+
+        void processKeyInput(float deltaTime);
+        void processPlayerTurn(float deltaTime);
+        void processEnemyTurn(float deltaTime);
 
         // デバッグ用 ----------------------------------
         void debug_displayDungeonParam(const Shared<atl::Atl3DCamera>& camera, float deltaTime);

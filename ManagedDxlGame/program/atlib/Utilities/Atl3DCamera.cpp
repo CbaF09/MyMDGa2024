@@ -24,6 +24,8 @@ namespace atl {
 		// 横振り
 		cameraRotateAxis({ 0, 1, 0 }, mvel.x * controlSpeed);
 
+		// カメラアップデート
+		update();
     }
 
 	void Atl3DCamera::cameraRotateAxis(tnl::Vector3 rotateAxis, float rotateDegree) {

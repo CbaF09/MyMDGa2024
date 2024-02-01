@@ -1,5 +1,6 @@
 #include "EnemyPawn.h"
 #include "../Scenes/DungeonScene.h"
+#include "../Singletons/DungeonCreater.h"
 #include "../Utilities/AtlRandom.h"
 
 namespace atl {

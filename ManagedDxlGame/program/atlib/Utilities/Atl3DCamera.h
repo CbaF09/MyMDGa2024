@@ -23,6 +23,7 @@ namespace atl {
 		inline tnl::Vector3 left() override { return tnl::Vector3::Cross(forward(), up()); }
 		inline tnl::Vector3 right() override { return tnl::Vector3::Cross(up(), forward()); }
 
+		// マウスでカメラを回転させる
 		void cameraControl(float controlSpeed);
 
 		// カメラをX,Y,Z軸で回転させる
@@ -41,7 +42,7 @@ namespace atl {
 		const float MIN_PITCH = 40.0f;
 		const float MAX_PITCH = 150.0f;
 
-		tnl::Quaternion cameraRot_ = tnl::Quaternion();
+		tnl::Quaternion cameraRot_;
 	};
 
 }

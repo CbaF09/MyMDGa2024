@@ -4,33 +4,9 @@
 
 namespace atl {
 
-	PlayerPawn::PlayerPawn() {
-		playerCamera_ = std::make_shared<Atl3DCamera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);
-		player3Dpos_ = playerCamera_->pos_;
-	}
-
 	void PlayerPawn::setPlayerAndCamera3Dpos(const tnl::Vector3& newPos) {
 		player3Dpos_ = newPos;
 		playerCamera_->pos_ = newPos;
-	}
-
-	void PlayerPawn::cameraControl() {
-		playerCamera_->target_ = playerCamera_->pos_ + playerCamera_->forward();
-		playerCamera_->up();
-
-		tnl::Quaternion beforeRot = playerCamera_->getCameraRot();
-
-		tnl::Vector3 mvel = tnl::Input::GetMouseVelocity();
-
-		// ècêUÇË
-		playerCamera_->cameraRotateAxis(playerCamera_->right(), mvel.y * CAMERA_ROT_SPEED);
-		float newAngle = tnl::ToDegree(playerCamera_->forward().angle({ 0,1,0 }));
-		if (newAngle < playerCamera_->getMIN_PITCH() || playerCamera_->getMAX_PITCH() < newAngle) {
-			playerCamera_->setCameraRot(beforeRot);
-		}
-
-		// â°êUÇË
-		playerCamera_->cameraRotateAxis({ 0, 1, 0 }, mvel.x * CAMERA_ROT_SPEED);
 	}
 
 	void PlayerPawn::playerSpawn2Dpos(const tnl::Vector2i& spawn2Dpos) {
@@ -65,8 +41,8 @@ namespace atl {
 
 		if (length <= 0.01f) {
 			moveLerpTimeCount_ = 0;
+			isAlreadyAction = true;
 			seq_.change(&PlayerPawn::seqWaitKeyInput);
-			return true;
 		}
 		player3Dpos_ = playerCamera_->pos_;
 		return false;
@@ -84,21 +60,11 @@ namespace atl {
 		float minAngle = (std::min)({ angleToZplus, angleToZminus, angleToXplus, angleToXminus });
 
 		e_XZdir retV;
-		if (minAngle == angleToZplus) {
-			retV = e_XZdir::Zplus;
-		}
-		else if (minAngle == angleToZminus) {
-			retV = e_XZdir::Zminus;
-		}
-		else if (minAngle == angleToXplus) {
-			retV = e_XZdir::Xplus;
-		}
-		else if (minAngle == angleToXminus) {
-			retV = e_XZdir::Xminus;
-		}
-		else {
-			retV = e_XZdir::NONE;
-		}
+		if		(minAngle == angleToZplus) { retV = e_XZdir::Zplus; }
+		else if (minAngle == angleToZminus) { retV = e_XZdir::Zminus; }
+		else if (minAngle == angleToXplus) { retV = e_XZdir::Xplus; }
+		else if (minAngle == angleToXminus) { retV = e_XZdir::Xminus; }
+		else { retV = e_XZdir::NONE; }
 		return retV;
 	}	
 	
@@ -131,19 +97,11 @@ namespace atl {
 			break;
 		}
 
-		// WASD Ç≈ ä÷êîÉ|ÉCÉìÉ^ÇÃíÜêgëJà⁄
-		if (tnl::Input::IsKeyDown(eKeys::KB_W)) {
-			seq_.change(relativeForward);
-		}
-		else if (tnl::Input::IsKeyDown(eKeys::KB_S)) {
-			seq_.change(relativeBack);
-		}
-		else if (tnl::Input::IsKeyDown(eKeys::KB_A)) {
-			seq_.change(relativeLeft);
-		}
-		else if (tnl::Input::IsKeyDown(eKeys::KB_D)) {
-			seq_.change(relativeRight);
-		}
+		// WASD Ç≈ ä÷êîÉ|ÉCÉìÉ^ÇÃíÜêgÇ…ëJà⁄
+		if (tnl::Input::IsKeyDown(eKeys::KB_W)) { seq_.change(relativeForward); }
+		else if (tnl::Input::IsKeyDown(eKeys::KB_S)) { seq_.change(relativeBack); }
+		else if (tnl::Input::IsKeyDown(eKeys::KB_A)) { seq_.change(relativeLeft); }
+		else if (tnl::Input::IsKeyDown(eKeys::KB_D)) { seq_.change(relativeRight); }
 	}
 
 
@@ -152,11 +110,12 @@ namespace atl {
 	// ---------------------------
 
 	bool PlayerPawn::seqWaitKeyInput(float deltaTime) {
-		{// à⁄ìÆì¸óÕ
-			if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
-				calcDirAndMoveSeqChange();
-				return false;
-			}
+		if (seq_.isStart()) {
+			isAlreadyAction = false;
+		}
+
+		if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
+			calcDirAndMoveSeqChange();
 		}
 		return false;
 	}
@@ -165,32 +124,32 @@ namespace atl {
 		if (seq_.isStart()) {
 			checkIsCanMovePos({ 0,1 });
 		}
-		
-		return moveLerp(deltaTime);
+		moveLerp(deltaTime);
+		return false;
 	}
 
 	bool PlayerPawn::seqMoveZminus(float deltaTime) {
 		if (seq_.isStart()) {
 			checkIsCanMovePos({ 0,-1 });
 		}
-
-		return moveLerp(deltaTime);
+		moveLerp(deltaTime);
+		return false;
 	}
 
 	bool PlayerPawn::seqMoveXplus(float deltaTime) {
 		if (seq_.isStart()) {
 			checkIsCanMovePos({ 1,0 });
 		}
-
-		return moveLerp(deltaTime);
+		moveLerp(deltaTime);
+		return false;
 	}
 
 	bool PlayerPawn::seqMoveXminus(float deltaTime) {
 		if (seq_.isStart()) {
 			checkIsCanMovePos({ -1,0 });
 		}
-		
-		return moveLerp(deltaTime);
+		moveLerp(deltaTime);
+		return false;
 	}
 
 	// ---------------------------
