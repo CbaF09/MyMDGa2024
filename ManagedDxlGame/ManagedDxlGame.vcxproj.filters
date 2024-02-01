@@ -239,9 +239,6 @@
     <ClCompile Include="program\atlib\MeshObject\Wall.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
-    <ClCompile Include="program\atlib\Object\PlayerPawn.cpp">
-      <Filter>program\[002] atlib\Object</Filter>
-    </ClCompile>
     <ClCompile Include="program\atlib\Scenes\DungeonScene.cpp">
       <Filter>program\[002] atlib\Scenes</Filter>
     </ClCompile>
@@ -273,6 +270,12 @@
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
     <ClCompile Include="program\atlib\MeshObject\MagicBook.cpp">
+      <Filter>program\[002] atlib\MeshObject</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\MeshObject\PlayerPawn.cpp">
+      <Filter>program\[002] atlib\MeshObject</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\MeshObject\ForwardArrow.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
   </ItemGroup>
@@ -503,9 +506,6 @@
     <ClInclude Include="program\atlib\MeshObject\Wall.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\Object\PlayerPawn.h">
-      <Filter>program\[002] atlib\Object</Filter>
-    </ClInclude>
     <ClInclude Include="program\atlib\Scenes\Base_Scene.h">
       <Filter>program\[002] atlib\Scenes</Filter>
     </ClInclude>
@@ -552,6 +552,12 @@
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\MeshObject\MagicBook.h">
+      <Filter>program\[002] atlib\MeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\MeshObject\PlayerPawn.h">
+      <Filter>program\[002] atlib\MeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\MeshObject\ForwardArrow.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
   </ItemGroup>

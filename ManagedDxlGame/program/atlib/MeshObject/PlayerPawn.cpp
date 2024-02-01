@@ -165,9 +165,9 @@ namespace atl {
 			"playerCameraPos ... [ %.2f , %.2f , %.2f ]", playerCamera_->pos_.x, playerCamera_->pos_.y, playerCamera_->pos_.z);
 		DrawStringEx(drawPosX, drawPosY + 45, -1,
 			"playerCameraAngle ... [ %.2f , %.2f, %.2f ]", tnl::ToDegree(playerCamera_->forward().angle({ 1,0,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,1,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,0,1 })));
-		if (playerHaveMagicWand) {
+		if (playerHaveMagicWand_) {
 			DrawStringEx(drawPosX, drawPosY + 60, -1,
-				"playerWandPos ... [ %.2f , %.2f, %.2f ]", playerHaveMagicWand->getRootMesh()->pos_.x, playerHaveMagicWand->getRootMesh()->pos_.y, playerHaveMagicWand->getRootMesh()->pos_.z);
+				"playerWandPos ... [ %.2f , %.2f, %.2f ]", playerHaveMagicWand_->getRootMesh()->pos_.x, playerHaveMagicWand_->getRootMesh()->pos_.y, playerHaveMagicWand_->getRootMesh()->pos_.z);
 		}
 	}
 

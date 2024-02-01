@@ -3,7 +3,7 @@
 #include "../dxlib_ext/dxlib_ext.h"
 #include "Base_Scene.h"
 #include "../Singletons/DungeonCreater.h"
-#include "../Object/PlayerPawn.h"
+#include "../MeshObject/PlayerPawn.h"
 #include "../MeshObject/Wall.h"
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/EnemyPawn.h"
@@ -31,9 +31,8 @@ namespace atl {
         };
 
         void render(float deltaTime) {
-            auto camera = player_->getPlayerCamera();
-
-            camera->update();
+            
+            player_->render(deltaTime);
 
             DrawDefaultLightGuiController();
             DrawGridGround(player_->getPlayerCamera(), 50, 20);
@@ -46,6 +45,7 @@ namespace atl {
         bool seqInit(float deltaTime) {
             player_ = std::make_shared<PlayerPawn>();
             player_->playerSpawn2Dpos({ 0,0 });
+            player_->initialize();
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
@@ -64,6 +64,8 @@ namespace atl {
             {// カメラコントロール ( 移動の後にやらないと、なんか変になる )
                 player_->getPlayerCamera()->cameraControl(0.3f);
             }
+
+            render(deltaTime);
 
             {// デバッグ用。ESCキーでウィンドウ落とす。
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) {

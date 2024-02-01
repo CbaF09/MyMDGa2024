@@ -1,5 +1,5 @@
 #include "MagicBook.h"
-#include "../Object/PlayerPawn.h"
+#include "PlayerPawn.h"
 
 namespace atl {
 

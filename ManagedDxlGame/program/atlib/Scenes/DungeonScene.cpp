@@ -5,7 +5,7 @@
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/EnemyPawn.h"
-#include "../Object/PlayerPawn.h"
+#include "../MeshObject/PlayerPawn.h"
 #include "../Utilities/Atl3DCamera.h"
 
 namespace atl {
