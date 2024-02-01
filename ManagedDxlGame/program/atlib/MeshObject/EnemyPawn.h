@@ -3,6 +3,8 @@
 
 namespace atl {
 
+	class PlayerPawn;
+
 	class EnemyPawn : public Base_MultiMeshObject {
 	public:
 		// arg1 ... エネミーを生成する位置
@@ -12,11 +14,10 @@ namespace atl {
 
 		void adjustmentChildMeshes() override;
 
-		// ステートマシン用 enum
+		// ステート用 enum
 		enum class e_EnemyState {
 			Wandering,	// 目的のない探索
-			Searching,	// 目的のある探索
-			Chasing,	// プレイヤーを追跡中
+			PlayerNeighboring, // その場で足踏み,プレイヤーの方を向く
 		};
 
 		// ゲッター
@@ -24,20 +25,27 @@ namespace atl {
 		inline const bool getIsAlreadyAction() const { return isAlreadyAction; }
 
 		// セッター
-		inline void setEnemySpeed(float enemyMoveSpeed) { enemyMoveSpeed_ = enemyMoveSpeed; }
+		inline void setEnemyState(const e_EnemyState& newState) { currentState_ = newState; }
+		inline void setIsAlreadyAction(bool flag = false) { isAlreadyAction = flag; }
 		
 		// エネミーの毎フレームの行動
+		// setEnemyState でステートを設定してから呼び出す事で、ステートに応じた行動を取る
 		bool enemyUpdate(float deltaTime) {
 			return seq_.update(deltaTime);
 		}
+
+		// プレイヤーの位置を2D座標系で得る
+		const tnl::Vector2i& searchPlayerPos(Shared<PlayerPawn> player);
+		// プレイヤーと前後左右で隣接しているか
+		bool isNeighborPlayer(Shared<PlayerPawn> player);
 
 	private:
 
 		//----------------------
 		// メソッド
 		// arg ... 現在位置からの移動量
-		bool checkIsCanMovePos(const tnl::Vector2i& moveToPos);
-		bool moveLerp(float deltaTime);
+		bool isCanMovePos(const tnl::Vector2i& moveToPos);
+		void moveLerp(float deltaTime);
 
 		//-----------------------
 		// メンバ変数
@@ -62,8 +70,7 @@ namespace atl {
 		SEQUENCE(EnemyPawn, &EnemyPawn::seqCheckCurrentState);
 		bool seqCheckCurrentState(float deltaTime);
 		bool seqWandering(float deltaTime);
-		bool seqSearching(float deltaTime) {/*未実装*/ };
-		bool seqChasing(float deltaTime) {/*未実装*/ };
+		bool seqPlayerNeighboring(float deltaTime);
 
 		bool seqMoveZplus(float deltaTime);
 		bool seqMoveZminus(float deltaTime);

@@ -26,33 +26,6 @@ namespace atl {
 
 	void DungeonScene::sceneUpdate(float deltaTime) {
 		seq_.update(deltaTime);
-	}
-
-
-	//---------------------
-	// シーケンス
-	//---------------------
-
-
-	bool DungeonScene::seqInit(float deltaTime) {
-		generateDungeon();
-		player_->initialize();
-		seq_.change(&DungeonScene::seqTurnStateProcess);
-		return true;
-	}
-
-	bool DungeonScene::seqTurnStateProcess(float deltaTime) {
-		switch (currentTurn_) {
-		case e_turnState::KEY_INPUT:
-			processKeyInput(deltaTime);
-			break;
-		case e_turnState::PLAYER:
-			processPlayerTurn(deltaTime);
-			break;
-		case e_turnState::ENEMY:
-			processEnemyTurn(deltaTime);
-			break;
-		}
 
 		{// カメラコントロール ( 移動の後にやらないと、なんか変になる )
 			player_->getPlayerCamera()->cameraControl(CAMERA_ROT_SPEED);
@@ -64,7 +37,45 @@ namespace atl {
 
 		{// デバッグ用操作
 			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) seq_.change(&DungeonScene::seqInit);
+			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN));//デバッグ用処理
 			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
+		}
+	}
+
+
+	//---------------------
+	// シーケンス
+	//---------------------
+
+
+	// 初期化
+	bool DungeonScene::seqInit(float deltaTime) {
+		generateDungeon();
+		player_->initialize();
+		seq_.change(&DungeonScene::seqAllActionFlagOff);
+		return true;
+	}
+
+	// フラグオフ用シーケンス
+	bool DungeonScene::seqAllActionFlagOff(float deltaTime) {
+		player_->setIsAlreadyAction();
+		for (auto& enemy : enemies_) { enemy->setIsAlreadyAction(); }
+
+		currentTurn_ = e_turnState::KEY_INPUT;
+		seq_.change(&DungeonScene::seqTurnStateProcess);
+		return true;
+	}
+
+	// 現在ターンに応じて処理実行
+	bool DungeonScene::seqTurnStateProcess(float deltaTime) {
+
+		switch (currentTurn_) {
+		case e_turnState::KEY_INPUT:
+			processKeyInput(deltaTime);
+			break;
+		case e_turnState::PLAYER_MOVE:
+			processPlayerMoveTurn(deltaTime);
+			break;
 		}
 
 		return true;
@@ -72,24 +83,31 @@ namespace atl {
 
 	void DungeonScene::processKeyInput(float deltaTime) {
 		if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
-			currentTurn_ = e_turnState::PLAYER;
+			currentTurn_ = e_turnState::PLAYER_MOVE;
 		}
 	}
 
-	void DungeonScene::processPlayerTurn(float deltaTime) {
-		player_->playerUpdate(deltaTime);
-		if (player_->getIsAlreadyAction()) currentTurn_ = e_turnState::ENEMY;
-	}
+	// プレイヤーの移動入力
+	void DungeonScene::processPlayerMoveTurn(float deltaTime) {
+		// プレイヤーの移動
+		if (!player_->getIsAlreadyAction()) {
+			player_->playerUpdate(deltaTime);
+		}
 
-	void DungeonScene::processEnemyTurn(float deltaTime) {
+		// エネミーの行動
 		bool allEnemyAction = true;
-		for (auto enemy : enemies_) {
-			enemy->enemyUpdate(deltaTime);
-			if (!enemy->getIsAlreadyAction()) allEnemyAction = false; // 行動完了になっていないエネミーがいた場合、フラグをオフ
+		for (auto& enemy : enemies_) {
+			if (!enemy->getIsAlreadyAction()) {
+				// 隣接している場合
+				if (enemy->isNeighborPlayer(player_)) enemy->setEnemyState(EnemyPawn::e_EnemyState::PlayerNeighboring);
+				else enemy->setEnemyState(EnemyPawn::e_EnemyState::Wandering);
+				enemy->enemyUpdate(deltaTime);
+				allEnemyAction = false;
+			}
 		}
-		if (allEnemyAction) { // フラグが立っている ( 全エネミーが行動完了している ) 場合、Turnを切り替え
-			currentTurn_ = e_turnState::KEY_INPUT;
-		}
+
+		// プレイヤー移動完了・エネミー行動完了したら、シーケンス遷移
+		if (player_->getIsAlreadyAction() && allEnemyAction) seq_.immediatelyChange(&DungeonScene::seqAllActionFlagOff);
 	}
 
 	//---------------------

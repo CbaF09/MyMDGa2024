@@ -2,6 +2,7 @@
 #include "../Scenes/DungeonScene.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Utilities/AtlRandom.h"
+#include "PlayerPawn.h"
 
 namespace atl {
 
@@ -44,7 +45,22 @@ namespace atl {
 		childs[0]->pos_ = rootMesh->pos_ + tnl::Vector3::TransformCoord(tnl::Vector3{ 0,0,enemySize_.z / 2 }, childs[0]->rot_);
 	}
 
-	bool EnemyPawn::checkIsCanMovePos(const tnl::Vector2i& moveToPos) {
+	const tnl::Vector2i& EnemyPawn::searchPlayerPos(Shared<PlayerPawn> player) {
+		return player->getPlayer2Dpos();
+	}
+
+	bool EnemyPawn::isNeighborPlayer(Shared<PlayerPawn> player) {
+		auto& player2Dpos = searchPlayerPos(player);
+		auto& enemy2Dpos = get2Dpos();
+
+		if (player2Dpos.x == enemy2Dpos.x + 1 && player2Dpos.y == enemy2Dpos.y) return true;
+		else if (player2Dpos.x == enemy2Dpos.x - 1 && player2Dpos.y == enemy2Dpos.y) return true;
+		else if (player2Dpos.x == enemy2Dpos.x && player2Dpos.y == enemy2Dpos.y + 1) return true;
+		else if (player2Dpos.x == enemy2Dpos.x && player2Dpos.y == enemy2Dpos.y - 1) return true;
+		else return false;
+	}
+
+	bool EnemyPawn::isCanMovePos(const tnl::Vector2i& moveToPos) {
 		auto cellLength = DungeonScene::getCellLength();
 		if (DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(get2Dpos() + moveToPos)) {
 			auto meshPos = getRootMesh()->pos_;
@@ -60,31 +76,18 @@ namespace atl {
 		return false;
 	}
 
-	bool EnemyPawn::moveLerp(float deltaTime) {
-		getRootMesh()->pos_ = tnl::Vector3::DecelLerp(getRootMesh()->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
-		moveLerpTimeCount_ += deltaTime;
 
-		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
-			moveLerpTimeCount_ = 0;
-			seq_.change(&EnemyPawn::seqCheckCurrentState);
-			isAlreadyAction = true;
-			return true;
-		}
-		return false;
-	}
 
 	/// --------------------------
 	/// シーケンス
 	/// --------------------------
 
 	bool EnemyPawn::seqCheckCurrentState(float deltaTime) {
-		isAlreadyAction = false;
 		switch (currentState_) {
-		case e_EnemyState::Wandering:	seq_.change(&EnemyPawn::seqWandering); break;
-		case e_EnemyState::Searching:; break;
-		case e_EnemyState::Chasing:; break;
+		case e_EnemyState::Wandering: seq_.change(&EnemyPawn::seqWandering); break;
+		case e_EnemyState::PlayerNeighboring: seq_.change(&EnemyPawn::seqPlayerNeighboring); break;
 		}
-		return false;
+		return true;
 	}
 
 	bool EnemyPawn::seqWandering(float deltaTime) {
@@ -103,36 +106,64 @@ namespace atl {
 		case 3:
 			seq_.change(&EnemyPawn::seqMoveXminus);
 		}
-		return false;
+		return true;
 	}
+
+
 
 	bool EnemyPawn::seqMoveZplus(float deltaTime) {
 		if (seq_.isStart()) {
-			checkIsCanMovePos({ 0,1 });
+			isCanMovePos({ 0,1 });
 		}
-		return moveLerp(deltaTime);
-
+		moveLerp(deltaTime);
+		return true;
 	}
 
 	bool EnemyPawn::seqMoveZminus(float deltaTime) {
 		if (seq_.isStart()) {
-			checkIsCanMovePos({ 0,-1 });
+			isCanMovePos({ 0,-1 });
 		}
-		return moveLerp(deltaTime);
+		moveLerp(deltaTime);
+
+		return true;
 	}
 
 	bool EnemyPawn::seqMoveXplus(float deltaTime) {
 		if (seq_.isStart()) {
-			checkIsCanMovePos({ 1,0 });
+			isCanMovePos({ 1,0 });
 		}
-		return moveLerp(deltaTime);
+		moveLerp(deltaTime);
+		return true;
 	}
 
 	bool EnemyPawn::seqMoveXminus(float deltaTime) {
 		if (seq_.isStart()) {
-			checkIsCanMovePos({ -1,0 });
+			isCanMovePos({ -1,0 });
 		}
-		return moveLerp(deltaTime);
+		moveLerp(deltaTime);
+		return true;
+	}
+
+	void EnemyPawn::moveLerp(float deltaTime) {
+		getRootMesh()->pos_ = tnl::Vector3::DecelLerp(getRootMesh()->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
+		moveLerpTimeCount_ += deltaTime;
+
+		tnl::Vector3 moveVector = moveTarget_ - getRootMesh()->pos_;
+		float length = moveVector.length();
+
+		if (length <= 0.01f) {
+			moveLerpTimeCount_ = 0;
+			isAlreadyAction = true;
+			seq_.change(&EnemyPawn::seqCheckCurrentState);
+		}
+	}
+
+	bool EnemyPawn::seqPlayerNeighboring(float deltaTime) {
+		// デバッグ用 仮でSEが鳴る
+		PlaySoundFile("sound/test_se.wav", 2);
+		seq_.change(&EnemyPawn::seqCheckCurrentState);
+		isAlreadyAction = true;
+		return true;
 	}
 
 }

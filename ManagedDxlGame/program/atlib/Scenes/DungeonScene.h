@@ -20,8 +20,7 @@ namespace atl {
         // ターン制御用 enum
         enum class e_turnState {
             KEY_INPUT,
-            PLAYER,
-            ENEMY,
+            PLAYER_MOVE,
         };
         
         // ゲッター
@@ -72,10 +71,10 @@ namespace atl {
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);
         bool seqInit(float deltaTime);
         bool seqTurnStateProcess(float deltaTime);
+        bool seqAllActionFlagOff(float deltaTime);
 
         void processKeyInput(float deltaTime);
-        void processPlayerTurn(float deltaTime);
-        void processEnemyTurn(float deltaTime);
+        void processPlayerMoveTurn(float deltaTime);
 
         // デバッグ用 ----------------------------------
         void debug_displayDungeonParam(const Shared<atl::Atl3DCamera>& camera, float deltaTime);

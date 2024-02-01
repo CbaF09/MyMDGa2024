@@ -110,10 +110,6 @@ namespace atl {
 	// ---------------------------
 
 	bool PlayerPawn::seqWaitKeyInput(float deltaTime) {
-		if (seq_.isStart()) {
-			isAlreadyAction = false;
-		}
-
 		if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
 			calcDirAndMoveSeqChange();
 		}

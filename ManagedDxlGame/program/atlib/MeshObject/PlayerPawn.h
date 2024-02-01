@@ -13,8 +13,11 @@ namespace atl {
 		// ゲッター
 		inline const Shared<Atl3DCamera> getPlayerCamera() const { return playerCamera_; }
 		inline const tnl::Vector3& getPlayerPos() const { return player3Dpos_; }
+		inline const tnl::Vector2i& getPlayer2Dpos() const { return player2Dpos_; }
 		inline bool getIsAlreadyAction() const { return isAlreadyAction; }
-		
+
+		// セッター
+		inline void setIsAlreadyAction(bool flag = false) { isAlreadyAction = flag; }
 		void setPlayerAndCamera3Dpos(const tnl::Vector3& newPos);
 
 		// 2D座標上の位置で Spawn する
