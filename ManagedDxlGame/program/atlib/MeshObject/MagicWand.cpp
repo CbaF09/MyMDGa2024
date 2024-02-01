@@ -3,6 +3,7 @@
 
 namespace atl {
 
+	// プレイヤーに保持された状態で生成される時
 	MagicWand::MagicWand(std::weak_ptr<const PlayerPawn> player) : weakPlayerPawn(player) {
 		auto playerLock = weakPlayerPawn.lock();
 		if (playerLock) {
@@ -15,6 +16,7 @@ namespace atl {
 			auto stick = dxe::Mesh::CreateConeCylinderMV(initSize / 4, initSize / 10, initSize * 2.5f);
 			stick->rot_ *= tnl::Quaternion::RotationAxis({ 0,0,1 }, tnl::ToRadian(180));
 			stick->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(90));
+			initRot_ = stick->rot_;
 			stick->setTexture(dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"));
 			setRootMesh(stick);
 
@@ -78,25 +80,24 @@ namespace atl {
 
 		// プレイヤーが保持している時の動き
 		if (isHeldByPlayer == true) {
-			auto playerLock = weakPlayerPawn.lock();
-			if (playerLock) {
-				auto& camera = playerLock->getPlayerCamera()->getCameraRot();
-				tnl::Vector3 forwardVec = playerLock->getPlayerCamera()->forward();
+			auto player = weakPlayerPawn.lock();
+			if (player) {
+				auto cameraPos = player->getPlayerCamera()->pos_;
+				auto& cameraRot = player->getPlayerCamera()->getCameraRot();
 
-				auto stick = getRootMesh();
-				stick->pos_ = playerLock->getPlayerPos() + tnl::Vector3::TransformCoord({50, -25, 50}, camera);
-				stick->rot_ = tnl::Quaternion::LookAt(stick->pos_, forwardVec, { 0,1,0 });
-				stick->rot_ *= tnl::Quaternion::RotationAxis({ 0,0,1 }, tnl::ToRadian(180));
+				auto& stick = getRootMesh();
+				stick->pos_ = cameraPos + tnl::Vector3::TransformCoord({ 60,-25,80 }, cameraRot);
+				stick->rot_ = initRot_ * cameraRot;
 
 				auto& childs = getChildMeshes();
+
 				// sphere
-				childs[0]->pos_ = stick->pos_ + tnl::Vector3::TransformCoord({ 0,25,0 }, camera);
-				childs[0]->rot_ *= tnl::Quaternion::RotationAxis({0,1,0}, tnl::ToRadian(1));
+				childs[0]->pos_ = stick->pos_ + tnl::Vector3::TransformCoord({ 0,25,0 }, cameraRot);
+				childs[0]->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(1));
 
 				// outerRing
-				childs[1]->pos_ = stick->pos_ + tnl::Vector3::TransformCoord({ 0,25,0 }, camera);
-				childs[1]->rot_ = tnl::Quaternion::LookAt(childs[1]->pos_, forwardVec, {0,1,0});
-				childs[1]->rot_ *= tnl::Quaternion::RotationAxis({0,0,1}, tnl::ToRadian(90));
+				childs[1]->pos_ = stick->pos_ + tnl::Vector3::TransformCoord({ 0,25,0 }, cameraRot);
+				childs[1]->rot_ = tnl::Quaternion::RotationAxis({ 0,0,1 }, tnl::ToRadian(90)) * cameraRot;
 
 			}
 		}

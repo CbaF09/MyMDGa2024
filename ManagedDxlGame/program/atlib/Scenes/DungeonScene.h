@@ -20,10 +20,9 @@ namespace atl {
     class DungeonScene final : public Base_Scene {
 
     public:
-        DungeonScene();
-        
         // ターン制御用 enum
         enum class e_turnState {
+            KEY_INPUT,
             PLAYER,
             ENEMY,
         };
@@ -42,7 +41,7 @@ namespace atl {
         // 汎用 ----------------------------------------
         // セル一辺の全長
         static const int32_t CELL_FULL_LENGTH = 1000;
-        e_turnState currentTurn_ = e_turnState::PLAYER;
+        e_turnState currentTurn_ = e_turnState::KEY_INPUT;
 
         // 壁 用 ---------------------------------------
         Shared<Wall> originWall_ = nullptr;

@@ -2,45 +2,66 @@
 
 namespace atl {
 
-	DungeonScene::DungeonScene() {
-	}
-
-	void DungeonScene::sceneUpdate(float deltaTime) {
-		seq_.update(deltaTime);
-
-		render(deltaTime,player_->getPlayerCamera());
-	}
-
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
 		camera->update();
 
 		{//MeshObject 群をレンダリング
 			for (const auto& wall : walls_) { wall->renderObject(camera); }
 			for (const auto& groundTile : groundTiles_) { groundTile->renderObject(camera); }
-			
+
 			originStairs_->renderObjects(camera);
 			for (const auto& enemy : enemies_) { enemy->renderObjects(camera); }
-
+			player_->render(deltaTime);
 		}
 
 		debug_displayDungeonParam(camera, deltaTime);
 	}
 
-	void DungeonScene::debug_displayDungeonParam(const Shared<atl::Atl3DCamera>& camera, float deltaTime) {
-		DrawGridGround(player_->getPlayerCamera(), 50, 20);
-		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
-
-		player_->debug_displayPlayerParam(0, 0);
-
-		// 階段の位置
-		auto& stairsPos = originStairs_->get2Dpos();
-		DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
-
-		for (int i = 0; i < 3; ++i) {
-			DrawStringEx(0, 115 + (15 * i), -1, "Enemy[%d] pos ... [ %d , %d ]", i, enemies_[i]->get2Dpos().x, enemies_[i]->get2Dpos().y);
-		}
+	void DungeonScene::sceneUpdate(float deltaTime) {
+		seq_.update(deltaTime);
 	}
 
+
+	//---------------------
+	// シーケンス
+	//---------------------
+
+
+	bool DungeonScene::seqInit(float deltaTime) {
+		generateDungeon();
+		player_->initialize();
+		seq_.change(&DungeonScene::seqProcess);
+		return true;
+	}
+
+	bool DungeonScene::seqProcess(float deltaTime) {
+		switch (currentTurn_) {
+		case e_turnState::KEY_INPUT:
+			break;
+		case e_turnState::PLAYER:
+			break;
+		case e_turnState::ENEMY:
+			break;
+		}
+
+		render(deltaTime, player_->getPlayerCamera());
+
+		{// カメラコントロール ( 移動の後にやらないと、なんか変になる )
+			player_->cameraControl();
+		}
+
+		{// デバッグ用操作
+			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) seq_.change(&DungeonScene::seqInit);
+			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
+		}
+
+		return true;
+	}
+
+	//---------------------
+	// ダンジョン生成
+	//---------------------
+	
 	void DungeonScene::initDungeon() {
 		walls_.clear();
 		groundTiles_.clear();
@@ -52,7 +73,7 @@ namespace atl {
 
 		DungeonCreater::getDungeonCreater()->createDungeon();
 		auto& fieldData = DungeonCreater::getDungeonCreater()->getFieldCells();
-		
+
 		for (int x = 0; x < fieldData.size(); ++x) {
 			for (int y = 0; y < fieldData[x].size(); ++y) {
 				if (fieldData[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
@@ -68,7 +89,7 @@ namespace atl {
 			auto& playerSpawnPos = DungeonCreater::getDungeonCreater()->getPlayerSpawnPos();
 			player_ = std::make_shared<PlayerPawn>();
 			player_->playerSpawn2Dpos(playerSpawnPos);
-			
+
 			auto& stairsSpawnPos = DungeonCreater::getDungeonCreater()->getStairsSpawnPos();
 			originStairs_ = std::make_shared<Stairs>(stairsSpawnPos, tnl::Vector3{ CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2 });
 
@@ -77,7 +98,7 @@ namespace atl {
 				enemies_[i] = std::make_shared<EnemyPawn>(enemySpawnPos[i], tnl::Vector3{ 200, 200, 200 });
 			}
 		}
-		
+
 		// テクスチャによるメモリリークが発生してる？っぽいので、実行
 		dxe::Texture::DestroyUnReferenceTextures();
 	}
@@ -100,38 +121,25 @@ namespace atl {
 		groundTiles_.emplace_back(newGroundTile);
 	}
 
-	bool DungeonScene::seqInit(float deltaTime) {
-		generateDungeon();
-		seq_.change(&DungeonScene::seqProcess);
-		return true;
-	}
 
-	bool DungeonScene::seqProcess(float deltaTime) {
-		switch (currentTurn_) {
-		case e_turnState::PLAYER:
-			if (player_->playerUpdate(deltaTime)) currentTurn_ = e_turnState::ENEMY;
-			break;
-		case e_turnState::ENEMY:
-			bool allEnemyAction = true;
-			for (auto& enemy : enemies_) {
-				enemy->enemyUpdate(deltaTime);
-				if(enemy->getIsAlreadyAction() == false) allEnemyAction = false;
-			}
-			
-			if(allEnemyAction) currentTurn_ = e_turnState::PLAYER;
-			break;
-		}
+	//------------------------
+	// デバッグ用
+	//------------------------
 
-		{// カメラコントロール ( 移動の後にやらないと、なんか変になる )
-			player_->cameraControl();
-		}
+	void DungeonScene::debug_displayDungeonParam(const Shared<atl::Atl3DCamera>& camera, float deltaTime) {
+		DrawGridGround(player_->getPlayerCamera(), 50, 20);
+		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
-		{// デバッグ用操作
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) seq_.change(&DungeonScene::seqInit);
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
-		}
+		player_->debug_displayPlayerParam(0, 0);
 
-		return true;
+		// 階段の位置
+		//auto& stairsPos = originStairs_->get2Dpos();
+		//DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
+
+		// 敵の位置
+		//for (int i = 0; i < 3; ++i) {
+		//	DrawStringEx(0, 115 + (15 * i), -1, "Enemy[%d] pos ... [ %d , %d ]", i, enemies_[i]->get2Dpos().x, enemies_[i]->get2Dpos().y);
+		//}
 	}
 
 }

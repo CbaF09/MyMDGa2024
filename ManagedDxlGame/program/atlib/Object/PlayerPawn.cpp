@@ -23,14 +23,14 @@ namespace atl {
 		tnl::Vector3 mvel = tnl::Input::GetMouseVelocity();
 
 		// ècêUÇË
-		playerCamera_->cameraRotateAxis(playerCamera_->right(), mvel.y * CAMERA_ROT_SPEED_);
+		playerCamera_->cameraRotateAxis(playerCamera_->right(), mvel.y * CAMERA_ROT_SPEED);
 		float newAngle = tnl::ToDegree(playerCamera_->forward().angle({ 0,1,0 }));
 		if (newAngle < playerCamera_->getMIN_PITCH() || playerCamera_->getMAX_PITCH() < newAngle) {
 			playerCamera_->setCameraRot(beforeRot);
 		}
 
 		// â°êUÇË
-		playerCamera_->cameraRotateAxis({ 0, 1, 0 }, mvel.x * CAMERA_ROT_SPEED_);
+		playerCamera_->cameraRotateAxis({ 0, 1, 0 }, mvel.x * CAMERA_ROT_SPEED);
 	}
 
 	void PlayerPawn::playerSpawn2Dpos(const tnl::Vector2i& spawn2Dpos) {
@@ -57,12 +57,15 @@ namespace atl {
 	}
 
 	bool PlayerPawn::moveLerp(float deltaTime) {
-		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
+		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_LERP_SPEED, moveLerpTimeCount_);
 		moveLerpTimeCount_ += deltaTime;
 
-		if (moveLerpTimeCount_ >= MOVE_LERP_TIME_) {
+		tnl::Vector3 moveVector = moveTarget_ - playerCamera_->pos_;
+		float length = moveVector.length();
+
+		if (length <= 0.01f) {
 			moveLerpTimeCount_ = 0;
-			seq_.change(&PlayerPawn::seqIdle);
+			seq_.change(&PlayerPawn::seqWaitKeyInput);
 			return true;
 		}
 		player3Dpos_ = playerCamera_->pos_;
@@ -148,14 +151,7 @@ namespace atl {
 	// ÉVÅ[ÉPÉìÉX
 	// ---------------------------
 
-	bool PlayerPawn::seqInit(float deltaTime) {
-		playerHaveMagicWand = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-
-		seq_.change(&PlayerPawn::seqIdle);
-		return false;
-	}
-
-	bool PlayerPawn::seqIdle(float deltaTime) {
+	bool PlayerPawn::seqWaitKeyInput(float deltaTime) {
 		{// à⁄ìÆì¸óÕ
 			if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
 				calcDirAndMoveSeqChange();
@@ -202,14 +198,18 @@ namespace atl {
 	// ---------------------------
 
 	void PlayerPawn::debug_displayPlayerParam(int drawPosX, int drawPosY) {
-			DrawStringEx(drawPosX, drawPosY, -1,
-				"player3Dpos ... [ %.2f , %.2f , %.2f ]", player3Dpos_.x, player3Dpos_.y, player3Dpos_.z);
-			DrawStringEx(drawPosX, drawPosY + 15, -1,
-				"player2Dpos ... [ %d , %d ]", player2Dpos_.x, player2Dpos_.y);
-			DrawStringEx(drawPosX, drawPosY + 30, -1,
-				"playerCameraPos ... [ %.2f , %.2f , %.2f ]", playerCamera_->pos_.x, playerCamera_->pos_.y, playerCamera_->pos_.z);
-			DrawStringEx(drawPosX, drawPosY + 45, -1,
-				"playerCameraAngle ... [ %.2f , %.2f, %.2f ]", tnl::ToDegree(playerCamera_->forward().angle({ 1,0,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,1,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,0,1 })));
+		DrawStringEx(drawPosX, drawPosY, -1,
+			"player3Dpos ... [ %.2f , %.2f , %.2f ]", player3Dpos_.x, player3Dpos_.y, player3Dpos_.z);
+		DrawStringEx(drawPosX, drawPosY + 15, -1,
+			"player2Dpos ... [ %d , %d ]", player2Dpos_.x, player2Dpos_.y);
+		DrawStringEx(drawPosX, drawPosY + 30, -1,
+			"playerCameraPos ... [ %.2f , %.2f , %.2f ]", playerCamera_->pos_.x, playerCamera_->pos_.y, playerCamera_->pos_.z);
+		DrawStringEx(drawPosX, drawPosY + 45, -1,
+			"playerCameraAngle ... [ %.2f , %.2f, %.2f ]", tnl::ToDegree(playerCamera_->forward().angle({ 1,0,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,1,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,0,1 })));
+		if (playerHaveMagicWand) {
+			DrawStringEx(drawPosX, drawPosY + 60, -1,
+				"playerWandPos ... [ %.2f , %.2f, %.2f ]", playerHaveMagicWand->getRootMesh()->pos_.x, playerHaveMagicWand->getRootMesh()->pos_.y, playerHaveMagicWand->getRootMesh()->pos_.z);
+		}
 	}
 
 }

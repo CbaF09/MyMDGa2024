@@ -272,6 +272,9 @@
     <ClCompile Include="program\atlib\MeshObject\MagicWand.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\MeshObject\MagicBook.cpp">
+      <Filter>program\[002] atlib\MeshObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">
@@ -546,6 +549,9 @@
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\MeshObject\ItemPawn.h">
+      <Filter>program\[002] atlib\MeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\MeshObject\MagicBook.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
   </ItemGroup>

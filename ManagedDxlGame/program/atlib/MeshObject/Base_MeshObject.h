@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "../dxlib_ext/dxlib_ext.h"
 #include "../atlib/Utilities/Atl3DCamera.h"
 
@@ -32,7 +31,7 @@ namespace atl {
 		inline void add2Dpos(tnl::Vector2i addVec) { mesh2Dpos_ += addVec; }
 
 		// ƒƒbƒVƒ…‚ğ•`‰æ‚·‚é
-		void renderObject(const Shared<Atl3DCamera> camera) const;
+		virtual void renderObject(const Shared<Atl3DCamera> camera) const;
 
 	private:
 		Shared<dxe::Mesh> mesh_;

@@ -153,6 +153,7 @@
     <ClCompile Include="program\atlib\MeshObject\Base_MultiMeshObject.cpp" />
     <ClCompile Include="program\atlib\MeshObject\EnemyPawn.cpp" />
     <ClCompile Include="program\atlib\MeshObject\GroundTile.cpp" />
+    <ClCompile Include="program\atlib\MeshObject\MagicBook.cpp" />
     <ClCompile Include="program\atlib\MeshObject\MagicWand.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Stairs.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Wall.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="program\atlib\MeshObject\EnemyPawn.h" />
     <ClInclude Include="program\atlib\MeshObject\GroundTile.h" />
     <ClInclude Include="program\atlib\MeshObject\ItemPawn.h" />
+    <ClInclude Include="program\atlib\MeshObject\MagicBook.h" />
     <ClInclude Include="program\atlib\MeshObject\MagicWand.h" />
     <ClInclude Include="program\atlib\MeshObject\Stairs.h" />
     <ClInclude Include="program\atlib\MeshObject\Wall.h" />
