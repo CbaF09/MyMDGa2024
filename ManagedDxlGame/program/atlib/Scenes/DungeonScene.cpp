@@ -1,6 +1,7 @@
 #include <string>
 #include "DungeonScene.h"
 #include "../Singletons/DungeonCreater.h"
+#include "../Singletons/TextLogManager.h"
 #include "../MeshObject/Wall.h"
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
@@ -35,6 +36,11 @@ namespace atl {
 
 		{// レンダー ( カメラコントロールの後 )
 			render(deltaTime, player_->getPlayerCamera());
+		}
+
+		{// テキストログの描画
+			TextLogManager::getTextLogManager()->displayTextLog(60,400,deltaTime);
+
 		}
 
 		{// デバッグ用操作

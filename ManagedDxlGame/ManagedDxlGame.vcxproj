@@ -165,6 +165,7 @@
     <ClCompile Include="program\atlib\Singletons\DungeonCreater.cpp" />
     <ClCompile Include="program\atlib\Singletons\ResourceManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\SceneManager.cpp" />
+    <ClCompile Include="program\atlib\Singletons\TextLogManager.cpp" />
     <ClCompile Include="program\atlib\Utilities\Atl3DCamera.cpp" />
     <ClCompile Include="program\atlib\Utilities\AtlAstar.cpp" />
     <ClCompile Include="program\atlib\Utilities\AtlRandom.cpp" />
@@ -248,6 +249,7 @@
     <ClInclude Include="program\atlib\Singletons\DungeonCreater.h" />
     <ClInclude Include="program\atlib\Singletons\ResourceManager.h" />
     <ClInclude Include="program\atlib\Singletons\SceneManager.h" />
+    <ClInclude Include="program\atlib\Singletons\TextLogManager.h" />
     <ClInclude Include="program\atlib\Templates\make_shared_withInitFunc.h" />
     <ClInclude Include="program\atlib\Utilities\Atl3DCamera.h" />
     <ClInclude Include="program\atlib\Utilities\AtlAstar.h" />

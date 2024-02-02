@@ -281,6 +281,9 @@
     <ClCompile Include="program\atlib\MeshObject\ItemPawn.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\Singletons\TextLogManager.cpp">
+      <Filter>program\[002] atlib\Singletons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">
@@ -562,6 +565,9 @@
     </ClInclude>
     <ClInclude Include="program\atlib\MeshObject\ForwardArrow.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Singletons\TextLogManager.h">
+      <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

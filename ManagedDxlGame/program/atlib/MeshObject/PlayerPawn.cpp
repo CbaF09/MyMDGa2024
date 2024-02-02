@@ -1,5 +1,6 @@
 #include "PlayerPawn.h"
 #include "../Singletons/DungeonCreater.h"
+#include "../Singletons/TextLogManager.h"
 #include "../Scenes/DungeonScene.h"
 
 namespace atl {
@@ -183,6 +184,9 @@ namespace atl {
 
 		PlaySoundFile("sound/explosion.wav", 2);
 		isAlreadyTurn_ = true;
+
+		TextLogManager::getTextLogManager()->addTextLog("プレイヤーの攻撃！　あああああああ");
+
 		seq_.change(&PlayerPawn::seqWaitKeyInput);
 
 		return true;
