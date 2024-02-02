@@ -9,7 +9,6 @@ namespace atl {
 
 	class PlayerPawn final : public std::enable_shared_from_this<PlayerPawn> {
 	public:
-
 		// ゲッター
 		inline const Shared<Atl3DCamera> getPlayerCamera() const { return playerCamera_; }
 		inline const tnl::Vector3& getPlayerPos() const { return player3Dpos_; }
@@ -36,6 +35,7 @@ namespace atl {
 			forwardArrow_->renderObject(playerCamera_);
 			playerHaveMagicWand_->renderObjects(playerCamera_);
 			playerHaveMagicBook_->renderObject(playerCamera_);
+
 		}
 
 		void initialize() {
@@ -72,6 +72,8 @@ namespace atl {
 		float moveLerpTimeCount_ = 0;
 		tnl::Vector3 moveTarget_{ 0,0,0 };
 		
+		// パーティクル用
+
 		// ターン制御用
 		bool isAlreadyTurn_ = false;
 
@@ -89,12 +91,14 @@ namespace atl {
 		SEQUENCE(PlayerPawn, &PlayerPawn::seqWaitKeyInput);
 		
 		bool seqWaitKeyInput(float deltaTime);
+		bool seqAttack(float deltaTime);
 		bool seqMoveZplus(float deltaTime);
 		bool seqMoveZminus(float deltaTime);
 		bool seqMoveXplus(float deltaTime);
 		bool seqMoveXminus(float deltaTime);
 
 		bool actionMoveLerp(float deltaTime);
+		bool actionAttack(float deltaTime);
 	};
 
 }

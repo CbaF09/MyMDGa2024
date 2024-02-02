@@ -87,6 +87,12 @@ namespace atl {
 			player_->playerUpdate(deltaTime);
 			currentTurn_ = e_turnState::PLAYER_MOVE;
 		}
+
+		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
+			player_->playerUpdate(deltaTime);
+			currentTurn_ = e_turnState::PLAYER_MOVE;
+		}
+
 	}
 
 	// ƒvƒŒƒCƒ„[‚ÌˆÚ“®“ü—Í

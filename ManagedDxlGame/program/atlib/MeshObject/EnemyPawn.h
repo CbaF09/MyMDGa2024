@@ -35,9 +35,7 @@ namespace atl {
 		// プレイヤーへの弱参照を設定
 		void assignWeakPlayer(std::weak_ptr<PlayerPawn> player);
 
-
 	private:
-
 		//----------------------
 		// メソッド
 		

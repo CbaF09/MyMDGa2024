@@ -97,6 +97,9 @@ namespace atl {
 			if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
 				calcDirAndMoveSeqChange();
 			}
+			if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
+				seq_.change(&PlayerPawn::actionAttack);
+			}
 		}
 		return true;
 	}
@@ -132,7 +135,7 @@ namespace atl {
 		actionMoveLerp(deltaTime);
 		return true;
 	}
-
+	
 	bool PlayerPawn::actionMoveLerp(float deltaTime) {
 		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_TIME, moveLerpTimeCount_);
 		moveLerpTimeCount_ += deltaTime;
@@ -147,6 +150,13 @@ namespace atl {
 		}
 		player3Dpos_ = playerCamera_->pos_;
 		return false;
+	}
+
+	bool PlayerPawn::actionAttack(float deltaTime) {
+		PlaySoundFile("sound/test_se.wav", 2);
+		isAlreadyTurn_ = true;
+		seq_.change(&PlayerPawn::seqWaitKeyInput);
+		return true;
 	}
 
 	// ---------------------------
