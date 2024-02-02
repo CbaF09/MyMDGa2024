@@ -278,6 +278,9 @@
     <ClCompile Include="program\atlib\MeshObject\ForwardArrow.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\MeshObject\ItemPawn.cpp">
+      <Filter>program\[002] atlib\MeshObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">

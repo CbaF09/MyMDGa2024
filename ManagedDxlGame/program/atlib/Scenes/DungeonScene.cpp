@@ -5,6 +5,7 @@
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/EnemyPawn.h"
+#include "../MeshObject/ItemPawn.h"
 #include "../MeshObject/PlayerPawn.h"
 #include "../Utilities/Atl3DCamera.h"
 
@@ -18,6 +19,7 @@ namespace atl {
 
 			originStairs_->renderObjects(camera);
 			for (const auto& enemy : enemies_) { enemy->renderObjects(camera); }
+			for (const auto& item : items_) { item->renderObjects(camera); }
 			player_->render(deltaTime);
 		}
 
@@ -131,6 +133,7 @@ namespace atl {
 		walls_.clear();
 		groundTiles_.clear();
 		enemies_.resize(3);
+		items_.resize(5);
 	}
 
 	void DungeonScene::generateDungeon() {
@@ -162,6 +165,12 @@ namespace atl {
 			for (int i = 0; i < 3; ++i) {
 				enemies_[i] = std::make_shared<EnemyPawn>(enemySpawnPos[i], tnl::Vector3{ 200, 200, 200 });
 				enemies_[i]->assignWeakPlayer(player_);
+			}
+
+			auto& itemSpawnPos = DungeonCreater::getDungeonCreater()->getItemSpawnPos();
+			for (int i = 0; i < 5; ++i) {
+				items_[i] = std::make_shared<ItemPawn>(itemSpawnPos[i]);
+				items_[i]->assignWeakPlayer(player_);
 			}
 		}
 

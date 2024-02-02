@@ -39,6 +39,7 @@ namespace atl {
 		inline const tnl::Vector2i& getPlayerSpawnPos() const { return playerSpawnPos_; }
 		inline const tnl::Vector2i& getStairsSpawnPos() const { return stairsSpawnPos_; }
 		inline const std::vector<tnl::Vector2i>& getEnemySpawnPos() const { return enemySpawnPosArray_; }
+		inline const std::vector<tnl::Vector2i>& getItemSpawnPos() const { return itemSpawnPosArray_; }
 
 		// fieldCells_ から、スポーン可能状態の空セルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 選ばれた XY地点の fieldCell は、スポーン不可状態に切り替わる
@@ -96,10 +97,12 @@ namespace atl {
 		//----------------------- 
 		// メンバ変数
 		const int32_t ENEMY_SPAWN_NUM = 3; // 敵の数
+		const int32_t ITEM_SPAWN_NUM = 5; // アイテムの数
 
 		tnl::Vector2i playerSpawnPos_{ 0,0 };
 		tnl::Vector2i stairsSpawnPos_{ 0,0 };
 		std::vector<tnl::Vector2i> enemySpawnPosArray_;
+		std::vector<tnl::Vector2i> itemSpawnPosArray_;
 
 		std::vector<Area> areas_;
 
@@ -123,6 +126,7 @@ namespace atl {
 		void choicePlayerSpawnPos();
 		void choiceStairsSpawnPos();
 		void choiceEnemySpawnPos();
+		void choiceItemSpawnPos();
 	};
 
 };

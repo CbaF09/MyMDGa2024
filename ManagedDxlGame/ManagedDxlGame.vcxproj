@@ -154,6 +154,7 @@
     <ClCompile Include="program\atlib\MeshObject\EnemyPawn.cpp" />
     <ClCompile Include="program\atlib\MeshObject\ForwardArrow.cpp" />
     <ClCompile Include="program\atlib\MeshObject\GroundTile.cpp" />
+    <ClCompile Include="program\atlib\MeshObject\ItemPawn.cpp" />
     <ClCompile Include="program\atlib\MeshObject\MagicBook.cpp" />
     <ClCompile Include="program\atlib\MeshObject\MagicWand.cpp" />
     <ClCompile Include="program\atlib\MeshObject\PlayerPawn.cpp" />

@@ -10,6 +10,7 @@
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/MagicWand.h"
 #include "../MeshObject/MagicBook.h"
+#include "../MeshObject/ItemPawn.h"
 #include "../Collision/Collision.h"
 
 namespace atl {
@@ -24,6 +25,7 @@ namespace atl {
     private:
 
         Shared<PlayerPawn> player_;
+        Shared<ItemPawn> item_;
 
         void sceneUpdate(float deltaTime) override {
             seq_.update(deltaTime);
@@ -33,6 +35,8 @@ namespace atl {
         void render(float deltaTime) {
             
             player_->render(deltaTime);
+
+            item_->renderObjects(player_->getPlayerCamera());
 
             DrawDefaultLightGuiController();
             DrawGridGround(player_->getPlayerCamera(), 50, 20);
@@ -44,8 +48,11 @@ namespace atl {
 
         bool seqInit(float deltaTime) {
             player_ = std::make_shared<PlayerPawn>();
-            player_->playerSpawn2Dpos({ 0,0 });
+            player_->playerSpawn2Dpos({ 0,1 });
             player_->initialize();
+
+            item_ = std::make_shared<ItemPawn>(tnl::Vector2i{ 0,0 });
+            item_->assignWeakPlayer(player_);
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
@@ -57,10 +64,6 @@ namespace atl {
                 player_->playerUpdate(deltaTime);
             }
 
-            {
-
-            }
-
             {// カメラコントロール ( 移動の後にやらないと、なんか変になる )
                 player_->getPlayerCamera()->cameraControl(0.3f);
             }
@@ -70,10 +73,6 @@ namespace atl {
             {// デバッグ用。ESCキーでウィンドウ落とす。
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) {
                     exit(1);
-                }
-
-                if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
-
                 }
             }
 

@@ -11,6 +11,7 @@ namespace atl {
     class PlayerPawn;
     class DungeonCreater;
     class Atl3DCamera;
+    class ItemPawn;
 
     // ダンジョンシーン
     // 役割 ... ダンジョン探索シーン
@@ -56,6 +57,9 @@ namespace atl {
 
         // エネミー関連 --------------------------------
         std::vector<Shared<EnemyPawn>> enemies_;
+
+        // アイテム関連 --------------------------------
+        std::vector<Shared<ItemPawn>> items_;
 
         //----------------------
         // メソッド

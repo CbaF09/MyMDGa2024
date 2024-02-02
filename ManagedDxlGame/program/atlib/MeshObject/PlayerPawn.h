@@ -9,6 +9,8 @@ namespace atl {
 
 	class PlayerPawn final : public std::enable_shared_from_this<PlayerPawn> {
 	public:
+		~PlayerPawn() { explosion_.reset(); }
+
 		// ゲッター
 		inline const Shared<Atl3DCamera> getPlayerCamera() const { return playerCamera_; }
 		inline const tnl::Vector3& getPlayerPos() const { return player3Dpos_; }
@@ -32,10 +34,13 @@ namespace atl {
 
 		// render系
 		void render(float deltaTime) {
-			forwardArrow_->renderObject(playerCamera_);
+			//forwardArrow_->renderObject(playerCamera_);
 			playerHaveMagicWand_->renderObjects(playerCamera_);
 			playerHaveMagicBook_->renderObject(playerCamera_);
 
+			dxe::DirectXRenderBegin();
+			explosion_->render(playerCamera_);
+			dxe::DirectXRenderEnd();
 		}
 
 		void initialize() {
@@ -73,6 +78,7 @@ namespace atl {
 		tnl::Vector3 moveTarget_{ 0,0,0 };
 		
 		// パーティクル用
+		Shared<dxe::Particle> explosion_ = std::make_shared<dxe::Particle>("graphics/particle/explosion.bin");
 
 		// ターン制御用
 		bool isAlreadyTurn_ = false;
@@ -91,7 +97,6 @@ namespace atl {
 		SEQUENCE(PlayerPawn, &PlayerPawn::seqWaitKeyInput);
 		
 		bool seqWaitKeyInput(float deltaTime);
-		bool seqAttack(float deltaTime);
 		bool seqMoveZplus(float deltaTime);
 		bool seqMoveZminus(float deltaTime);
 		bool seqMoveXplus(float deltaTime);

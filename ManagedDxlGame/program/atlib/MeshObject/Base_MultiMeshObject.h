@@ -28,7 +28,7 @@ namespace atl {
 		// 子メッシュ群の座標と回転を設定。renderObjects内で、render前に実行される
 		virtual void adjustmentChildMeshes() = 0;
 		// メッシュ群を描画する
-		void renderObjects(const Shared<Atl3DCamera> camera);
+		virtual void renderObjects(const Shared<Atl3DCamera> camera);
 
 		// 2Dpos操作メソッド
 		inline void add2Dpos(tnl::Vector2i addVec) { mesh2Dpos_ += addVec; };

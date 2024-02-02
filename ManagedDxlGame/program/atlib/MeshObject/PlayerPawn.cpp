@@ -50,7 +50,7 @@ namespace atl {
 		else if (minAngle == angleToXminus) { retV = e_XZdir::Xminus; }
 		else { retV = e_XZdir::NONE; }
 		return retV;
-	}	
+	}
 	
 	void PlayerPawn::calcDirAndMoveSeqChange() {
 		bool(PlayerPawn:: * relativeForward)(float) = &PlayerPawn::seqMoveZplus;
@@ -153,9 +153,38 @@ namespace atl {
 	}
 
 	bool PlayerPawn::actionAttack(float deltaTime) {
-		PlaySoundFile("sound/test_se.wav", 2);
+
+		{// 爆発パーティクル
+			tnl::Vector3 cameraForward = playerCamera_->forward();
+			cameraForward.normalize();
+
+			tnl::Vector3 normals[4] = {
+				{1,0,0},
+				{-1,0,0},
+				{0,0,1},
+				{0,0,-1}
+			};
+
+			tnl::Vector3 closestNormal = normals[0];
+			float minAngle = cameraForward.angle(normals[0]);
+
+			for (int i = 1; i < 4; ++i) {
+				float angle = cameraForward.angle(normals[i]);
+				if (angle < minAngle) {
+					minAngle = angle;
+					closestNormal = normals[i];
+				}
+			}
+
+			auto particlePos = playerCamera_->pos_ + (closestNormal * 500);
+			explosion_->setPosition(particlePos);
+			explosion_->start();
+		}
+
+		PlaySoundFile("sound/explosion.wav", 2);
 		isAlreadyTurn_ = true;
 		seq_.change(&PlayerPawn::seqWaitKeyInput);
+
 		return true;
 	}
 

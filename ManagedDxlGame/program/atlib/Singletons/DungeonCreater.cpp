@@ -35,6 +35,7 @@ namespace atl {
 		choicePlayerSpawnPos();
 		choiceStairsSpawnPos();
 		choiceEnemySpawnPos();
+		choiceItemSpawnPos();
 	}
 
 	//------------------------------
@@ -282,6 +283,12 @@ namespace atl {
 	void DungeonCreater::choiceEnemySpawnPos() {
 		for (int i = 0;i < ENEMY_SPAWN_NUM;++i) {
 			enemySpawnPosArray_.emplace_back(randomChoiceCanSpawnFieldCellPos());
+		}
+	}
+
+	void DungeonCreater::choiceItemSpawnPos() {
+		for (int i = 0; i < ITEM_SPAWN_NUM;++i) {
+			itemSpawnPosArray_.emplace_back(randomChoiceCanSpawnFieldCellPos());
 		}
 	}
 
