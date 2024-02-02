@@ -14,10 +14,10 @@ namespace atl {
 		inline const Shared<Atl3DCamera> getPlayerCamera() const { return playerCamera_; }
 		inline const tnl::Vector3& getPlayerPos() const { return player3Dpos_; }
 		inline const tnl::Vector2i& getPlayer2Dpos() const { return player2Dpos_; }
-		inline bool getIsAlreadyAction() const { return isAlreadyAction; }
+		inline bool getIsAlreadyTurn() const { return isAlreadyTurn_; }
 
 		// セッター
-		inline void setIsAlreadyAction(bool flag = false) { isAlreadyAction = flag; }
+		inline void setIsAlreadyTurn(bool flag = false) { isAlreadyTurn_ = flag; }
 		void setPlayerAndCamera3Dpos(const tnl::Vector3& newPos);
 
 		// 2D座標上の位置で Spawn する
@@ -65,22 +65,21 @@ namespace atl {
 
 		tnl::Vector2i player2Dpos_{ 0,0 };
 		tnl::Vector3 player3Dpos_{ 0,0,0 };
+		const float PLAYER_HEAD_LINE = 500;		// プレイヤーのY高さ（カメラ・目線の高さ）
 
 		// moveLerp用
-		const float MOVE_LERP_SPEED = 3.0f;		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
-		const float PLAYER_HEAD_LINE = 500;		// プレイヤーのY高さ（カメラ・目線の高さ）
+		const float MOVE_TIME = 1.5f;		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
 		float moveLerpTimeCount_ = 0;
 		tnl::Vector3 moveTarget_{ 0,0,0 };
 		
 		// ターン制御用
-		bool isAlreadyAction = false;
+		bool isAlreadyTurn_ = false;
 
 		// --------------------------------------------------
 		// メソッド
 		
 		// arg ... 現在位置からの移動先
-		bool checkIsCanMovePos(const tnl::Vector2i& moveToPos);
-		bool moveLerp(float deltaTime);
+		bool isCanMovePos(const tnl::Vector2i& moveToPos);
 		e_XZdir checkCurrentFowardDir();
 		void calcDirAndMoveSeqChange();
 
@@ -94,6 +93,8 @@ namespace atl {
 		bool seqMoveZminus(float deltaTime);
 		bool seqMoveXplus(float deltaTime);
 		bool seqMoveXminus(float deltaTime);
+
+		bool actionMoveLerp(float deltaTime);
 	};
 
 }

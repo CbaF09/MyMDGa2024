@@ -45,12 +45,12 @@ namespace atl {
 		childs[0]->pos_ = rootMesh->pos_ + tnl::Vector3::TransformCoord(tnl::Vector3{ 0,0,enemySize_.z / 2 }, childs[0]->rot_);
 	}
 
-	const tnl::Vector2i& EnemyPawn::searchPlayerPos(Shared<PlayerPawn> player) {
-		return player->getPlayer2Dpos();
+	void EnemyPawn::assignWeakPlayer(std::weak_ptr<PlayerPawn> player) {
+		weakPlayer = player;
 	}
 
-	bool EnemyPawn::isNeighborPlayer(Shared<PlayerPawn> player) {
-		auto& player2Dpos = searchPlayerPos(player);
+	bool EnemyPawn::isNeighborPlayer() {
+		auto& player2Dpos = weakPlayer.lock()->getPlayer2Dpos();
 		auto& enemy2Dpos = get2Dpos();
 
 		if (player2Dpos.x == enemy2Dpos.x + 1 && player2Dpos.y == enemy2Dpos.y) return true;
@@ -60,8 +60,9 @@ namespace atl {
 		else return false;
 	}
 
-	bool EnemyPawn::isCanMovePos(const tnl::Vector2i& moveToPos) {
+	bool EnemyPawn::assignMoveTarget(const tnl::Vector2i& moveToPos) {
 		auto cellLength = DungeonScene::getCellLength();
+		// 移動先が移動可能か確認
 		if (DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(get2Dpos() + moveToPos)) {
 			auto meshPos = getRootMesh()->pos_;
 			moveTarget_ = { meshPos.x + (moveToPos.x * cellLength),meshPos.y,meshPos.z + (moveToPos.y * cellLength) };
@@ -69,6 +70,7 @@ namespace atl {
 			add2Dpos(moveToPos);
 			return true;
 		}
+		// 移動不可能な場合、現在位置をmoveTargetに ( 足踏み )
 		else {
 			moveTarget_ = getRootMesh()->pos_;
 			return true;
@@ -76,76 +78,48 @@ namespace atl {
 		return false;
 	}
 
-
-
 	/// --------------------------
 	/// シーケンス
 	/// --------------------------
 
-	bool EnemyPawn::seqCheckCurrentState(float deltaTime) {
-		switch (currentState_) {
-		case e_EnemyState::Wandering: seq_.change(&EnemyPawn::seqWandering); break;
-		case e_EnemyState::PlayerNeighboring: seq_.change(&EnemyPawn::seqPlayerNeighboring); break;
+	bool EnemyPawn::seqStateTransition(float deltaTime) {
+		if (!isAlreadyAction_ || !isAlreadyMove_) {
+
+			// プレイヤーと隣接していた場合
+			if (isNeighborPlayer()) turnState_ = e_EnemyMoveState::PlayerNeighboring;
+			// それ以外の場合
+			else turnState_ = e_EnemyMoveState::Wandering;
+
+			switch (turnState_) {
+			case e_EnemyMoveState::Wandering:			seq_.change(&EnemyPawn::seqWandering); break;
+			case e_EnemyMoveState::PlayerNeighboring:	seq_.change(&EnemyPawn::seqPlayerNeighboring); break;
+			}
 		}
 		return true;
 	}
-
+	
+	// 乱数でランダムに四方移動
 	bool EnemyPawn::seqWandering(float deltaTime) {
-		// 現状 : 乱数でランダムに四方移動
 		int32_t rand = mtRandomRangeInt(0, 3);
 		switch (rand) {
-		case 0:
-			seq_.change(&EnemyPawn::seqMoveZplus);
+		case 0: 
+			assignMoveTarget({ 0,1 });
 			break;
 		case 1:
-			seq_.change(&EnemyPawn::seqMoveZminus);
+			assignMoveTarget({ 0,-1 });
 			break;
 		case 2:
-			seq_.change(&EnemyPawn::seqMoveXplus);
+			assignMoveTarget({ 1,0 });
 			break;
 		case 3:
-			seq_.change(&EnemyPawn::seqMoveXminus);
+			assignMoveTarget({ -1,0 });
 		}
+		seq_.change(&EnemyPawn::seqMoveToTarget);
 		return true;
 	}
 
-
-
-	bool EnemyPawn::seqMoveZplus(float deltaTime) {
-		if (seq_.isStart()) {
-			isCanMovePos({ 0,1 });
-		}
-		moveLerp(deltaTime);
-		return true;
-	}
-
-	bool EnemyPawn::seqMoveZminus(float deltaTime) {
-		if (seq_.isStart()) {
-			isCanMovePos({ 0,-1 });
-		}
-		moveLerp(deltaTime);
-
-		return true;
-	}
-
-	bool EnemyPawn::seqMoveXplus(float deltaTime) {
-		if (seq_.isStart()) {
-			isCanMovePos({ 1,0 });
-		}
-		moveLerp(deltaTime);
-		return true;
-	}
-
-	bool EnemyPawn::seqMoveXminus(float deltaTime) {
-		if (seq_.isStart()) {
-			isCanMovePos({ -1,0 });
-		}
-		moveLerp(deltaTime);
-		return true;
-	}
-
-	void EnemyPawn::moveLerp(float deltaTime) {
-		getRootMesh()->pos_ = tnl::Vector3::DecelLerp(getRootMesh()->pos_, moveTarget_, MOVE_LERP_TIME_, moveLerpTimeCount_);
+	bool EnemyPawn::seqMoveToTarget(float deltaTime) {
+		getRootMesh()->pos_ = tnl::Vector3::DecelLerp(getRootMesh()->pos_, moveTarget_, MOVE_TIME, moveLerpTimeCount_);
 		moveLerpTimeCount_ += deltaTime;
 
 		tnl::Vector3 moveVector = moveTarget_ - getRootMesh()->pos_;
@@ -153,17 +127,44 @@ namespace atl {
 
 		if (length <= 0.01f) {
 			moveLerpTimeCount_ = 0;
-			isAlreadyAction = true;
-			seq_.change(&EnemyPawn::seqCheckCurrentState);
+			isAlreadyMove_ = true;
+			seq_.change(&EnemyPawn::seqActionNone);
 		}
+		return true;
+	}
+
+	bool EnemyPawn::seqActionNone(float deltaTime) {
+		isAlreadyAction_ = true;
+		seq_.change(&EnemyPawn::seqStateTransition);
+		return true;
 	}
 
 	bool EnemyPawn::seqPlayerNeighboring(float deltaTime) {
-		// デバッグ用 仮でSEが鳴る
-		PlaySoundFile("sound/test_se.wav", 2);
-		seq_.change(&EnemyPawn::seqCheckCurrentState);
-		isAlreadyAction = true;
+		auto player = weakPlayer.lock();
+		if (player->getIsAlreadyTurn()) {
+			// プレイヤーの行動が終わってから、プレイヤーの方を向く
+			auto meshPos = getRootMesh()->pos_;
+			getRootMesh()->rot_ = tnl::Quaternion::LookAt(meshPos, player->getPlayerPos(), { 0,1,0 });
+			seq_.change(&EnemyPawn::seqMoveNone);
+		}
 		return true;
 	}
+
+	bool EnemyPawn::seqMoveNone(float deltaTime) {
+		isAlreadyMove_ = true;
+		seq_.change(&EnemyPawn::seqActionAttack);
+		return true;
+	}
+
+	bool EnemyPawn::seqActionAttack(float deltaTime) {
+		if (weakPlayer.lock()->getIsAlreadyTurn()) {
+
+			PlaySoundFile("sound/test_se.wav", 2);
+			isAlreadyAction_ = true;
+			seq_.change(&EnemyPawn::seqStateTransition);
+		}
+		return true;
+	}
+
 
 }

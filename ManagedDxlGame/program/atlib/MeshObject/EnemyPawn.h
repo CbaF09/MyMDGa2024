@@ -15,67 +15,75 @@ namespace atl {
 		void adjustmentChildMeshes() override;
 
 		// ステート用 enum
-		enum class e_EnemyState {
+		enum class e_EnemyMoveState {
 			Wandering,	// 目的のない探索
 			PlayerNeighboring, // その場で足踏み,プレイヤーの方を向く
 		};
 
 		// ゲッター
-		inline const e_EnemyState& getCurrentEnemyState() const { return currentState_; }
-		inline const bool getIsAlreadyAction() const { return isAlreadyAction; }
+		inline const bool getIsAlreadyMove() const { return isAlreadyMove_; }
+		inline const bool getIsAlreadyAction() const { return isAlreadyAction_; }
 
 		// セッター
-		inline void setEnemyState(const e_EnemyState& newState) { currentState_ = newState; }
-		inline void setIsAlreadyAction(bool flag = false) { isAlreadyAction = flag; }
+		inline void setIsAlreadyTurn(bool flag = false) { isAlreadyAction_ = flag; isAlreadyMove_ = flag; }
 		
 		// エネミーの毎フレームの行動
-		// setEnemyState でステートを設定してから呼び出す事で、ステートに応じた行動を取る
 		bool enemyUpdate(float deltaTime) {
 			return seq_.update(deltaTime);
 		}
 
-		// プレイヤーの位置を2D座標系で得る
-		const tnl::Vector2i& searchPlayerPos(Shared<PlayerPawn> player);
-		// プレイヤーと前後左右で隣接しているか
-		bool isNeighborPlayer(Shared<PlayerPawn> player);
+		// プレイヤーへの弱参照を設定
+		void assignWeakPlayer(std::weak_ptr<PlayerPawn> player);
+
 
 	private:
 
 		//----------------------
 		// メソッド
-		// arg ... 現在位置からの移動量
-		bool isCanMovePos(const tnl::Vector2i& moveToPos);
-		void moveLerp(float deltaTime);
+		
+		// ret ... 移動できる => true , 移動できない => false
+		// arg ... 現在位置からの移動先
+		bool assignMoveTarget(const tnl::Vector2i& moveToPos);
+		// プレイヤーと前後左右で隣接しているか
+		bool isNeighborPlayer();
+
 
 		//-----------------------
 		// メンバ変数
 		
-		bool isAlreadyAction = false;
+		bool isAlreadyMove_ = false;
+		bool isAlreadyAction_ = false;
 		tnl::Vector3 enemySize_{ 0,0,0 };
 
 		// 移動用
 		tnl::Vector3 moveTarget_{ 0,0,0 };
-		const float MOVE_LERP_TIME_ = 0.5f;
+		const float MOVE_TIME = 1.0f; // 移動にかかる時間 ( 値が大きいほど移動に時間がかかる ) 
 		float moveLerpTimeCount_ = 0;
-		float enemyMoveSpeed_ = 1.0f;			// 移動速度
-		float enemyRotateSpeed_ = 1.0f;			// 回転速度
-		float needMoveAmount_ = 0.0f;			// 残り移動量カウンター
 
 		// 現在のステート
-		e_EnemyState currentState_ = e_EnemyState::Wandering;
+		e_EnemyMoveState turnState_ = e_EnemyMoveState::Wandering;
+
+		// プレイヤーへの弱参照
+		std::weak_ptr<PlayerPawn> weakPlayer;
 
 		//-----------------------
 		// シーケンス
 
-		SEQUENCE(EnemyPawn, &EnemyPawn::seqCheckCurrentState);
-		bool seqCheckCurrentState(float deltaTime);
+		SEQUENCE(EnemyPawn, &EnemyPawn::seqStateTransition);
+		bool seqStateTransition(float deltaTime);
+
 		bool seqWandering(float deltaTime);
 		bool seqPlayerNeighboring(float deltaTime);
 
-		bool seqMoveZplus(float deltaTime);
-		bool seqMoveZminus(float deltaTime);
-		bool seqMoveXplus(float deltaTime);
-		bool seqMoveXminus(float deltaTime);
+		// 移動 ( 隣一マスへ )
+		bool seqMoveToTarget(float deltaTime);
+		// 移動 ( 足踏み )
+		bool seqMoveNone(float deltaTime);
+
+		// 行動 ( 攻撃 )
+		bool seqActionAttack(float deltaTime);
+		// 行動 ( 無し )
+		bool seqActionNone(float deltaTime);
 
 	};
 

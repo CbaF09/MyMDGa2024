@@ -18,7 +18,7 @@ namespace atl {
 		setPlayerAndCamera3Dpos(initPos);
 	}
 
-	bool PlayerPawn::checkIsCanMovePos(const tnl::Vector2i& moveToPos) {
+	bool PlayerPawn::isCanMovePos(const tnl::Vector2i& moveToPos) {
 		auto cellLength = DungeonScene::getCellLength();
 		if (DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(player2Dpos_ + moveToPos)) {
 			moveTarget_ = { playerCamera_->pos_.x + (moveToPos.x * cellLength),playerCamera_->pos_.y,playerCamera_->pos_.z + (moveToPos.y * cellLength) };
@@ -29,22 +29,6 @@ namespace atl {
 			moveTarget_ = player3Dpos_;
 			return true;
 		}
-		return false;
-	}
-
-	bool PlayerPawn::moveLerp(float deltaTime) {
-		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_LERP_SPEED, moveLerpTimeCount_);
-		moveLerpTimeCount_ += deltaTime;
-
-		tnl::Vector3 moveVector = moveTarget_ - playerCamera_->pos_;
-		float length = moveVector.length();
-
-		if (length <= 0.01f) {
-			moveLerpTimeCount_ = 0;
-			isAlreadyAction = true;
-			seq_.change(&PlayerPawn::seqWaitKeyInput);
-		}
-		player3Dpos_ = playerCamera_->pos_;
 		return false;
 	}
 
@@ -104,47 +88,64 @@ namespace atl {
 		else if (tnl::Input::IsKeyDown(eKeys::KB_D)) { seq_.change(relativeRight); }
 	}
 
-
 	// ---------------------------
 	// シーケンス
 	// ---------------------------
 
 	bool PlayerPawn::seqWaitKeyInput(float deltaTime) {
-		if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
-			calcDirAndMoveSeqChange();
+		if (!isAlreadyTurn_) {
+			if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
+				calcDirAndMoveSeqChange();
+			}
 		}
-		return false;
+		return true;
 	}
 
 	bool PlayerPawn::seqMoveZplus(float deltaTime) {
 		if (seq_.isStart()) {
-			checkIsCanMovePos({ 0,1 });
+			isCanMovePos({ 0,1 });
 		}
-		moveLerp(deltaTime);
-		return false;
+		actionMoveLerp(deltaTime);
+		return true;
 	}
 
 	bool PlayerPawn::seqMoveZminus(float deltaTime) {
 		if (seq_.isStart()) {
-			checkIsCanMovePos({ 0,-1 });
+			isCanMovePos({ 0,-1 });
 		}
-		moveLerp(deltaTime);
-		return false;
+		actionMoveLerp(deltaTime);
+		return true;
 	}
 
 	bool PlayerPawn::seqMoveXplus(float deltaTime) {
 		if (seq_.isStart()) {
-			checkIsCanMovePos({ 1,0 });
+			isCanMovePos({ 1,0 });
 		}
-		moveLerp(deltaTime);
-		return false;
+		actionMoveLerp(deltaTime);
+		return true;
 	}
 
 	bool PlayerPawn::seqMoveXminus(float deltaTime) {
 		if (seq_.isStart()) {
-			checkIsCanMovePos({ -1,0 });
+			isCanMovePos({ -1,0 });
 		}
-		moveLerp(deltaTime);
+		actionMoveLerp(deltaTime);
+		return true;
+	}
+
+	bool PlayerPawn::actionMoveLerp(float deltaTime) {
+		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_TIME, moveLerpTimeCount_);
+		moveLerpTimeCount_ += deltaTime;
+
+		tnl::Vector3 moveVector = moveTarget_ - playerCamera_->pos_;
+		float length = moveVector.length();
+
+		if (length <= 0.01f) {
+			moveLerpTimeCount_ = 0;
+			isAlreadyTurn_ = true;
+			seq_.change(&PlayerPawn::seqWaitKeyInput);
+		}
+		player3Dpos_ = playerCamera_->pos_;
 		return false;
 	}
 

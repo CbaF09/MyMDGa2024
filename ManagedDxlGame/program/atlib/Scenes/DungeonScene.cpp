@@ -52,14 +52,14 @@ namespace atl {
 	bool DungeonScene::seqInit(float deltaTime) {
 		generateDungeon();
 		player_->initialize();
-		seq_.change(&DungeonScene::seqAllActionFlagOff);
+		seq_.change(&DungeonScene::seqAllTurnFlagOff);
 		return true;
 	}
 
 	// フラグオフ用シーケンス
-	bool DungeonScene::seqAllActionFlagOff(float deltaTime) {
-		player_->setIsAlreadyAction();
-		for (auto& enemy : enemies_) { enemy->setIsAlreadyAction(); }
+	bool DungeonScene::seqAllTurnFlagOff(float deltaTime) {
+		player_->setIsAlreadyTurn();
+		for (auto& enemy : enemies_) { enemy->setIsAlreadyTurn(); }
 
 		currentTurn_ = e_turnState::KEY_INPUT;
 		seq_.change(&DungeonScene::seqTurnStateProcess);
@@ -83,31 +83,38 @@ namespace atl {
 
 	void DungeonScene::processKeyInput(float deltaTime) {
 		if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
+			// 移動入力は1フレーム分遅れるので、一回呼ぶ
+			player_->playerUpdate(deltaTime);
 			currentTurn_ = e_turnState::PLAYER_MOVE;
 		}
 	}
 
 	// プレイヤーの移動入力
 	void DungeonScene::processPlayerMoveTurn(float deltaTime) {
-		// プレイヤーの移動
-		if (!player_->getIsAlreadyAction()) {
+		// プレイヤーのターン
+		if (!player_->getIsAlreadyTurn()) {
 			player_->playerUpdate(deltaTime);
 		}
 
-		// エネミーの行動
-		bool allEnemyAction = true;
+		// エネミーのターン
+		bool allEnemyTurned = true;
+		
+		// 移動処理
 		for (auto& enemy : enemies_) {
-			if (!enemy->getIsAlreadyAction()) {
-				// 隣接している場合
-				if (enemy->isNeighborPlayer(player_)) enemy->setEnemyState(EnemyPawn::e_EnemyState::PlayerNeighboring);
-				else enemy->setEnemyState(EnemyPawn::e_EnemyState::Wandering);
-				enemy->enemyUpdate(deltaTime);
-				allEnemyAction = false;
-			}
+			if (enemy->getIsAlreadyMove()) { continue; }
+			enemy->enemyUpdate(deltaTime);
+			allEnemyTurned = false;
+		}
+
+		// 行動処理
+		for (auto& enemy : enemies_) {
+			if (enemy->getIsAlreadyAction()) { continue; }
+			enemy->enemyUpdate(deltaTime);
+			allEnemyTurned = false;
 		}
 
 		// プレイヤー移動完了・エネミー行動完了したら、シーケンス遷移
-		if (player_->getIsAlreadyAction() && allEnemyAction) seq_.immediatelyChange(&DungeonScene::seqAllActionFlagOff);
+		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.immediatelyChange(&DungeonScene::seqAllTurnFlagOff);
 	}
 
 	//---------------------
@@ -148,6 +155,7 @@ namespace atl {
 			auto& enemySpawnPos = DungeonCreater::getDungeonCreater()->getEnemySpawnPos();
 			for (int i = 0; i < 3; ++i) {
 				enemies_[i] = std::make_shared<EnemyPawn>(enemySpawnPos[i], tnl::Vector3{ 200, 200, 200 });
+				enemies_[i]->assignWeakPlayer(player_);
 			}
 		}
 

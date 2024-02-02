@@ -71,7 +71,7 @@ namespace atl {
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);
         bool seqInit(float deltaTime);
         bool seqTurnStateProcess(float deltaTime);
-        bool seqAllActionFlagOff(float deltaTime);
+        bool seqAllTurnFlagOff(float deltaTime);
 
         void processKeyInput(float deltaTime);
         void processPlayerMoveTurn(float deltaTime);
