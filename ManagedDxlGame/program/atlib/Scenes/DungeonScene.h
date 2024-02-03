@@ -54,8 +54,7 @@ namespace atl {
 
         // プレイヤー関連 ------------------------------
         Shared<PlayerPawn> player_ = nullptr;
-        const float CAMERA_ROT_SPEED = 0.3f;	// カメラ回転速度
-        bool isOpenMenu = false;    // メニューを開いているか ( 本を開いているか )
+        bool isOpenMenu_ = false;    // メニューを開いているか
 
         // エネミー関連 --------------------------------
         std::vector<Shared<EnemyPawn>> enemies_;

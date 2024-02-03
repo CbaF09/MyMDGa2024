@@ -29,7 +29,7 @@ namespace atl {
 
 	void DungeonScene::draw2D(float deltaTime) {
 		debug_displayDungeonParam(deltaTime);
-		if (!isOpenMenu) { TextLogManager::getTextLogManager()->displayTextLog(60, 400, deltaTime); }
+		if (!isOpenMenu_) { TextLogManager::getTextLogManager()->displayTextLog(60, 400, deltaTime); }
 		drawUI(deltaTime);
 	}
 
@@ -65,15 +65,15 @@ namespace atl {
 	void DungeonScene::sceneUpdate(float deltaTime) {
 		seq_.update(deltaTime);
 
-		{// カメラコントロール ( 移動の後にやらないと、なんか変になる )
-			player_->getPlayerCamera()->cameraControl(CAMERA_ROT_SPEED);
+		{// カメラのアップデート
+			player_->getPlayerCamera()->update();
 		}
 
-		{// レンダー ( カメラコントロールの後 )
+		{// レンダー ( カメラアップデートの後 )
 			render(deltaTime, player_->getPlayerCamera());
 		}
 
-		{// 2D系の描画テキストログの描画
+		{// 2D系の描画
 			draw2D(deltaTime);
 		}
 
@@ -127,7 +127,7 @@ namespace atl {
 	}
 
 	void DungeonScene::processKeyInput(float deltaTime) {
-		if (!isOpenMenu) {
+		if (!isOpenMenu_) {
 			if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
 				// プレイヤー側でもキー入力待ちをしていて、プレイヤー操作は 1 フレーム分遅れるので、一回 呼ぶ
 				player_->playerUpdate(deltaTime);
@@ -141,7 +141,7 @@ namespace atl {
 		}
 
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
-			isOpenMenu = !isOpenMenu;
+			isOpenMenu_ = !isOpenMenu_;
 			player_->playerUpdate(deltaTime);
 		}
 

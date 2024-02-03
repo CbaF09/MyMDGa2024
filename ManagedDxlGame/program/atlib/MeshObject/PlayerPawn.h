@@ -46,15 +46,6 @@ namespace atl {
 
 	private:
 		// --------------------------------------------------
-		enum class e_XZdir {
-			NONE,
-			Zplus,
-			Zminus,
-			Xplus,
-			Xminus
-		};
-		
-		// --------------------------------------------------
 		// メンバー変数
 
 		Shared<Atl3DCamera> playerCamera_ = std::make_shared<Atl3DCamera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);
@@ -77,6 +68,7 @@ namespace atl {
 
 		// ターン制御用
 		bool isAlreadyTurn_ = false;
+		const float ATTACK_TIME = 1.5f;	// 攻撃した時の停止時間
 
 		// --------------------------------------------------
 		// ステータス用
@@ -89,8 +81,7 @@ namespace atl {
 		bool isCanMovePos(const tnl::Vector2i& moveToPos);
 		// 移動先を指定 ( moveLerp用 ) 
 		void setMoveTarget(const tnl::Vector2i& moveToPos);
-		e_XZdir checkCurrentFowardDir();
-		void calcDirAndMoveSeqChange();
+		void changeMoveDirSeq();
 
 		// --------------------------------------------------
 		// シーケンス用

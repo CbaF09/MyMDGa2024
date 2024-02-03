@@ -45,49 +45,29 @@ namespace atl {
 		moveTarget_ = { playerCamera_->pos_.x + (moveToPos.x * cellLength),playerCamera_->pos_.y,playerCamera_->pos_.z + (moveToPos.y * cellLength) };
 		player2Dpos_ += moveToPos;
 	}
-
-	PlayerPawn::e_XZdir PlayerPawn::checkCurrentFowardDir() {
-		tnl::Vector3 cameraForward = playerCamera_->forward().xz();
-		cameraForward.normalize();
-
-		float angleToZplus = cameraForward.angle({ 0, 0, 1 });
-		float angleToZminus = cameraForward.angle({ 0,0,-1 });
-		float angleToXplus = cameraForward.angle({ 1, 0, 0 });
-		float angleToXminus = cameraForward.angle({ -1,0,0 });
-
-		float minAngle = (std::min)({ angleToZplus, angleToZminus, angleToXplus, angleToXminus });
-
-		e_XZdir retV;
-		if		(minAngle == angleToZplus) { retV = e_XZdir::Zplus; }
-		else if (minAngle == angleToZminus) { retV = e_XZdir::Zminus; }
-		else if (minAngle == angleToXplus) { retV = e_XZdir::Xplus; }
-		else if (minAngle == angleToXminus) { retV = e_XZdir::Xminus; }
-		else { retV = e_XZdir::NONE; }
-		return retV;
-	}
 	
-	void PlayerPawn::calcDirAndMoveSeqChange() {
+	void PlayerPawn::changeMoveDirSeq() {
 		bool(PlayerPawn:: * relativeForward)(float) = &PlayerPawn::seqMoveZplus;
 		bool(PlayerPawn:: * relativeBack)(float) = &PlayerPawn::seqMoveZminus;
 		bool(PlayerPawn:: * relativeRight)(float) = &PlayerPawn::seqMoveXplus;
 		bool(PlayerPawn:: * relativeLeft)(float) = &PlayerPawn::seqMoveXminus;
 
 		// 現在の向きに応じて 関数ポインタの中身を変更
-		switch (checkCurrentFowardDir()) {
-		case e_XZdir::Zplus: break; // Z+ 向きならそのまま
-		case e_XZdir::Zminus:
+		switch (playerCamera_->getCurrentForwardDir()) {
+		case Atl3DCamera::e_XZdir::Zplus: break; // Z+ 向きならそのまま
+		case Atl3DCamera::e_XZdir::Zminus:
 			relativeForward = &PlayerPawn::seqMoveZminus;
 			relativeBack = &PlayerPawn::seqMoveZplus;
 			relativeRight = &PlayerPawn::seqMoveXminus;
 			relativeLeft = &PlayerPawn::seqMoveXplus;
 			break;
-		case e_XZdir::Xplus:
+		case Atl3DCamera::e_XZdir::Xplus:
 			relativeForward = &PlayerPawn::seqMoveXplus;
 			relativeBack = &PlayerPawn::seqMoveXminus;
 			relativeRight = &PlayerPawn::seqMoveZminus;
 			relativeLeft = &PlayerPawn::seqMoveZplus;
 			break;
-		case e_XZdir::Xminus:
+		case Atl3DCamera::e_XZdir::Xminus:
 			relativeForward = &PlayerPawn::seqMoveXminus;
 			relativeBack = &PlayerPawn::seqMoveXplus;
 			relativeRight = &PlayerPawn::seqMoveZplus;
@@ -109,7 +89,7 @@ namespace atl {
 	bool PlayerPawn::seqWaitKeyInput(float deltaTime) {
 		if (!isAlreadyTurn_) {
 			if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
-				calcDirAndMoveSeqChange();
+				changeMoveDirSeq();
 			}
 			if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 				seq_.change(&PlayerPawn::actionAttack);
@@ -178,40 +158,50 @@ namespace atl {
 	}
 
 	bool PlayerPawn::actionAttack(float deltaTime) {
+		if (seq_.isStart()) {
 
-		{// 爆発パーティクル
-			tnl::Vector3 cameraForward = playerCamera_->forward();
-			cameraForward.normalize();
+			{// 爆発パーティクル
+				tnl::Vector3 cameraForward = playerCamera_->forward();
+				cameraForward.normalize();
 
-			tnl::Vector3 normals[4] = {
-				{1,0,0},
-				{-1,0,0},
-				{0,0,1},
-				{0,0,-1}
-			};
+				tnl::Vector3 normals[4] = {
+					{1,0,0},
+					{-1,0,0},
+					{0,0,1},
+					{0,0,-1}
+				};
 
-			tnl::Vector3 closestNormal = normals[0];
-			float minAngle = cameraForward.angle(normals[0]);
+				tnl::Vector3 closestNormal = normals[0];
+				float minAngle = cameraForward.angle(normals[0]);
 
-			for (int i = 1; i < 4; ++i) {
-				float angle = cameraForward.angle(normals[i]);
-				if (angle < minAngle) {
-					minAngle = angle;
-					closestNormal = normals[i];
+				for (int i = 1; i < 4; ++i) {
+					float angle = cameraForward.angle(normals[i]);
+					if (angle < minAngle) {
+						minAngle = angle;
+						closestNormal = normals[i];
+					}
 				}
+
+				auto particlePos = playerCamera_->pos_ + (closestNormal * 500);
+				explosion_->setPosition(particlePos);
+				explosion_->start();
 			}
 
-			auto particlePos = playerCamera_->pos_ + (closestNormal * 500);
-			explosion_->setPosition(particlePos);
-			explosion_->start();
+			PlaySoundFile("sound/explosion.wav", 2);
+
+			TextLogManager::getTextLogManager()->addTextLog("プレイヤーの攻撃！　あああああああ");
 		}
 
-		PlaySoundFile("sound/explosion.wav", 2);
-		isAlreadyTurn_ = true;
-
-		TextLogManager::getTextLogManager()->addTextLog("プレイヤーの攻撃！　あああああああ");
-
-		seq_.change(&PlayerPawn::seqWaitKeyInput);
+		// ATTACK_TIMEの間だけ、シーケンスを遷移させない
+		static float totalDeltaTime = 0.0f;
+		totalDeltaTime += deltaTime;
+		if (totalDeltaTime > ATTACK_TIME) {
+			totalDeltaTime = 0.0f;
+			
+			// ターン終了
+			isAlreadyTurn_ = true;
+			seq_.change(&PlayerPawn::seqWaitKeyInput);
+		}
 
 		return true;
 	}
