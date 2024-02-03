@@ -39,7 +39,7 @@ namespace atl {
 		}
 
 		{// テキストログの描画
-			TextLogManager::getTextLogManager()->displayTextLog(60,400,deltaTime);
+			if(!isOpenMenu)	TextLogManager::getTextLogManager()->displayTextLog(60,400,deltaTime);
 
 		}
 
@@ -90,15 +90,22 @@ namespace atl {
 	}
 
 	void DungeonScene::processKeyInput(float deltaTime) {
-		if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
-			// 移動入力は1フレーム分遅れるので、一回呼ぶ
-			player_->playerUpdate(deltaTime);
-			currentTurn_ = e_turnState::PLAYER_MOVE;
+		if (!isOpenMenu) {
+			if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
+				// 移動入力は1フレーム分遅れるので、一回呼ぶ
+				player_->playerUpdate(deltaTime);
+				currentTurn_ = e_turnState::PLAYER_MOVE;
+			}
+
+			if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
+				player_->playerUpdate(deltaTime);
+				currentTurn_ = e_turnState::PLAYER_MOVE;
+			}
 		}
 
-		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
+		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
+			isOpenMenu = !isOpenMenu;
 			player_->playerUpdate(deltaTime);
-			currentTurn_ = e_turnState::PLAYER_MOVE;
 		}
 
 	}

@@ -101,6 +101,9 @@ namespace atl {
 			if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 				seq_.change(&PlayerPawn::actionAttack);
 			}
+			if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
+				playerHaveMagicBook_->isOpen() ? playerHaveMagicBook_->closeBook() : playerHaveMagicBook_->openBook();
+			}
 		}
 		return true;
 	}
@@ -208,6 +211,10 @@ namespace atl {
 		if (playerHaveMagicWand_) {
 			DrawStringEx(drawPosX, drawPosY + 60, -1,
 				"playerWandPos ... [ %.2f , %.2f, %.2f ]", playerHaveMagicWand_->getRootMesh()->pos_.x, playerHaveMagicWand_->getRootMesh()->pos_.y, playerHaveMagicWand_->getRootMesh()->pos_.z);
+		}
+		if (playerHaveMagicBook_) {
+			DrawStringEx(drawPosX, drawPosY + 75, -1,
+				"bookOpen ... [ %d ]", playerHaveMagicBook_->isOpen());
 		}
 	}
 

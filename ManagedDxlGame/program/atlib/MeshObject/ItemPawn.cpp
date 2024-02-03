@@ -1,6 +1,7 @@
 #include "ItemPawn.h"
 #include "PlayerPawn.h"
 #include "../Scenes/DungeonScene.h"
+#include "../Object/Item.h"
 
 namespace atl {
 
@@ -13,9 +14,10 @@ namespace atl {
 		rootMesh->pos_ = item3Dpos;
 		setRootMesh(rootMesh);
 
-		auto plate = dxe::Mesh::CreatePlaneMV({ 200,200,0 });
-		plate->pos_ = rootMesh->pos_ + tnl::Vector3{ 0,200,0 };
-		addChildMesh(plate);
+		auto plane = dxe::Mesh::CreatePlaneMV({ 200,200,0 });
+		plane->setTexture(itemData_->getItemIllust());
+		plane->pos_ = rootMesh->pos_ + tnl::Vector3{ 0,200,0 };
+		addChildMesh(plane);
 
 		itemParticle_->setPosition(getRootMesh()->pos_);
 	}

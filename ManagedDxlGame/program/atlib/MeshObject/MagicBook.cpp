@@ -26,23 +26,23 @@ namespace atl {
 	}
 
 	void MagicBook::renderObject(const Shared<Atl3DCamera> camera) const {
-		// プレイヤーが保持している
-		if (isHeldByPlayer) {
-			auto player = weakPlayerPawn.lock();
-			if (player) {
+		auto player = weakPlayerPawn.lock();
+		if (player) {
 				auto cameraPos = player->getPlayerCamera()->pos_;
 				auto& cameraRot = player->getPlayerCamera()->getCameraRot();
 				auto& mesh = getMesh();
-				
-				mesh->pos_ = cameraPos + tnl::Vector3::TransformCoord({ -55,-25,80 }, cameraRot);
-				mesh->rot_ = initRot_ * cameraRot;
-			}
-		}
-		// プレイヤーが保持していない ( フィールドに落ちている )
-		else {
-			
-		}
 
+				if (!isOpenByPlayer) {
+					mesh->pos_ = cameraPos + tnl::Vector3::TransformCoord({ -55,-25,80 }, cameraRot);
+					mesh->rot_ = initRot_ * cameraRot;
+				}
+				else {
+					mesh->pos_ = cameraPos + tnl::Vector3::TransformCoord({ 0,0,60 }, cameraRot);
+					tnl::Quaternion identityRot;
+					mesh->rot_ = identityRot * cameraRot;
+				}
+			}
+		
 		getMesh()->render(camera);
 	}
 

@@ -4,6 +4,7 @@
 namespace atl {
 
 	class PlayerPawn;
+	class Item;
 
 	class ItemPawn : public Base_MultiMeshObject {
 	public:
@@ -18,6 +19,7 @@ namespace atl {
 
 	private:
 		std::weak_ptr<PlayerPawn> weakPlayer_;
+		Shared<Item> itemData_ = std::make_shared<Item>();
 		Shared<dxe::Particle> itemParticle_ = std::make_shared<dxe::Particle>("graphics/particle/ItemEffect.bin");
 	};
 

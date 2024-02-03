@@ -16,10 +16,11 @@ namespace atl {
 	void Base_MultiMeshObject::renderObjects(const Shared<Atl3DCamera> camera){
 		adjustmentChildMeshes();
 
-		rootMesh_->render(camera);
 		for (const auto& mesh : childMeshes_) {
 			mesh->render(camera);
 		}
+		rootMesh_->render(camera);
+
 	}
 
 }

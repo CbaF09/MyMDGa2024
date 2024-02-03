@@ -284,6 +284,9 @@
     <ClCompile Include="program\atlib\Singletons\TextLogManager.cpp">
       <Filter>program\[002] atlib\Singletons</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\Object\Item.cpp">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">
@@ -568,6 +571,9 @@
     </ClInclude>
     <ClInclude Include="program\atlib\Singletons\TextLogManager.h">
       <Filter>program\[002] atlib\Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Object\Item.h">
+      <Filter>program\[002] atlib\Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

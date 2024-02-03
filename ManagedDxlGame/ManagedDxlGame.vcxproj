@@ -160,6 +160,7 @@
     <ClCompile Include="program\atlib\MeshObject\PlayerPawn.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Stairs.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Wall.cpp" />
+    <ClCompile Include="program\atlib\Object\Item.cpp" />
     <ClCompile Include="program\atlib\Scenes\DungeonScene.cpp" />
     <ClCompile Include="program\atlib\Scenes\Scene_Dummy.cpp" />
     <ClCompile Include="program\atlib\Singletons\DungeonCreater.cpp" />
@@ -241,6 +242,7 @@
     <ClInclude Include="program\atlib\MeshObject\PlayerPawn.h" />
     <ClInclude Include="program\atlib\MeshObject\Stairs.h" />
     <ClInclude Include="program\atlib\MeshObject\Wall.h" />
+    <ClInclude Include="program\atlib\Object\Item.h" />
     <ClInclude Include="program\atlib\Scenes\Base_Scene.h" />
     <ClInclude Include="program\atlib\Scenes\DungeonScene.h" />
     <ClInclude Include="program\atlib\Scenes\IE_SceneUpdater.h" />

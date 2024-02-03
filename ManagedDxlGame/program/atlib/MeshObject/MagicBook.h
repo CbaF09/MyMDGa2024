@@ -13,10 +13,15 @@ namespace atl {
 		
 		void renderObject(const Shared<Atl3DCamera> camera) const override;
 
+		inline const bool isOpen() const { return isOpenByPlayer; }
+		inline void openBook() { isOpenByPlayer = true; }
+		inline void closeBook() { isOpenByPlayer = false; }
+
 	private:
 		std::weak_ptr<const PlayerPawn> weakPlayerPawn;
 		tnl::Quaternion initRot_;
 		bool isHeldByPlayer = false;
+		bool isOpenByPlayer = false;
 	};
 
 }
