@@ -2,6 +2,7 @@
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Scenes/DungeonScene.h"
+#include "EnemyPawn.h"
 
 namespace atl {
 
@@ -20,17 +21,26 @@ namespace atl {
 	}
 
 	bool PlayerPawn::isCanMovePos(const tnl::Vector2i& moveToPos) {
+		auto newPlayerPos = player2Dpos_ + moveToPos;
+
+		// ダンジョンセルが移動不可 ( 壁など ) なら移動不可
+		if (!DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(player2Dpos_ + moveToPos)) {
+			return false;
+		}
+
+		// エネミーがいたら移動不可
+		auto& enemies = weakDungeonScene_.lock()->getEnemyArray();
+		for (auto& enemy : enemies) {
+			if (newPlayerPos == enemy->get2Dpos()) return false;
+		}
+
+		return true;
+	}
+
+	void PlayerPawn::setMoveTarget(const tnl::Vector2i& moveToPos) {
 		auto cellLength = DungeonScene::getCellLength();
-		if (DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(player2Dpos_ + moveToPos)) {
-			moveTarget_ = { playerCamera_->pos_.x + (moveToPos.x * cellLength),playerCamera_->pos_.y,playerCamera_->pos_.z + (moveToPos.y * cellLength) };
-			player2Dpos_ += moveToPos;
-			return true;
-		}
-		else {
-			moveTarget_ = player3Dpos_;
-			return true;
-		}
-		return false;
+		moveTarget_ = { playerCamera_->pos_.x + (moveToPos.x * cellLength),playerCamera_->pos_.y,playerCamera_->pos_.z + (moveToPos.y * cellLength) };
+		player2Dpos_ += moveToPos;
 	}
 
 	PlayerPawn::e_XZdir PlayerPawn::checkCurrentFowardDir() {
@@ -110,7 +120,9 @@ namespace atl {
 
 	bool PlayerPawn::seqMoveZplus(float deltaTime) {
 		if (seq_.isStart()) {
-			isCanMovePos({ 0,1 });
+			if (isCanMovePos({ 0,1 })) {
+				setMoveTarget({ 0,1 });
+			}
 		}
 		actionMoveLerp(deltaTime);
 		return true;
@@ -118,7 +130,9 @@ namespace atl {
 
 	bool PlayerPawn::seqMoveZminus(float deltaTime) {
 		if (seq_.isStart()) {
-			isCanMovePos({ 0,-1 });
+			if (isCanMovePos({ 0,-1 })) {
+				setMoveTarget({ 0,-1 });
+			}
 		}
 		actionMoveLerp(deltaTime);
 		return true;
@@ -126,7 +140,9 @@ namespace atl {
 
 	bool PlayerPawn::seqMoveXplus(float deltaTime) {
 		if (seq_.isStart()) {
-			isCanMovePos({ 1,0 });
+			if (isCanMovePos({ 1,0 })) {
+				setMoveTarget({ 1,0 });
+			}
 		}
 		actionMoveLerp(deltaTime);
 		return true;
@@ -134,7 +150,9 @@ namespace atl {
 
 	bool PlayerPawn::seqMoveXminus(float deltaTime) {
 		if (seq_.isStart()) {
-			isCanMovePos({ -1,0 });
+			if (isCanMovePos({ -1,0 })) {
+				setMoveTarget({ -1,0 });
+			}
 		}
 		actionMoveLerp(deltaTime);
 		return true;

@@ -15,7 +15,7 @@ namespace atl {
 
     // ダンジョンシーン
     // 役割 ... ダンジョン探索シーン
-    class DungeonScene final : public Base_Scene {
+    class DungeonScene final : public Base_Scene, public std::enable_shared_from_this<DungeonScene> {
 
     public:
         // ターン制御用 enum
@@ -25,8 +25,9 @@ namespace atl {
         };
         
         // ゲッター
-        static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
-        const e_turnState& getCurrentTurn() { return currentTurn_; }
+        inline static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
+        inline const e_turnState& getCurrentTurn() { return currentTurn_; }
+        inline const std::vector<Shared<EnemyPawn>>& getEnemyArray() const { return enemies_; }
 
         // セッター
         void setCurrenTurn(e_turnState nextTurn) { currentTurn_ = nextTurn; }

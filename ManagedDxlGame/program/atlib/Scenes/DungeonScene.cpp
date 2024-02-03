@@ -94,7 +94,7 @@ namespace atl {
 	// ‰Šú‰»
 	bool DungeonScene::seqInit(float deltaTime) {
 		generateDungeon();
-		player_->initialize();
+		player_->initialize(shared_from_this());
 		seq_.change(&DungeonScene::seqAllTurnFlagOff);
 		return true;
 	}

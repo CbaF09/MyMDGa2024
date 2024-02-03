@@ -1,6 +1,7 @@
 #pragma once
 #include "../dxlib_ext/dxlib_ext.h"
 #include "../../atlib/Utilities/Atl3DCamera.h"
+#include "../Scenes/DungeonScene.h"
 #include "../MeshObject/MagicWand.h"
 #include "../MeshObject/MenuBook.h"
 #include "../MeshObject/ForwardArrow.h"
@@ -43,11 +44,12 @@ namespace atl {
 			dxe::DirectXRenderEnd();
 		}
 
-		void initialize() {
+		void initialize(std::weak_ptr<DungeonScene> dungeonScene) {
 			playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
 			playerHaveMenuBook_ = std::make_shared<MenuBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
 			forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
 			player3Dpos_ = playerCamera_->pos_;
+			weakDungeonScene_ = dungeonScene;
 		}
 
 	private:
@@ -67,6 +69,7 @@ namespace atl {
 		Shared<MagicWand> playerHaveMagicWand_ = nullptr;
 		Shared<MenuBook> playerHaveMenuBook_ = nullptr;
 		Shared<ForwardArrow> forwardArrow_ = nullptr;
+		std::weak_ptr<DungeonScene> weakDungeonScene_;
 
 		tnl::Vector2i player2Dpos_{ 0,0 };
 		tnl::Vector3 player3Dpos_{ 0,0,0 };
@@ -86,8 +89,10 @@ namespace atl {
 		// --------------------------------------------------
 		// メソッド
 		
-		// arg ... 現在位置からの移動先
+		// 移動できるか判定
 		bool isCanMovePos(const tnl::Vector2i& moveToPos);
+		// 移動先を指定 ( moveLerp用 ) 
+		void setMoveTarget(const tnl::Vector2i& moveToPos);
 		e_XZdir checkCurrentFowardDir();
 		void calcDirAndMoveSeqChange();
 
