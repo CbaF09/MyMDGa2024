@@ -3,9 +3,9 @@
 
 namespace atl {
 
-	class Item final {
+	class ItemData final {
 	public:
-		Item();
+		ItemData();
 
 		const Shared<dxe::Texture> getItemIllust() { return itemIllust_; }
 

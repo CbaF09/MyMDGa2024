@@ -1,0 +1,3 @@
+EnemyID,HP,攻撃力,テクスチャファイルパス
+0,10,6,graphics/Texture/EnemyTexture.png
+1,15,4,graphics/Texture/pattern8-pattern-42a.png

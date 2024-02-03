@@ -1,5 +1,6 @@
 #pragma once
 #include "Base_MultiMeshObject.h"
+#include "../Object/EnemyData.h"
 
 namespace atl {
 
@@ -63,6 +64,9 @@ namespace atl {
 
 		// プレイヤーへの弱参照
 		std::weak_ptr<PlayerPawn> weakPlayer;
+
+		// データ保持
+		Shared<EnemyData> enemyData_ = std::make_shared<EnemyData>();
 
 		//-----------------------
 		// シーケンス

@@ -1,7 +1,9 @@
 #include "EnemyPawn.h"
 #include "../Scenes/DungeonScene.h"
 #include "../Singletons/DungeonCreater.h"
+#include "../Singletons/TextLogManager.h"
 #include "../Utilities/AtlRandom.h"
+#include "../Utilities/AtlString.h"
 #include "PlayerPawn.h"
 
 namespace atl {
@@ -11,15 +13,16 @@ namespace atl {
 		auto cellLength = DungeonScene::getCellLength();
 		tnl::Vector3 enemy3Dpos = { static_cast<float>(enemyPos.x * cellLength), 400 ,static_cast<float>(enemyPos.y * cellLength) };
 
+		auto texture = enemyData_->getEnemyTexture();
+
 		auto rootMesh = dxe::Mesh::CreateBoxMV(
 			enemySize,
-			dxe::Texture::CreateFromFile("graphics/box/box_left.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_right.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_up.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_down.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_forward.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_back.bmp")
-		);
+			texture,
+			texture,
+			texture,
+			texture,
+			texture,
+			texture);
 		rootMesh->pos_ = enemy3Dpos;
 		setRootMesh(rootMesh);
 
@@ -157,8 +160,11 @@ namespace atl {
 	}
 
 	bool EnemyPawn::seqActionAttack(float deltaTime) {
-		if (weakPlayer.lock()->getIsAlreadyTurn()) {
+		auto player = weakPlayer.lock();
+		if (player->getIsAlreadyTurn()) {
+			auto damage = player->getPlayerData()->damaged(enemyData_->getattackPower());
 
+			TextLogManager::getTextLogManager()->addTextLog("プレイヤーは " + convertFullWidthNumber(damage) + " のダメージを受けた");
 			PlaySoundFile("sound/test_se.wav", 2);
 			isAlreadyAction_ = true;
 			seq_.change(&EnemyPawn::seqStateTransition);

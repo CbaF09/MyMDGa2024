@@ -284,11 +284,17 @@
     <ClCompile Include="program\atlib\Singletons\TextLogManager.cpp">
       <Filter>program\[002] atlib\Singletons</Filter>
     </ClCompile>
-    <ClCompile Include="program\atlib\Object\Item.cpp">
+    <ClCompile Include="program\atlib\Object\ItemData.cpp">
       <Filter>program\[002] atlib\Object</Filter>
     </ClCompile>
-    <ClCompile Include="program\atlib\Singletons\PlayerStatsManager.cpp">
-      <Filter>program\[002] atlib\Singletons</Filter>
+    <ClCompile Include="program\atlib\Object\Base_ActorData.cpp">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Object\PlayerData.cpp">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Object\EnemyData.cpp">
+      <Filter>program\[002] atlib\Object</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -575,14 +581,20 @@
     <ClInclude Include="program\atlib\Singletons\TextLogManager.h">
       <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\Object\Item.h">
+    <ClInclude Include="program\atlib\Object\ItemData.h">
       <Filter>program\[002] atlib\Object</Filter>
-    </ClInclude>
-    <ClInclude Include="program\atlib\Singletons\PlayerStatsManager.h">
-      <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\Utilities\AtlString.h">
       <Filter>program\[002] atlib\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Object\EnemyData.h">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Object\Base_ActorData.h">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Object\PlayerData.h">
+      <Filter>program\[002] atlib\Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

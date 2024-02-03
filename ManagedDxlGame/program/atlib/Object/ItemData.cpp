@@ -1,8 +1,8 @@
-#include "Item.h"
+#include "ItemData.h"
 
 namespace atl {
 
-	Item::Item() {
+	ItemData::ItemData() {
 
 		auto csv = tnl::LoadCsv("csv/ItemCSV.csv");
 

@@ -1,7 +1,7 @@
 #include "ItemPawn.h"
 #include "PlayerPawn.h"
 #include "../Scenes/DungeonScene.h"
-#include "../Object/Item.h"
+#include "../Object/ItemData.h"
 
 namespace atl {
 

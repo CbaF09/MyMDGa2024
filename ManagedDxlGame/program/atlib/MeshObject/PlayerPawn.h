@@ -2,11 +2,15 @@
 #include "../dxlib_ext/dxlib_ext.h"
 #include "../../atlib/Utilities/Atl3DCamera.h"
 #include "../Scenes/DungeonScene.h"
-#include "../MeshObject/MagicWand.h"
-#include "../MeshObject/MenuBook.h"
-#include "../MeshObject/ForwardArrow.h"
+
+#include "../Object/PlayerData.h"
 
 namespace atl {
+
+	class DungeonScene;
+	class MagicWand;
+	class MenuBook;
+	class ForwardArrow;
 
 	class PlayerPawn final : public std::enable_shared_from_this<PlayerPawn> {
 	public:
@@ -17,6 +21,7 @@ namespace atl {
 		inline const tnl::Vector3& getPlayerPos() const { return player3Dpos_; }
 		inline const tnl::Vector2i& getPlayer2Dpos() const { return player2Dpos_; }
 		inline bool getIsAlreadyTurn() const { return isAlreadyTurn_; }
+		inline const Shared<PlayerData> getPlayerData() const {return playerData_;}
 
 		// セッター
 		inline void setIsAlreadyTurn(bool flag = false) { isAlreadyTurn_ = flag; }
@@ -34,23 +39,10 @@ namespace atl {
 		}
 
 		// render系
-		void render(float deltaTime) {
-			//forwardArrow_->renderObject(playerCamera_);
-			playerHaveMagicWand_->renderObjects(playerCamera_);
-			playerHaveMenuBook_->renderObject(playerCamera_,deltaTime);
+		void render(float deltaTime);
 
-			dxe::DirectXRenderBegin();
-			explosion_->render(playerCamera_);
-			dxe::DirectXRenderEnd();
-		}
-
-		void initialize(std::weak_ptr<DungeonScene> dungeonScene) {
-			playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-			playerHaveMenuBook_ = std::make_shared<MenuBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-			forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-			player3Dpos_ = playerCamera_->pos_;
-			weakDungeonScene_ = dungeonScene;
-		}
+		// 遅延コンストラクタ。生成後に一回だけ呼ぶ事
+		void initialize(std::weak_ptr<DungeonScene> dungeonScene);
 
 	private:
 		// --------------------------------------------------
@@ -65,7 +57,7 @@ namespace atl {
 		// --------------------------------------------------
 		// メンバー変数
 
-		Shared<Atl3DCamera> playerCamera_ = std::make_shared<Atl3DCamera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);;
+		Shared<Atl3DCamera> playerCamera_ = std::make_shared<Atl3DCamera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);
 		Shared<MagicWand> playerHaveMagicWand_ = nullptr;
 		Shared<MenuBook> playerHaveMenuBook_ = nullptr;
 		Shared<ForwardArrow> forwardArrow_ = nullptr;
@@ -85,6 +77,10 @@ namespace atl {
 
 		// ターン制御用
 		bool isAlreadyTurn_ = false;
+
+		// --------------------------------------------------
+		// ステータス用
+		Shared<PlayerData> playerData_ = std::make_shared<PlayerData>();
 
 		// --------------------------------------------------
 		// メソッド

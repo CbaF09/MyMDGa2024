@@ -2,6 +2,9 @@
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Scenes/DungeonScene.h"
+#include "../MeshObject/MagicWand.h"
+#include "../MeshObject/MenuBook.h"
+#include "../MeshObject/ForwardArrow.h"
 #include "EnemyPawn.h"
 
 namespace atl {
@@ -234,6 +237,24 @@ namespace atl {
 			DrawStringEx(drawPosX, drawPosY + 75, -1,
 				"menuOpen ... [ %d ]", playerHaveMenuBook_->isOpenMenu());
 		}
+	}
+
+	void PlayerPawn::render(float deltaTime) {
+		//forwardArrow_->renderObject(playerCamera_);
+		playerHaveMagicWand_->renderObjects(playerCamera_);
+		playerHaveMenuBook_->renderObject(playerCamera_, deltaTime);
+
+		dxe::DirectXRenderBegin();
+		explosion_->render(playerCamera_);
+		dxe::DirectXRenderEnd();
+	}
+
+	void PlayerPawn::initialize(std::weak_ptr<DungeonScene> dungeonScene) {
+		playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+		playerHaveMenuBook_ = std::make_shared<MenuBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+		forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+		player3Dpos_ = playerCamera_->pos_;
+		weakDungeonScene_ = dungeonScene;
 	}
 
 }

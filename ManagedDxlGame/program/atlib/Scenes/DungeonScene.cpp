@@ -3,13 +3,12 @@
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/ResourceManager.h"
-#include "../Singletons/PlayerStatsManager.h"
 #include "../MeshObject/Wall.h"
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/EnemyPawn.h"
-#include "../MeshObject/ItemPawn.h"
 #include "../MeshObject/PlayerPawn.h"
+#include "../MeshObject/ItemPawn.h"
 #include "../Utilities/Atl3DCamera.h"
 
 namespace atl {
@@ -20,10 +19,10 @@ namespace atl {
 			for (const auto& wall : walls_) { wall->renderObject(camera); }
 			for (const auto& groundTile : groundTiles_) { groundTile->renderObject(camera); }
 
-			originStairs_->renderObjects(camera);
+			if (originStairs_) originStairs_->renderObjects(camera);
 			for (const auto& enemy : enemies_) { enemy->renderObjects(camera); }
 			for (const auto& item : items_) { item->renderObjects(camera); }
-			player_->render(deltaTime);
+			if (player_)player_->render(deltaTime);
 		}
 
 	}
@@ -52,13 +51,13 @@ namespace atl {
 			HP_BAR_RIGHT_DOWN_POINT.y - HP_BAR_ADJUST_VALUE.y, HPbarRed, true);
 
 		// 緑ゲージの描画 ( HP がゼロでない場合のみ描画 )
-		if (!PlayerStatsManager::getPlayerStatsManager()->isZeroPlayerHP()) {
-			auto hpPersent = PlayerStatsManager::getPlayerStatsManager()->getPlayerCurrentHPpersent();
+		if (!player_->getPlayerData()->isZeroHP()) {
+			auto hpPersent = player_->getPlayerData()->getCurrentHPpersent();
 			auto HPbarGreen = ResourceManager::getResourceManager()->getUIres("graphics/UI/HPbarGreen.bmp");
 			DrawExtendGraph(
 				HP_BAR_LEFT_UP_POINT.x + HP_BAR_ADJUST_VALUE.x,
 				HP_BAR_LEFT_UP_POINT.y + HP_BAR_ADJUST_VALUE.y,
-				(HP_BAR_RIGHT_DOWN_POINT.x * hpPersent) - HP_BAR_ADJUST_VALUE.x,
+				static_cast<int>((HP_BAR_RIGHT_DOWN_POINT.x * hpPersent)) - HP_BAR_ADJUST_VALUE.x,
 				HP_BAR_RIGHT_DOWN_POINT.y - HP_BAR_ADJUST_VALUE.y, HPbarGreen, true);
 		}
 	}
@@ -79,8 +78,8 @@ namespace atl {
 		}
 
 		{// デバッグ用操作
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) seq_.change(&DungeonScene::seqInit);
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN)) PlayerStatsManager::getPlayerStatsManager()->damagedPlayer(10);
+			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) 	generateDungeon();;
+			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN)) player_->getPlayerData()->damaged(10);
 			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
 		}
 	}
@@ -93,10 +92,15 @@ namespace atl {
 
 	// 初期化
 	bool DungeonScene::seqInit(float deltaTime) {
-		generateDungeon();
-		player_->initialize(shared_from_this());
-		seq_.change(&DungeonScene::seqAllTurnFlagOff);
-		return true;
+		// 最初の1フレームで行う前処理
+		if (seq_.isStart()) {
+			player_ = std::make_shared<PlayerPawn>();
+			player_->initialize(shared_from_this());
+			generateDungeon();;
+		}
+		else { // その後の処理
+			seq_.change(&DungeonScene::seqAllTurnFlagOff);
+		}return true;
 	}
 
 	// 行動フラグオフ用シーケンス
@@ -178,8 +182,8 @@ namespace atl {
 	void DungeonScene::initDungeon() {
 		walls_.clear();
 		groundTiles_.clear();
-		enemies_.resize(3);
-		items_.resize(5);
+		enemies_.resize(DungeonCreater::getDungeonCreater()->getEnemySpawnNum());
+		items_.resize(DungeonCreater::getDungeonCreater()->getItemSpawnNum());
 	}
 
 	void DungeonScene::generateDungeon() {
@@ -204,7 +208,6 @@ namespace atl {
 
 		{// 各種スポーン ( DungeonCreaterが作ったスポーン位置を取得し、生成 )
 			auto& playerSpawnPos = dungeonCreater->getPlayerSpawnPos();
-			player_ = std::make_shared<PlayerPawn>();
 			player_->playerSpawn2Dpos(playerSpawnPos);
 
 			auto& stairsSpawnPos = dungeonCreater->getStairsSpawnPos();
@@ -262,11 +265,6 @@ namespace atl {
 		// 階段の位置
 		//auto& stairsPos = originStairs_->get2Dpos();
 		//DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
-
-		// 敵の位置
-		for (int i = 0; i < 3; ++i) {
-			DrawStringEx(600, 115 + (15 * i), -1, "Enemy[%d] pos ... [ %d , %d ]", i, enemies_[i]->get2Dpos().x, enemies_[i]->get2Dpos().y);
-		}
 	}
 
 }

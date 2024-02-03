@@ -6,12 +6,12 @@ namespace atl {
 
     class Stairs;
     class EnemyPawn;
+    class PlayerPawn;
+    class ItemPawn;
     class Wall;
     class GroundTile;
-    class PlayerPawn;
     class DungeonCreater;
     class Atl3DCamera;
-    class ItemPawn;
 
     // ダンジョンシーン
     // 役割 ... ダンジョン探索シーン
