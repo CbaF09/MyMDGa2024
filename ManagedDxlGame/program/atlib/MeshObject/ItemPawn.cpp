@@ -22,7 +22,7 @@ namespace atl {
 		itemParticle_->setPosition(getRootMesh()->pos_);
 	}
 
-	void ItemPawn::adjustmentChildMeshes() {
+	void ItemPawn::adjustChildsMeshes() {
 		getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(0.5f));
 
 		auto& childs = getChildMeshes();
@@ -31,7 +31,7 @@ namespace atl {
 	}
 
 	void ItemPawn::renderObjects(const Shared<Atl3DCamera> camera) {
-		adjustmentChildMeshes();
+		adjustChildsMeshes();
 
 		getRootMesh()->render(camera);
 		auto& childs = getChildMeshes();

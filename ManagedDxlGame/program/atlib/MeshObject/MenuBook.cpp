@@ -1,10 +1,9 @@
-#include "MagicBook.h"
+#include "MenuBook.h"
 #include "PlayerPawn.h"
 
 namespace atl {
 
-	MagicBook::MagicBook(std::weak_ptr<const PlayerPawn> player) {
-		isHeldByPlayer = true;
+	MenuBook::MenuBook(std::weak_ptr<const PlayerPawn> player) {
 		weakPlayerPawn = player;
 
 		tnl::Vector3 size{ 40,50,15 };
@@ -25,24 +24,24 @@ namespace atl {
 		setMeshSizeVector3(size);
 	}
 
-	void MagicBook::renderObject(const Shared<Atl3DCamera> camera) const {
+	void MenuBook::renderObject(const Shared<Atl3DCamera> camera,float deltaTime) {
 		auto player = weakPlayerPawn.lock();
 		if (player) {
-				auto cameraPos = player->getPlayerCamera()->pos_;
-				auto& cameraRot = player->getPlayerCamera()->getCameraRot();
-				auto& mesh = getMesh();
+			auto cameraPos = player->getPlayerCamera()->pos_;
+			auto& cameraRot = player->getPlayerCamera()->getCameraRot();
+			auto& mesh = getMesh();
 
-				if (!isOpenByPlayer) {
-					mesh->pos_ = cameraPos + tnl::Vector3::TransformCoord({ -55,-25,80 }, cameraRot);
-					mesh->rot_ = initRot_ * cameraRot;
-				}
-				else {
-					mesh->pos_ = cameraPos + tnl::Vector3::TransformCoord({ 0,0,60 }, cameraRot);
-					tnl::Quaternion identityRot;
-					mesh->rot_ = identityRot * cameraRot;
-				}
+			if (!isOpenMenu_) {
+				mesh->pos_ = cameraPos + tnl::Vector3::TransformCoord({ -55,-25,80 }, cameraRot);
+				mesh->rot_ = initRot_ * cameraRot;
 			}
-		
+			else {
+				mesh->pos_ = cameraPos + tnl::Vector3::TransformCoord({ 0,0,60 }, cameraRot);
+				tnl::Quaternion identityRot;
+				mesh->rot_ = identityRot * cameraRot;
+			}
+		}
+
 		getMesh()->render(camera);
 	}
 

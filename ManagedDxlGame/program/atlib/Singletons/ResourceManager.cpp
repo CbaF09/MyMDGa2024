@@ -16,12 +16,17 @@ namespace atl {
 		};
 	}
 
-	Shared<dxe::Texture> ResourceManager::loadTexture(const std::string& filePath) {
-		auto it = textureResourceMap_.find(filePath);
-		if (it != textureResourceMap_.end()) return textureResourceMap_[filePath];
-		Shared<dxe::Texture> retTexture = dxe::Texture::CreateFromFile(filePath);
-		textureResourceMap_.insert(std::make_pair(filePath, retTexture));
-		return retTexture;
-	}
+	// フライウェイトパターン UI用のグラフィックハンドルを取得、無い場合はロードする
+	int ResourceManager::getUIres(const std::string& filepath) {
+		auto it = uiResourceMap_.find(filepath);
+		// uiResourceMap_ に filepath が見つかった場合、それと対応するグラフィックハンドルを返す
+		if (it != uiResourceMap_.end()) return uiResourceMap_[filepath];
 
+		int newGrHandle = LoadGraph(filepath.c_str());
+		if (newGrHandle != -1) { // エラーの場合 -1 が返ってくるので、エラーでない場合はuiResourceMapに追加する
+			uiResourceMap_.insert(std::make_pair(filepath, newGrHandle));
+		}
+
+		return newGrHandle;
+	}
 }

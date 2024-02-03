@@ -62,14 +62,36 @@ namespace atl {
         // アイテム関連 --------------------------------
         std::vector<Shared<ItemPawn>> items_;
 
+        // UI 関連 -------------------------------------
+        const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
+        const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 }; // HPバーの枠の位置
+        const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
+
         //----------------------
         // メソッド
 
         void sceneUpdate(float deltaTime) override;
+
+        // 3Dのレンダー
         void render(float deltaTime , const Shared<Atl3DCamera> camera);
+        // 2D系の描画
+        void draw2D(float deltaTime);
+        // UI の描画
+        void drawUI(float deltaTime);
+        // HPbar
+        void drawHPbar();
+
+        // ダンジョンの初期化
         void initDungeon();
+
+        // ダンジョン生成
         void generateDungeon();
+
+        // 壁を生成
+        // arg ... 生成する2D座標位置
         void generateWall(int generatePosX, int generatePosZ);
+        // 地面を生成
+        // arg ... 生成する2D座標位置
         void generateGround(int generatePosX, int generatePosZ);
 
         // シーケンス
@@ -82,7 +104,7 @@ namespace atl {
         void processPlayerMoveTurn(float deltaTime);
 
         // デバッグ用 ----------------------------------
-        void debug_displayDungeonParam(const Shared<atl::Atl3DCamera>& camera, float deltaTime);
+        void debug_displayDungeonParam(float deltaTime);
 
     };
 };

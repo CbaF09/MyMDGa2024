@@ -13,7 +13,7 @@ namespace atl {
 		setTexture(texture);
 	}
 
-	void ForwardArrow::renderObject(const Shared<Atl3DCamera> camera) const {
+	void ForwardArrow::renderObject(const Shared<Atl3DCamera> camera,float deltaTime) {
 		auto player = weakPlayerPawn.lock();
 		if (player) {
 			auto& mesh = getMesh();

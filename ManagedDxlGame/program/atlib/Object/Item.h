@@ -3,7 +3,7 @@
 
 namespace atl {
 
-	class Item {
+	class Item final {
 	public:
 		Item();
 

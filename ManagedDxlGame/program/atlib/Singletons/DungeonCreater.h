@@ -38,6 +38,8 @@ namespace atl {
 		inline const std::vector<std::vector<FieldCell>>& getFieldCells() const { return fieldCells_; }
 		inline const tnl::Vector2i& getPlayerSpawnPos() const { return playerSpawnPos_; }
 		inline const tnl::Vector2i& getStairsSpawnPos() const { return stairsSpawnPos_; }
+		inline const int32_t getEnemySpawnNum() { return ENEMY_SPAWN_NUM; }
+		inline const int32_t getItemSpawnNum() { return ITEM_SPAWN_NUM; }
 		inline const std::vector<tnl::Vector2i>& getEnemySpawnPos() const { return enemySpawnPosArray_; }
 		inline const std::vector<tnl::Vector2i>& getItemSpawnPos() const { return itemSpawnPosArray_; }
 
@@ -94,6 +96,7 @@ namespace atl {
 			e_FieldCellType cellType_ = e_FieldCellType::CELL_TYPE_NONE;
 			bool isAlreadySpawnSomething = false;
 		};
+
 		//----------------------- 
 		// ƒƒ“ƒo•Ï”
 		const int32_t ENEMY_SPAWN_NUM = 3; // “G‚Ì”

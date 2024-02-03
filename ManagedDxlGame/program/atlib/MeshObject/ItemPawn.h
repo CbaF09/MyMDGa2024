@@ -6,13 +6,13 @@ namespace atl {
 	class PlayerPawn;
 	class Item;
 
-	class ItemPawn : public Base_MultiMeshObject {
+	class ItemPawn final : public Base_MultiMeshObject {
 	public:
 		~ItemPawn() { itemParticle_.reset(); }
 
 		explicit ItemPawn(const tnl::Vector2i& spawnPos);
 		
-		void adjustmentChildMeshes();
+		void adjustChildsMeshes();
 		void renderObjects(const Shared<Atl3DCamera> camera) override;
 
 		void assignWeakPlayer(std::weak_ptr<PlayerPawn> player);

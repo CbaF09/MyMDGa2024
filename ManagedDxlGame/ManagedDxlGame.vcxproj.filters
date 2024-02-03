@@ -269,7 +269,7 @@
     <ClCompile Include="program\atlib\MeshObject\MagicWand.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
-    <ClCompile Include="program\atlib\MeshObject\MagicBook.cpp">
+    <ClCompile Include="program\atlib\MeshObject\MenuBook.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
     <ClCompile Include="program\atlib\MeshObject\PlayerPawn.cpp">
@@ -286,6 +286,9 @@
     </ClCompile>
     <ClCompile Include="program\atlib\Object\Item.cpp">
       <Filter>program\[002] atlib\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Singletons\PlayerStatsManager.cpp">
+      <Filter>program\[002] atlib\Singletons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -560,7 +563,7 @@
     <ClInclude Include="program\atlib\MeshObject\ItemPawn.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\MeshObject\MagicBook.h">
+    <ClInclude Include="program\atlib\MeshObject\MenuBook.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\MeshObject\PlayerPawn.h">
@@ -574,6 +577,12 @@
     </ClInclude>
     <ClInclude Include="program\atlib\Object\Item.h">
       <Filter>program\[002] atlib\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Singletons\PlayerStatsManager.h">
+      <Filter>program\[002] atlib\Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Utilities\AtlString.h">
+      <Filter>program\[002] atlib\Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

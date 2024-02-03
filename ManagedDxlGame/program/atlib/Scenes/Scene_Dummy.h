@@ -9,7 +9,7 @@
 #include "../MeshObject/EnemyPawn.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/MagicWand.h"
-#include "../MeshObject/MagicBook.h"
+#include "../MeshObject/MenuBook.h"
 #include "../MeshObject/ItemPawn.h"
 #include "../Collision/Collision.h"
 

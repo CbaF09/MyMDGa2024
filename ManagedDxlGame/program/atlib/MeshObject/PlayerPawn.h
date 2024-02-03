@@ -2,7 +2,7 @@
 #include "../dxlib_ext/dxlib_ext.h"
 #include "../../atlib/Utilities/Atl3DCamera.h"
 #include "../MeshObject/MagicWand.h"
-#include "../MeshObject/MagicBook.h"
+#include "../MeshObject/MenuBook.h"
 #include "../MeshObject/ForwardArrow.h"
 
 namespace atl {
@@ -36,7 +36,7 @@ namespace atl {
 		void render(float deltaTime) {
 			//forwardArrow_->renderObject(playerCamera_);
 			playerHaveMagicWand_->renderObjects(playerCamera_);
-			playerHaveMagicBook_->renderObject(playerCamera_);
+			playerHaveMenuBook_->renderObject(playerCamera_,deltaTime);
 
 			dxe::DirectXRenderBegin();
 			explosion_->render(playerCamera_);
@@ -45,7 +45,7 @@ namespace atl {
 
 		void initialize() {
 			playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-			playerHaveMagicBook_ = std::make_shared<MagicBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+			playerHaveMenuBook_ = std::make_shared<MenuBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
 			forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
 			player3Dpos_ = playerCamera_->pos_;
 		}
@@ -65,7 +65,7 @@ namespace atl {
 
 		Shared<Atl3DCamera> playerCamera_ = std::make_shared<Atl3DCamera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);;
 		Shared<MagicWand> playerHaveMagicWand_ = nullptr;
-		Shared<MagicBook> playerHaveMagicBook_ = nullptr;
+		Shared<MenuBook> playerHaveMenuBook_ = nullptr;
 		Shared<ForwardArrow> forwardArrow_ = nullptr;
 
 		tnl::Vector2i player2Dpos_{ 0,0 };

@@ -16,10 +16,10 @@ namespace atl {
 	//------------------------------------------
 
 	public:
-		Shared<dxe::Texture> loadTexture(const std::string& filepath);
+		int getUIres(const std::string& filepath);
 
 	private:
-		std::unordered_map<std::string, Shared<dxe::Texture>> textureResourceMap_;
+		std::unordered_map<std::string, int> uiResourceMap_;
 	};
 
 }

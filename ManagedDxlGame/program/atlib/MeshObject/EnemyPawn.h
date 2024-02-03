@@ -12,7 +12,7 @@ namespace atl {
 		// arg3 ... １セルの全長
 		EnemyPawn(const tnl::Vector2i& enemyPos , const tnl::Vector3& enemySize);
 
-		void adjustmentChildMeshes() override;
+		void adjustChildsMeshes() override;
 
 		// ステート用 enum
 		enum class e_EnemyMoveState {

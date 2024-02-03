@@ -37,7 +37,7 @@ namespace atl {
 
 	}
 
-	void EnemyPawn::adjustmentChildMeshes() {
+	void EnemyPawn::adjustChildsMeshes() {
 		auto rootMesh = getRootMesh();
 		auto& childs = getChildMeshes();
 

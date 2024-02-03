@@ -17,16 +17,16 @@ namespace atl {
 		inline const tnl::Vector2i& get2Dpos() const { return mesh2Dpos_; }
 
 		// セッター
-		// 親メッシュを設定する
 		inline void setRootMesh(const Shared<dxe::Mesh> rootMesh) { rootMesh_ = rootMesh; }
-		// 引数を子メッシュ配列の末尾に追加する
-		void addChildMesh(const Shared<dxe::Mesh> childMesh);
 		inline void set2Dpos(const tnl::Vector2i& mesh2Dpos) { mesh2Dpos_ = mesh2Dpos; }
 		// 2D座標{x,y}を指定すると、その座標にあたる3D空間上の位置に設定される。Y はそのまま
 		void set2DposAnd3Dpos(const tnl::Vector2i& mesh2Dpos);
 
+		// 引数を子メッシュ配列の末尾に追加する
+		void addChildMesh(const Shared<dxe::Mesh> childMesh);
+
 		// 子メッシュ群の座標と回転を設定。renderObjects内で、render前に実行される
-		virtual void adjustmentChildMeshes() = 0;
+		virtual void adjustChildsMeshes() = 0;
 		// メッシュ群を描画する
 		virtual void renderObjects(const Shared<Atl3DCamera> camera);
 

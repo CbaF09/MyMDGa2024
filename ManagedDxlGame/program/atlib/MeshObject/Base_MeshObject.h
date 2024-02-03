@@ -31,7 +31,7 @@ namespace atl {
 		inline void add2Dpos(tnl::Vector2i addVec) { mesh2Dpos_ += addVec; }
 
 		// ƒƒbƒVƒ…‚ğ•`‰æ‚·‚é
-		virtual void renderObject(const Shared<Atl3DCamera> camera) const;
+		virtual void renderObject(const Shared<Atl3DCamera> camera, float deltaTime = 0);
 
 	private:
 		Shared<dxe::Mesh> mesh_;

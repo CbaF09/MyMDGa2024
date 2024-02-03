@@ -155,7 +155,7 @@
     <ClCompile Include="program\atlib\MeshObject\ForwardArrow.cpp" />
     <ClCompile Include="program\atlib\MeshObject\GroundTile.cpp" />
     <ClCompile Include="program\atlib\MeshObject\ItemPawn.cpp" />
-    <ClCompile Include="program\atlib\MeshObject\MagicBook.cpp" />
+    <ClCompile Include="program\atlib\MeshObject\MenuBook.cpp" />
     <ClCompile Include="program\atlib\MeshObject\MagicWand.cpp" />
     <ClCompile Include="program\atlib\MeshObject\PlayerPawn.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Stairs.cpp" />
@@ -164,6 +164,7 @@
     <ClCompile Include="program\atlib\Scenes\DungeonScene.cpp" />
     <ClCompile Include="program\atlib\Scenes\Scene_Dummy.cpp" />
     <ClCompile Include="program\atlib\Singletons\DungeonCreater.cpp" />
+    <ClCompile Include="program\atlib\Singletons\PlayerStatsManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\ResourceManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\SceneManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\TextLogManager.cpp" />
@@ -237,7 +238,7 @@
     <ClInclude Include="program\atlib\MeshObject\ForwardArrow.h" />
     <ClInclude Include="program\atlib\MeshObject\GroundTile.h" />
     <ClInclude Include="program\atlib\MeshObject\ItemPawn.h" />
-    <ClInclude Include="program\atlib\MeshObject\MagicBook.h" />
+    <ClInclude Include="program\atlib\MeshObject\MenuBook.h" />
     <ClInclude Include="program\atlib\MeshObject\MagicWand.h" />
     <ClInclude Include="program\atlib\MeshObject\PlayerPawn.h" />
     <ClInclude Include="program\atlib\MeshObject\Stairs.h" />
@@ -249,6 +250,7 @@
     <ClInclude Include="program\atlib\Scenes\Scene_Dummy.h" />
     <ClInclude Include="program\atlib\Scenes\TitleScene.h" />
     <ClInclude Include="program\atlib\Singletons\DungeonCreater.h" />
+    <ClInclude Include="program\atlib\Singletons\PlayerStatsManager.h" />
     <ClInclude Include="program\atlib\Singletons\ResourceManager.h" />
     <ClInclude Include="program\atlib\Singletons\SceneManager.h" />
     <ClInclude Include="program\atlib\Singletons\TextLogManager.h" />
@@ -256,6 +258,7 @@
     <ClInclude Include="program\atlib\Utilities\Atl3DCamera.h" />
     <ClInclude Include="program\atlib\Utilities\AtlAstar.h" />
     <ClInclude Include="program\atlib\Utilities\AtlRandom.h" />
+    <ClInclude Include="program\atlib\Utilities\AtlString.h" />
     <ClInclude Include="program\atlib\Utilities\InputSystem.h" />
     <ClInclude Include="program\dxlib_ext\dxlib_ext.h" />
     <ClInclude Include="program\dxlib_ext\dxlib_ext_camera.h" />

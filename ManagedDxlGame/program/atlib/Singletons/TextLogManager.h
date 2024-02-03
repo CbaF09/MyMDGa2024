@@ -38,7 +38,7 @@ namespace atl {
 		int32_t drawCharCount_ = 0;
 		int32_t drawLogLine_ = 0;
 		float accumDeltaTime_ = 0.0f;	// —İÏŠÔ
-		const float CHAR_INTERVAL = 0.5f; // •\¦•¶š‚ğ‘‚â‚·ŠÔŠu ( •b )
+		const float CHAR_INTERVAL = 0.05f; // •\¦•¶š‚ğ‘‚â‚·ŠÔŠu ( •b )
 
 		const int32_t MAX_LOG_COUNT = 5;
 	};

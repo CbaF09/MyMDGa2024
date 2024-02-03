@@ -17,7 +17,7 @@ namespace atl {
 		mesh_->loadMaterial(filePath);
 	}
 
-	void Base_MeshObject::renderObject(const Shared<Atl3DCamera> camera) const {
+	void Base_MeshObject::renderObject(const Shared<Atl3DCamera> camera, float deltaTime) {
 		mesh_->render(camera);
 	}
 }

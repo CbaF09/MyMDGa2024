@@ -46,7 +46,7 @@ namespace atl {
 
 	}
 
-	void Stairs::adjustmentChildMeshes() {
+	void Stairs::adjustChildsMeshes() {
 		auto rootMesh = getRootMesh();
 		auto& childs = getChildMeshes();
 

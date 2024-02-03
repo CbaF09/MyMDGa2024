@@ -15,9 +15,9 @@
 void gameStart() {
 	atl::mtRandomInit();
 
-	//	SetFogEnable(true);
-	//	SetFogColor(32, 32, 32);
-	//	SetFogStartEnd(500.0f, 1500.0f);
+	//SetFogEnable(true);
+	//SetFogColor(32, 32, 32);
+	//SetFogStartEnd(500.0f, 5000.0f);
 	ChangeLightTypeDir(VGet(0.0f, -1.0f, 0.0f));
 	SetBackgroundColor(32, 32, 32);
 	SetMouseDispFlag(false);

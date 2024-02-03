@@ -10,7 +10,7 @@ namespace atl {
 		explicit MagicWand(std::weak_ptr<const PlayerPawn> player);
 		MagicWand(const tnl::Vector2i spawnPos, float initSize);
 
-		void adjustmentChildMeshes() override;
+		void adjustChildsMeshes() override;
 
 	private:
 		float wandSize_ = 0.0f;

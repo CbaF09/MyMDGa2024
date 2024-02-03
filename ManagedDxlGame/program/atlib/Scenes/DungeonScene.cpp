@@ -2,6 +2,8 @@
 #include "DungeonScene.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
+#include "../Singletons/ResourceManager.h"
+#include "../Singletons/PlayerStatsManager.h"
 #include "../MeshObject/Wall.h"
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
@@ -24,7 +26,41 @@ namespace atl {
 			player_->render(deltaTime);
 		}
 
-		debug_displayDungeonParam(camera, deltaTime);
+	}
+
+	void DungeonScene::draw2D(float deltaTime) {
+		debug_displayDungeonParam(deltaTime);
+		if (!isOpenMenu) { TextLogManager::getTextLogManager()->displayTextLog(60, 400, deltaTime); }
+		drawUI(deltaTime);
+	}
+
+	void DungeonScene::drawUI(float deltaTime) {
+		drawHPbar();
+	}
+
+	void DungeonScene::drawHPbar() {
+		// 背景 ( 枠 ) の描画
+		auto HPbarBackGround = ResourceManager::getResourceManager()->getUIres("graphics/UI/HPbarBackGround.png");
+		DrawExtendGraph(HP_BAR_LEFT_UP_POINT.x, HP_BAR_LEFT_UP_POINT.y, HP_BAR_RIGHT_DOWN_POINT.x,HP_BAR_RIGHT_DOWN_POINT.y,HPbarBackGround,true);
+
+		// 赤ゲージの描画
+		auto HPbarRed = ResourceManager::getResourceManager()->getUIres("graphics/UI/HPbarRed.bmp");
+		DrawExtendGraph(
+			HP_BAR_LEFT_UP_POINT.x + HP_BAR_ADJUST_VALUE.x, 
+			HP_BAR_LEFT_UP_POINT.y + HP_BAR_ADJUST_VALUE.y, 
+			HP_BAR_RIGHT_DOWN_POINT.x - HP_BAR_ADJUST_VALUE.x, 
+			HP_BAR_RIGHT_DOWN_POINT.y - HP_BAR_ADJUST_VALUE.y, HPbarRed, true);
+
+		// 緑ゲージの描画 ( HP がゼロでない場合のみ描画 )
+		if (!PlayerStatsManager::getPlayerStatsManager()->isZeroPlayerHP()) {
+			auto hpPersent = PlayerStatsManager::getPlayerStatsManager()->getPlayerCurrentHPpersent();
+			auto HPbarGreen = ResourceManager::getResourceManager()->getUIres("graphics/UI/HPbarGreen.bmp");
+			DrawExtendGraph(
+				HP_BAR_LEFT_UP_POINT.x + HP_BAR_ADJUST_VALUE.x,
+				HP_BAR_LEFT_UP_POINT.y + HP_BAR_ADJUST_VALUE.y,
+				(HP_BAR_RIGHT_DOWN_POINT.x * hpPersent) - HP_BAR_ADJUST_VALUE.x,
+				HP_BAR_RIGHT_DOWN_POINT.y - HP_BAR_ADJUST_VALUE.y, HPbarGreen, true);
+		}
 	}
 
 	void DungeonScene::sceneUpdate(float deltaTime) {
@@ -38,14 +74,13 @@ namespace atl {
 			render(deltaTime, player_->getPlayerCamera());
 		}
 
-		{// テキストログの描画
-			if(!isOpenMenu)	TextLogManager::getTextLogManager()->displayTextLog(60,400,deltaTime);
-
+		{// 2D系の描画テキストログの描画
+			draw2D(deltaTime);
 		}
 
 		{// デバッグ用操作
 			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) seq_.change(&DungeonScene::seqInit);
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN));//デバッグ用処理
+			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN)) PlayerStatsManager::getPlayerStatsManager()->damagedPlayer(10);
 			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
 		}
 	}
@@ -64,7 +99,7 @@ namespace atl {
 		return true;
 	}
 
-	// フラグオフ用シーケンス
+	// 行動フラグオフ用シーケンス
 	bool DungeonScene::seqAllTurnFlagOff(float deltaTime) {
 		player_->setIsAlreadyTurn();
 		for (auto& enemy : enemies_) { enemy->setIsAlreadyTurn(); }
@@ -76,7 +111,6 @@ namespace atl {
 
 	// 現在ターンに応じて処理実行
 	bool DungeonScene::seqTurnStateProcess(float deltaTime) {
-
 		switch (currentTurn_) {
 		case e_turnState::KEY_INPUT:
 			processKeyInput(deltaTime);
@@ -85,14 +119,13 @@ namespace atl {
 			processPlayerMoveTurn(deltaTime);
 			break;
 		}
-
 		return true;
 	}
 
 	void DungeonScene::processKeyInput(float deltaTime) {
 		if (!isOpenMenu) {
 			if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
-				// 移動入力は1フレーム分遅れるので、一回呼ぶ
+				// プレイヤー側でもキー入力待ちをしていて、プレイヤー操作は 1 フレーム分遅れるので、一回 呼ぶ
 				player_->playerUpdate(deltaTime);
 				currentTurn_ = e_turnState::PLAYER_MOVE;
 			}
@@ -141,7 +174,7 @@ namespace atl {
 	//---------------------
 	// ダンジョン生成
 	//---------------------
-	
+
 	void DungeonScene::initDungeon() {
 		walls_.clear();
 		groundTiles_.clear();
@@ -152,11 +185,14 @@ namespace atl {
 	void DungeonScene::generateDungeon() {
 		initDungeon();
 
-		DungeonCreater::getDungeonCreater()->createDungeon();
-		auto& fieldData = DungeonCreater::getDungeonCreater()->getFieldCells();
+		auto dungeonCreater = DungeonCreater::getDungeonCreater();
+
+		dungeonCreater->createDungeon();
+		auto& fieldData = dungeonCreater->getFieldCells();
 
 		for (int x = 0; x < fieldData.size(); ++x) {
 			for (int y = 0; y < fieldData[x].size(); ++y) {
+				// その位置が壁なら壁を生成、壁でないなら地面を生成
 				if (fieldData[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
 					generateWall(x, y);
 				}
@@ -166,28 +202,30 @@ namespace atl {
 			}
 		}
 
-		{// 各種スポーン
-			auto& playerSpawnPos = DungeonCreater::getDungeonCreater()->getPlayerSpawnPos();
+		{// 各種スポーン ( DungeonCreaterが作ったスポーン位置を取得し、生成 )
+			auto& playerSpawnPos = dungeonCreater->getPlayerSpawnPos();
 			player_ = std::make_shared<PlayerPawn>();
 			player_->playerSpawn2Dpos(playerSpawnPos);
 
-			auto& stairsSpawnPos = DungeonCreater::getDungeonCreater()->getStairsSpawnPos();
+			auto& stairsSpawnPos = dungeonCreater->getStairsSpawnPos();
+			// セル全長の半分の大きさで生成
 			originStairs_ = std::make_shared<Stairs>(stairsSpawnPos, tnl::Vector3{ CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2 });
 
-			auto& enemySpawnPos = DungeonCreater::getDungeonCreater()->getEnemySpawnPos();
-			for (int i = 0; i < 3; ++i) {
+			auto& enemySpawnPos = dungeonCreater->getEnemySpawnPos();
+			for (int i = 0; i < dungeonCreater->getEnemySpawnNum(); ++i) {
+				// TODO : マジックナンバー。後でエネミーの見た目を変えた時に変更する事。
 				enemies_[i] = std::make_shared<EnemyPawn>(enemySpawnPos[i], tnl::Vector3{ 200, 200, 200 });
 				enemies_[i]->assignWeakPlayer(player_);
 			}
 
-			auto& itemSpawnPos = DungeonCreater::getDungeonCreater()->getItemSpawnPos();
-			for (int i = 0; i < 5; ++i) {
+			auto& itemSpawnPos = dungeonCreater->getItemSpawnPos();
+			for (int i = 0; i < dungeonCreater->getItemSpawnNum(); ++i) {
 				items_[i] = std::make_shared<ItemPawn>(itemSpawnPos[i]);
 				items_[i]->assignWeakPlayer(player_);
 			}
 		}
 
-		// テクスチャによるメモリリークが発生してるっぽいので、実行
+		// テクスチャによるメモリリーク対策
 		dxe::Texture::DestroyUnReferenceTextures();
 	}
 
@@ -209,16 +247,15 @@ namespace atl {
 		groundTiles_.emplace_back(newGroundTile);
 	}
 
-
 	//------------------------
 	// デバッグ用
 	//------------------------
-
-	void DungeonScene::debug_displayDungeonParam(const Shared<atl::Atl3DCamera>& camera, float deltaTime) {
+	
+	void DungeonScene::debug_displayDungeonParam(float deltaTime) {
 		DrawGridGround(player_->getPlayerCamera(), 50, 20);
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
-		player_->debug_displayPlayerParam(0, 0);
+		player_->debug_displayPlayerParam(600, 0);
 
 		DrawStringEx(0, 100, -1, "curentTurn ... [ %d ]", currentTurn_);
 
@@ -228,7 +265,7 @@ namespace atl {
 
 		// 敵の位置
 		for (int i = 0; i < 3; ++i) {
-			DrawStringEx(0, 115 + (15 * i), -1, "Enemy[%d] pos ... [ %d , %d ]", i, enemies_[i]->get2Dpos().x, enemies_[i]->get2Dpos().y);
+			DrawStringEx(600, 115 + (15 * i), -1, "Enemy[%d] pos ... [ %d , %d ]", i, enemies_[i]->get2Dpos().x, enemies_[i]->get2Dpos().y);
 		}
 	}
 
