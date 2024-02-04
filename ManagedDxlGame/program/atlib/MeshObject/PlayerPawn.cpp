@@ -27,7 +27,7 @@ namespace atl {
 		auto newPlayerPos = player2Dpos_ + moveToPos;
 
 		// ダンジョンセルが移動不可 ( 壁など ) なら移動不可
-		if (!DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(player2Dpos_ + moveToPos)) {
+		if (!DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(newPlayerPos)) {
 			return false;
 		}
 
@@ -47,39 +47,38 @@ namespace atl {
 	}
 	
 	void PlayerPawn::changeMoveDirSeq() {
-		bool(PlayerPawn:: * relativeForward)(float) = &PlayerPawn::seqMoveZplus;
-		bool(PlayerPawn:: * relativeBack)(float) = &PlayerPawn::seqMoveZminus;
-		bool(PlayerPawn:: * relativeRight)(float) = &PlayerPawn::seqMoveXplus;
-		bool(PlayerPawn:: * relativeLeft)(float) = &PlayerPawn::seqMoveXminus;
+		// カメラが保持する正面方向を取得
+		// 前進 ( W ) => そのまま
+		// 後退 ( S ) => 前進を反転
+		// 右 ( D ) => 正面方向と Y+軸 で外積を取る
+		// 左 ( A ) => 右を反転
 
-		// 現在の向きに応じて 関数ポインタの中身を変更
-		switch (playerCamera_->getCurrentForwardDir()) {
-		case Atl3DCamera::e_XZdir::Zplus: break; // Z+ 向きならそのまま
-		case Atl3DCamera::e_XZdir::Zminus:
-			relativeForward = &PlayerPawn::seqMoveZminus;
-			relativeBack = &PlayerPawn::seqMoveZplus;
-			relativeRight = &PlayerPawn::seqMoveXminus;
-			relativeLeft = &PlayerPawn::seqMoveXplus;
-			break;
-		case Atl3DCamera::e_XZdir::Xplus:
-			relativeForward = &PlayerPawn::seqMoveXplus;
-			relativeBack = &PlayerPawn::seqMoveXminus;
-			relativeRight = &PlayerPawn::seqMoveZminus;
-			relativeLeft = &PlayerPawn::seqMoveZplus;
-			break;
-		case Atl3DCamera::e_XZdir::Xminus:
-			relativeForward = &PlayerPawn::seqMoveXminus;
-			relativeBack = &PlayerPawn::seqMoveXplus;
-			relativeRight = &PlayerPawn::seqMoveZplus;
-			relativeLeft = &PlayerPawn::seqMoveZminus;
-			break;
+		auto forwardNormalDir = playerCamera_->getCurrentForwardDir();
+		tnl::Vector2i forwardV2i = { static_cast<int>(forwardNormalDir.x),static_cast<int>(forwardNormalDir.z) };
+		tnl::Vector2i backV2i = -forwardV2i;
+		auto rightNormalDir = tnl::Vector3::Cross( { 0,1,0 },forwardNormalDir);
+		tnl::Vector2i rightV2i = { static_cast<int>(rightNormalDir.x),static_cast<int>(rightNormalDir.z) };
+		tnl::Vector2i leftV2i = -rightV2i;
+
+		//// moveTargetが初期状態の場合、例外処理
+		//if (moveTarget_.x == 0 && moveTarget_.y == 0 && moveTarget_.z == 0) {
+		//	setMoveTarget(getPlayer2Dpos());
+		//}
+
+		if (tnl::Input::IsKeyDown(eKeys::KB_W)) {
+			if (isCanMovePos(forwardV2i)) {	setMoveTarget(forwardV2i); }
+		}
+		else if (tnl::Input::IsKeyDown(eKeys::KB_S)) {
+			if (isCanMovePos(backV2i)) { setMoveTarget(backV2i);}
+		}
+		else if (tnl::Input::IsKeyDown(eKeys::KB_D)) {
+			if (isCanMovePos(rightV2i)) { setMoveTarget(rightV2i); }
+		}
+		else if (tnl::Input::IsKeyDown(eKeys::KB_A)) {
+			if (isCanMovePos(leftV2i)) { setMoveTarget(leftV2i); }
 		}
 
-		// WASD で 関数ポインタの中身に遷移
-		if (tnl::Input::IsKeyDown(eKeys::KB_W)) { seq_.change(relativeForward); }
-		else if (tnl::Input::IsKeyDown(eKeys::KB_S)) { seq_.change(relativeBack); }
-		else if (tnl::Input::IsKeyDown(eKeys::KB_A)) { seq_.change(relativeLeft); }
-		else if (tnl::Input::IsKeyDown(eKeys::KB_D)) { seq_.change(relativeRight); }
+		seq_.change(&PlayerPawn::actionMoveLerp);
 	}
 
 	// ---------------------------
@@ -100,48 +99,14 @@ namespace atl {
 		}
 		return true;
 	}
-
-	bool PlayerPawn::seqMoveZplus(float deltaTime) {
-		if (seq_.isStart()) {
-			if (isCanMovePos({ 0,1 })) {
-				setMoveTarget({ 0,1 });
-			}
-		}
-		actionMoveLerp(deltaTime);
-		return true;
-	}
-
-	bool PlayerPawn::seqMoveZminus(float deltaTime) {
-		if (seq_.isStart()) {
-			if (isCanMovePos({ 0,-1 })) {
-				setMoveTarget({ 0,-1 });
-			}
-		}
-		actionMoveLerp(deltaTime);
-		return true;
-	}
-
-	bool PlayerPawn::seqMoveXplus(float deltaTime) {
-		if (seq_.isStart()) {
-			if (isCanMovePos({ 1,0 })) {
-				setMoveTarget({ 1,0 });
-			}
-		}
-		actionMoveLerp(deltaTime);
-		return true;
-	}
-
-	bool PlayerPawn::seqMoveXminus(float deltaTime) {
-		if (seq_.isStart()) {
-			if (isCanMovePos({ -1,0 })) {
-				setMoveTarget({ -1,0 });
-			}
-		}
-		actionMoveLerp(deltaTime);
-		return true;
-	}
 	
 	bool PlayerPawn::actionMoveLerp(float deltaTime) {
+		if (seq_.isStart()) {
+			// moveTarget が設定されていない場合、例外処理
+			if (moveTarget_.x == 0 && moveTarget_.y == 0 && moveTarget_.z == 0) {
+				moveTarget_ = playerCamera_->pos_;
+			}
+		}
 		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_TIME, moveLerpTimeCount_);
 		moveLerpTimeCount_ += deltaTime;
 
@@ -158,31 +123,12 @@ namespace atl {
 	}
 
 	bool PlayerPawn::actionAttack(float deltaTime) {
+		// 最初のフレームで本処理、その後は待機時間
 		if (seq_.isStart()) {
 
 			{// 爆発パーティクル
-				tnl::Vector3 cameraForward = playerCamera_->forward();
-				cameraForward.normalize();
-
-				tnl::Vector3 normals[4] = {
-					{1,0,0},
-					{-1,0,0},
-					{0,0,1},
-					{0,0,-1}
-				};
-
-				tnl::Vector3 closestNormal = normals[0];
-				float minAngle = cameraForward.angle(normals[0]);
-
-				for (int i = 1; i < 4; ++i) {
-					float angle = cameraForward.angle(normals[i]);
-					if (angle < minAngle) {
-						minAngle = angle;
-						closestNormal = normals[i];
-					}
-				}
-
-				auto particlePos = playerCamera_->pos_ + (closestNormal * 500);
+				auto& forwardNormal = playerCamera_->getCurrentForwardDir();
+				auto particlePos = playerCamera_->pos_ + (forwardNormal * 500);
 				explosion_->setPosition(particlePos);
 				explosion_->start();
 			}
@@ -218,7 +164,7 @@ namespace atl {
 		DrawStringEx(drawPosX, drawPosY + 30, -1,
 			"playerCameraPos ... [ %.2f , %.2f , %.2f ]", playerCamera_->pos_.x, playerCamera_->pos_.y, playerCamera_->pos_.z);
 		DrawStringEx(drawPosX, drawPosY + 45, -1,
-			"playerCameraAngle ... [ %.2f , %.2f, %.2f ]", tnl::ToDegree(playerCamera_->forward().angle({ 1,0,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,1,0 })), tnl::ToDegree(playerCamera_->forward().angle({ 0,0,1 })));
+			"moveTarget_ ... [ %.2f , %.2f, %.2f ]", moveTarget_.x, moveTarget_.y, moveTarget_.z);
 		if (playerHaveMagicWand_) {
 			DrawStringEx(drawPosX, drawPosY + 60, -1,
 				"playerWandPos ... [ %.2f , %.2f, %.2f ]", playerHaveMagicWand_->getRootMesh()->pos_.x, playerHaveMagicWand_->getRootMesh()->pos_.y, playerHaveMagicWand_->getRootMesh()->pos_.z);

@@ -17,15 +17,6 @@ namespace atl {
 		inline tnl::Vector3 left() override { return tnl::Vector3::Cross(forward(), up()); }
 		inline tnl::Vector3 right() override { return tnl::Vector3::Cross(up(), forward()); }
 
-		// --------------------------------------------------
-		enum class e_XZdir { // XZ平面での向いている方向を表現する
-			NONE,
-			Zplus,
-			Zminus,
-			Xplus,
-			Xminus
-		};
-
 		// マウスでカメラを回転・制御
 		void cameraControl();
 
@@ -36,13 +27,13 @@ namespace atl {
 
 		// ゲッター
 		inline const tnl::Quaternion& getCameraRot() const { return cameraRot_; }
-		inline const e_XZdir& getCurrentForwardDir() const { return currentForwardDir_; }
+		inline const tnl::Vector3& getCurrentForwardDir() const { return currentForwardNormalDir_; }
 
 		// デバッグ用
 		void debug_displayCameraParam(int drawPosX = 0, int drawPosY = 0);
 
 		// 現在の向いている方向を計算
-		void calcCurrentFowardDir();
+		void calcCurrentFowardNormalDir();
 
 	private:
 		const float MOUSE_SENSITIVITY = 0.3f;
@@ -50,7 +41,7 @@ namespace atl {
 		const float MAX_PITCH = 150.0f;
 
 		tnl::Quaternion cameraRot_;
-		e_XZdir currentForwardDir_;
+		tnl::Vector3 currentForwardNormalDir_{ 0,0,1 }; // 現在の正面方向
 
 	};
 

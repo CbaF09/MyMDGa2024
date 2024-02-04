@@ -89,10 +89,6 @@ namespace atl {
 		SEQUENCE(PlayerPawn, &PlayerPawn::seqWaitKeyInput);
 		
 		bool seqWaitKeyInput(float deltaTime);
-		bool seqMoveZplus(float deltaTime);
-		bool seqMoveZminus(float deltaTime);
-		bool seqMoveXplus(float deltaTime);
-		bool seqMoveXminus(float deltaTime);
 
 		bool actionMoveLerp(float deltaTime);
 		bool actionAttack(float deltaTime);
