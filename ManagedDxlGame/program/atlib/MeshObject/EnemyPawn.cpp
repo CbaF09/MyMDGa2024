@@ -152,7 +152,7 @@ namespace atl {
 		tnl::Vector3 moveVector = moveTarget_ - getRootMesh()->pos_;
 		float length = moveVector.length();
 
-		if (length <= 0.01f) {
+		if (length <= MOVE_END_BORDER) {
 			moveLerpTimeCount_ = 0;
 			isAlreadyMove_ = true;
 			seq_.change(&EnemyPawn::seqActionNone);

@@ -60,6 +60,7 @@ namespace atl {
 
 		// moveLerp用
 		const float MOVE_TIME = 1.5f;		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
+		const float MOVE_END_BORDER = 0.1f; // 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
 		float moveLerpTimeCount_ = 0;
 		tnl::Vector3 moveTarget_{ 0,0,0 };
 		

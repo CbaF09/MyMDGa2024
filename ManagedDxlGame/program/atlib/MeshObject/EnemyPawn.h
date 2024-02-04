@@ -17,10 +17,10 @@ namespace atl {
 
 		// ステート用 enum
 		enum class e_EnemyState {
-			Wandering,	// 目的のない探索
-			PlayerNeighboring, // その場で足踏み,プレイヤーの方を向く
-			Deading, // 死亡中 ( 徐々に消えていくなどの処理 )
-			Dead,	// 死亡 ( Deading から遷移 )
+			Wandering,			// 目的のない探索
+			PlayerNeighboring,	// その場で足踏み,プレイヤーの方を向く
+			Deading,			// 死亡中 ( 徐々に消えていくなどの処理 )
+			Dead,				// 死亡 ( Deading から遷移 )
 		};
 
 		// ゲッター
@@ -58,12 +58,13 @@ namespace atl {
 		bool isAlreadyAction_ = false;
 		float totalDeltaTimer_ = 0; // 行動停止用 ( 累積時間 )
 		float waitTime_ = 0;	// 行動停止用 ( 停止時間設定 )
-		const float DEADING_TIME = 2.5f;
+		const float DEADING_TIME = 2.5f; // 死亡演出の時間
 		tnl::Vector3 enemySize_{ 0,0,0 };
 
 		// 移動用
 		tnl::Vector3 moveTarget_{ 0,0,0 };
 		const float MOVE_TIME = 1.0f; // 移動にかかる時間 ( 値が大きいほど移動に時間がかかる ) 
+		const float MOVE_END_BORDER = 0.1f; // 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
 		float moveLerpTimeCount_ = 0;
 
 		// 現在のステート

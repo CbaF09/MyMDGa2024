@@ -166,7 +166,9 @@
     <ClCompile Include="program\atlib\Object\PlayerData.cpp" />
     <ClCompile Include="program\atlib\Scenes\DungeonScene.cpp" />
     <ClCompile Include="program\atlib\Scenes\Scene_Dummy.cpp" />
+    <ClCompile Include="program\atlib\Scenes\TitleScene.cpp" />
     <ClCompile Include="program\atlib\Singletons\DungeonCreater.cpp" />
+    <ClCompile Include="program\atlib\Singletons\FadeInOutManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\ResourceManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\SceneManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\TextLogManager.cpp" />
@@ -256,6 +258,7 @@
     <ClInclude Include="program\atlib\Scenes\Scene_Dummy.h" />
     <ClInclude Include="program\atlib\Scenes\TitleScene.h" />
     <ClInclude Include="program\atlib\Singletons\DungeonCreater.h" />
+    <ClInclude Include="program\atlib\Singletons\FadeInOutManager.h" />
     <ClInclude Include="program\atlib\Singletons\ResourceManager.h" />
     <ClInclude Include="program\atlib\Singletons\SceneManager.h" />
     <ClInclude Include="program\atlib\Singletons\TextLogManager.h" />

@@ -18,10 +18,13 @@ namespace atl {
     class DungeonScene final : public Base_Scene, public std::enable_shared_from_this<DungeonScene> {
 
     public:
+        ~DungeonScene();
+
         // ターン制御用 enum
         enum class e_turnState {
             KEY_INPUT,
             PLAYER_MOVE,
+            PLAYER_ON_STAIRS,
         };
         
         // ゲッター
@@ -65,16 +68,6 @@ namespace atl {
         const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
 
-        // フェードイン ・ アウト関連 ------------------
-        int32_t fadeAlphaValue_ = 255; // 0 ... 透明、 255 ... 真っ黒
-        const int32_t fadeSpeed_ = 3;
-        enum class e_FadeState{
-            FADE_NONE, // フェード中でない
-            FADE_IN, // フェードイン中 ( 透明に向かっている )
-            FADE_OUT // フェードアウト中 ( 真っ黒に向かっている )
-        }
-        currentFadeState_ = e_FadeState::FADE_NONE;
-
         //----------------------------------------------
         // メソッド
 
@@ -88,10 +81,6 @@ namespace atl {
         void drawUI(float deltaTime);
         // 2D HPbar の描画
         void drawHPbar();
-        // フェードイン ・ アウト用黒色短径の透明度を徐々に変化
-        void fadeBlackRect();
-        // フェードイン ・ アウト用の黒色短形の描画
-        void drawFadeBlackRect(float deltaTime);
 
         // ダンジョンの初期化
         void initDungeon();
@@ -115,12 +104,17 @@ namespace atl {
         bool seqDeadEnemyProcess(float deltaTime);
         // 敵とプレイヤーの行動完了フラグをオフにする
         bool seqAllTurnFlagOff(float deltaTime);
+        // 次の階層に移動している間
+        bool seqToNextFloor(float deltaTime);
 
+        // キー入力待ち
         void processKeyInput(float deltaTime);
+        // プレイヤーが移動したターンの処理
         void processPlayerMoveTurn(float deltaTime);
+        // プレイヤーが階段に乗った時
+        void processPlayerOnStairs(float deltaTime);
 
         // デバッグ用 ----------------------------------
         void debug_displayDungeonParam(float deltaTime);
-
     };
 };

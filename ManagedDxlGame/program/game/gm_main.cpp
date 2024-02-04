@@ -9,6 +9,7 @@
 #include "../atlib/Utilities/AtlRandom.h"
 #include "../atlib/Singletons/SceneManager.h"
 #include "../atlib/Scenes/DungeonScene.h"
+#include "../atlib/Scenes/TitleScene.h"
 #include "../atlib/Scenes/Scene_Dummy.h"
 #include "gm_main.h"
 

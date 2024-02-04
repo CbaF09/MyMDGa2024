@@ -297,7 +297,13 @@
       <Filter>program\[002] atlib\Object</Filter>
     </ClCompile>
     <ClCompile Include="program\atlib\Utilities\AtlString.cpp">
-      <Filter>program</Filter>
+      <Filter>program\[002] atlib\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Singletons\FadeInOutManager.cpp">
+      <Filter>program\[002] atlib\Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Scenes\TitleScene.cpp">
+      <Filter>program\[002] atlib\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -598,6 +604,9 @@
     </ClInclude>
     <ClInclude Include="program\atlib\Object\PlayerData.h">
       <Filter>program\[002] atlib\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Singletons\FadeInOutManager.h">
+      <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

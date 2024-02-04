@@ -1,8 +1,11 @@
 #include <string>
 #include "DungeonScene.h"
+#include "TitleScene.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/ResourceManager.h"
+#include "../Singletons/FadeInOutManager.h"
+#include "../Singletons/SceneManager.h"
 #include "../MeshObject/Wall.h"
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
@@ -11,7 +14,29 @@
 #include "../MeshObject/ItemPawn.h"
 #include "../Utilities/Atl3DCamera.h"
 
+
 namespace atl {
+
+	DungeonScene::~DungeonScene(){
+		{// ダンジョンシーンで使っているリソースを解放
+
+			// 解放するリソースのファイルパスの一時的配列を作成
+			std::vector<std::string> tempDeleteRes = {
+				"graphics/UI/HPbarBackGround.png",
+				"graphics/UI/HPbarRed.bmp",
+				"graphics/UI/HPbarGreen.bmp"
+			};
+
+			// ファイルパスを一つずつ解放。解放の成功失敗をデバッグログに出力
+			for (const auto& res : tempDeleteRes) {
+				bool isDelete = ResourceManager::getResourceManager()->deleteResource(res);
+				if (!isDelete) { tnl::DebugTrace("\n------------------------------\nDungeonScene::デストラクタ メモリ解放 => 正常に解放されていません"); }
+				else { tnl::DebugTrace("\n------------------------------\nDungeonScene::デストラクタ メモリ解放 => 正常"); }
+			}
+			tnl::DebugTrace("\n------------------------------\n"); // ログが見づらいので最後に改行と切り取り線を入れる
+		}
+
+	}
 
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
 
@@ -31,7 +56,7 @@ namespace atl {
 		debug_displayDungeonParam(deltaTime);
 		if (!isOpenMenu_) { TextLogManager::getTextLogManager()->displayTextLog(60, 400, deltaTime); }
 		drawUI(deltaTime);
-		drawFadeBlackRect(deltaTime);
+		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
 	}
 
 	void DungeonScene::drawUI(float deltaTime) {
@@ -40,11 +65,11 @@ namespace atl {
 
 	void DungeonScene::drawHPbar() {
 		// 背景 ( 枠 ) の描画
-		auto HPbarBackGround = ResourceManager::getResourceManager()->getUIres("graphics/UI/HPbarBackGround.png");
+		auto HPbarBackGround = ResourceManager::getResourceManager()->getUiRes("graphics/UI/HPbarBackGround.png");
 		DrawExtendGraph(HP_BAR_LEFT_UP_POINT.x, HP_BAR_LEFT_UP_POINT.y, HP_BAR_RIGHT_DOWN_POINT.x,HP_BAR_RIGHT_DOWN_POINT.y,HPbarBackGround,true);
 
 		// 赤ゲージの描画
-		auto HPbarRed = ResourceManager::getResourceManager()->getUIres("graphics/UI/HPbarRed.bmp");
+		auto HPbarRed = ResourceManager::getResourceManager()->getUiRes("graphics/UI/HPbarRed.bmp");
 		DrawExtendGraph(
 			HP_BAR_LEFT_UP_POINT.x + HP_BAR_ADJUST_VALUE.x, 
 			HP_BAR_LEFT_UP_POINT.y + HP_BAR_ADJUST_VALUE.y, 
@@ -54,7 +79,7 @@ namespace atl {
 		// 緑ゲージの描画 ( HP がゼロでない場合のみ描画 )
 		if (!player_->getPlayerData()->isZeroHP()) {
 			auto hpPersent = player_->getPlayerData()->getCurrentHPpersent();
-			auto HPbarGreen = ResourceManager::getResourceManager()->getUIres("graphics/UI/HPbarGreen.bmp");
+			auto HPbarGreen = ResourceManager::getResourceManager()->getUiRes("graphics/UI/HPbarGreen.bmp");
 			DrawExtendGraph(
 				HP_BAR_LEFT_UP_POINT.x + HP_BAR_ADJUST_VALUE.x,
 				HP_BAR_LEFT_UP_POINT.y + HP_BAR_ADJUST_VALUE.y,
@@ -62,41 +87,7 @@ namespace atl {
 				HP_BAR_RIGHT_DOWN_POINT.y - HP_BAR_ADJUST_VALUE.y, HPbarGreen, true);
 		}
 	}
-
-	void DungeonScene::fadeBlackRect() {
-		switch (currentFadeState_) {
-			// フェード状態でないなら何もしない
-		case e_FadeState::FADE_NONE : return;
-
-			// フェードイン ( 画面を見えるようにしていく )
-		case e_FadeState::FADE_IN:
-			fadeAlphaValue_ -= fadeSpeed_;
-			if (fadeAlphaValue_ < 0) {
-				fadeAlphaValue_ = 0;
-				currentFadeState_ = e_FadeState::FADE_NONE;
-			}
-			return;
-
-			// フェードアウト ( 画面を真っ黒に向かわせる )
-		case e_FadeState::FADE_OUT:
-			fadeAlphaValue_ += fadeSpeed_;
-			if (fadeAlphaValue_ > 255) {
-				fadeAlphaValue_ = 255;
-				currentFadeState_ = e_FadeState::FADE_NONE;
-			}
-			return;
-		}
-	}
-
-	void DungeonScene::drawFadeBlackRect(float deltaTime) {
-		fadeBlackRect();
-		// 完全透明の場合は描画しない
-		if (fadeAlphaValue_ == 0) return;
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, fadeAlphaValue_);
-		DrawBox(0, 0, DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT, GetColor(0, 0, 0), true);
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-	}
-
+	
 	void DungeonScene::sceneUpdate(float deltaTime) {
 		seq_.update(deltaTime);
 
@@ -126,7 +117,9 @@ namespace atl {
 			player_ = std::make_shared<PlayerPawn>();
 			player_->initialize(shared_from_this());
 			
-			currentFadeState_ = e_FadeState::FADE_IN;
+			auto fadeManager = FadeInOutManager::getFadeInOutManager();
+			fadeManager->setFadeAlphaValue(255);
+			fadeManager->startFadeIn();
 
 			generateDungeon();;
 		}
@@ -147,6 +140,18 @@ namespace atl {
 
 	// 現在ターンに応じて処理実行
 	bool DungeonScene::seqTurnStateProcess(float deltaTime) {
+		// ターンの特別遷移がある場合、記述
+		if (seq_.isStart()) {
+			auto player2Dpos = player_->getPlayer2Dpos();
+
+			{// 階段に乗った場合
+				auto stairs2Dpos = originStairs_->get2Dpos();
+				if (stairs2Dpos.x == player2Dpos.x && stairs2Dpos.y == player2Dpos.y) {
+					currentTurn_ = e_turnState::PLAYER_ON_STAIRS;
+				}
+			}
+		}
+
 		switch (currentTurn_) {
 		case e_turnState::KEY_INPUT:
 			processKeyInput(deltaTime);
@@ -154,13 +159,16 @@ namespace atl {
 		case e_turnState::PLAYER_MOVE:
 			processPlayerMoveTurn(deltaTime);
 			break;
+		case e_turnState::PLAYER_ON_STAIRS:
+			processPlayerOnStairs(deltaTime);
+			break;
 		}
 		return true;
 	}
 
 	void DungeonScene::processKeyInput(float deltaTime) {
 		// フェードイン ・ アウト中であれば操作不能
-		if (currentFadeState_ != e_FadeState::FADE_NONE) return;
+		if (FadeInOutManager::getFadeInOutManager()->isFading()) return;
 
 		if (!isOpenMenu_) {
 			if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
@@ -179,7 +187,6 @@ namespace atl {
 			isOpenMenu_ = !isOpenMenu_;
 			player_->playerUpdate(deltaTime);
 		}
-
 	}
 
 	// プレイヤーの移動入力
@@ -208,6 +215,27 @@ namespace atl {
 
 		// プレイヤー移動完了・エネミー行動完了したら、シーケンス遷移
 		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.change(&DungeonScene::seqDeadEnemyProcess);
+	}
+
+	// 階段に乗った時の処理
+	void DungeonScene::processPlayerOnStairs(float deltaTime) {
+		seq_.change(&DungeonScene::seqToNextFloor);
+	}
+
+	// 次の階層に進む処理
+	bool DungeonScene::seqToNextFloor(float deltaTime) {
+		// 最初のフレームでフェードアウト開始
+		if (seq_.isStart()) {
+			FadeInOutManager::getFadeInOutManager()->startFadeOut();
+		}
+
+		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
+			generateDungeon();
+			FadeInOutManager::getFadeInOutManager()->startFadeIn();
+			seq_.change(&DungeonScene::seqAllTurnFlagOff);
+		}
+
+		return true;
 	}
 
 	bool DungeonScene::seqDeadEnemyProcess(float deltaTime) {
@@ -326,11 +354,11 @@ namespace atl {
 
 		player_->debug_displayPlayerParam(600, 0);
 
-		DrawStringEx(0, 100, -1, "curentTurn ... [ %d ]", currentTurn_);
+		DrawStringEx(0, 75, -1, "curentTurn ... [ %d ]", currentTurn_);
 
 		// 階段の位置
-		//auto& stairsPos = originStairs_->get2Dpos();
-		//DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
+		auto& stairsPos = originStairs_->get2Dpos();
+		DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
 	}
 
 }
