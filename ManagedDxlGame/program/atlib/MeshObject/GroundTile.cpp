@@ -4,11 +4,11 @@ namespace atl {
 
 	GroundTile::GroundTile(const tnl::Vector3& initSize) {
 		auto mesh = dxe::Mesh::CreatePlaneMV(initSize);
+		mesh->setBlendMode(DX_BLENDMODE_ALPHA);
+		mesh->setAlpha(0.5f);
 		setMesh(mesh);
-
 		auto texture = dxe::Texture::CreateFromFile("graphics/Texture/Mable_Granite.jpg");
 		setTexture(texture);
-
 		getMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 1, 0, 0 }, tnl::ToRadian(90));
 	}
 

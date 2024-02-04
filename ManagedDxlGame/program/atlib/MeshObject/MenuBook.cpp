@@ -19,7 +19,6 @@ namespace atl {
 		mesh->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(-50));
 		mesh->rot_ *= tnl::Quaternion::RotationAxis({ 1,0,0 }, tnl::ToRadian(15));
 		initRot_ = mesh->rot_;
-
 		setMesh(mesh);
 		setMeshSizeVector3(size);
 	}

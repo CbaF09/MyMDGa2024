@@ -5,6 +5,7 @@
 #include "../MeshObject/MagicWand.h"
 #include "../MeshObject/MenuBook.h"
 #include "../MeshObject/ForwardArrow.h"
+#include "../Utilities/AtlString.h"
 #include "EnemyPawn.h"
 
 namespace atl {
@@ -125,31 +126,54 @@ namespace atl {
 	bool PlayerPawn::actionAttack(float deltaTime) {
 		// 最初のフレームで本処理、その後は待機時間
 		if (seq_.isStart()) {
+			auto& enemies = weakDungeonScene_.lock()->getEnemyArray();
+			tnl::Vector2i attackPos = player2Dpos_ + playerCamera_->getCurrentForwardDirToV2i();
+			
+			// 停止時間 => 空振り
+			waitTime_ = ATTACK_MISS_TIME;
 
-			{// 爆発パーティクル
-				auto& forwardNormal = playerCamera_->getCurrentForwardDir();
-				auto particlePos = playerCamera_->pos_ + (forwardNormal * 500);
-				explosion_->setPosition(particlePos);
-				explosion_->start();
+			for (auto& enemy : enemies) {
+				auto& enemyPos = enemy->get2Dpos();
+				if (enemyPos.x == attackPos.x && enemyPos.y == attackPos.y) { 
+					// 攻撃ヒット処理
+
+					// 停止時間 => 攻撃ヒット時
+					waitTime_ = ATTACK_TIME;
+
+					attackHitEffectAndLog(enemy);
+				}
 			}
-
-			PlaySoundFile("sound/explosion.wav", 2);
-
-			TextLogManager::getTextLogManager()->addTextLog("プレイヤーの攻撃！　あああああああ");
 		}
 
-		// ATTACK_TIMEの間だけ、シーケンスを遷移させない
-		static float totalDeltaTime = 0.0f;
-		totalDeltaTime += deltaTime;
-		if (totalDeltaTime > ATTACK_TIME) {
-			totalDeltaTime = 0.0f;
-			
+		// waitTimeに設定された時間分、停止する
+		totalDeltaTimer_ += deltaTime;
+		if (totalDeltaTimer_ > waitTime_) {
+			totalDeltaTimer_ = 0.0f;
 			// ターン終了
 			isAlreadyTurn_ = true;
 			seq_.change(&PlayerPawn::seqWaitKeyInput);
 		}
 
 		return true;
+	}
+
+	void PlayerPawn::attackHitEffectAndLog(const Shared<atl::EnemyPawn>& enemy) {
+		auto damage = enemy->getEnemyData()->damaged(playerData_->getAttackPower());
+
+		{// 爆発パーティクル
+			auto& forwardNormal = playerCamera_->getCurrentForwardDir();
+			auto particlePos = playerCamera_->pos_ + (forwardNormal * 500);
+			explosion_->setPosition(particlePos);
+			explosion_->start();
+		}
+
+		{// サウンド
+			PlaySoundFile("sound/explosion.wav", 2);
+		}
+
+		{// ログ
+			TextLogManager::getTextLogManager()->addTextLog("プレイヤーの攻撃！" + convertFullWidthNumber(damage) + "のダメージを与えた");
+		}
 	}
 
 	// ---------------------------

@@ -68,7 +68,11 @@ namespace atl {
 
 		// ターン制御用
 		bool isAlreadyTurn_ = false;
+		float totalDeltaTimer_ = 0.0f; // 停止時間用タイマー
+		float waitTime_ = 0.0f; // 実際の停止時間設定用
 		const float ATTACK_TIME = 1.5f;	// 攻撃した時の停止時間
+		const float ATTACK_MISS_TIME = 0.5f; // 攻撃を空振りした時の停止時間
+
 
 		// --------------------------------------------------
 		// ステータス用
@@ -92,6 +96,7 @@ namespace atl {
 
 		bool actionMoveLerp(float deltaTime);
 		bool actionAttack(float deltaTime);
+		void attackHitEffectAndLog(const Shared<atl::EnemyPawn>& enemy);
 	};
 
 }

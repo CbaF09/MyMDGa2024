@@ -16,14 +16,18 @@ namespace atl {
 		void adjustChildsMeshes() override;
 
 		// ステート用 enum
-		enum class e_EnemyMoveState {
+		enum class e_EnemyState {
 			Wandering,	// 目的のない探索
 			PlayerNeighboring, // その場で足踏み,プレイヤーの方を向く
+			Deading, // 死亡中 ( 徐々に消えていくなどの処理 )
+			Dead,	// 死亡 ( Deading から遷移 )
 		};
 
 		// ゲッター
 		inline const bool getIsAlreadyMove() const { return isAlreadyMove_; }
 		inline const bool getIsAlreadyAction() const { return isAlreadyAction_; }
+		inline const e_EnemyState& getCurrentState() const{ return currentState_; }
+		inline const Shared<EnemyData> getEnemyData() const { return enemyData_; }
 
 		// セッター
 		inline void setIsAlreadyTurn(bool flag = false) { isAlreadyAction_ = flag; isAlreadyMove_ = flag; }
@@ -52,6 +56,9 @@ namespace atl {
 		
 		bool isAlreadyMove_ = false;
 		bool isAlreadyAction_ = false;
+		float totalDeltaTimer_ = 0; // 行動停止用 ( 累積時間 )
+		float waitTime_ = 0;	// 行動停止用 ( 停止時間設定 )
+		const float DEADING_TIME = 2.5f;
 		tnl::Vector3 enemySize_{ 0,0,0 };
 
 		// 移動用
@@ -60,7 +67,7 @@ namespace atl {
 		float moveLerpTimeCount_ = 0;
 
 		// 現在のステート
-		e_EnemyMoveState turnState_ = e_EnemyMoveState::Wandering;
+		e_EnemyState currentState_ = e_EnemyState::Wandering;
 
 		// プレイヤーへの弱参照
 		std::weak_ptr<PlayerPawn> weakPlayer;
@@ -76,6 +83,8 @@ namespace atl {
 
 		bool seqWandering(float deltaTime);
 		bool seqPlayerNeighboring(float deltaTime);
+		bool seqDeading(float deltaTime);
+		bool seqDead(float deltaTime);
 
 		// 移動 ( 隣一マスへ )
 		bool seqMoveToTarget(float deltaTime);

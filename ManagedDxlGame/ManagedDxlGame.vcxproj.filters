@@ -296,6 +296,9 @@
     <ClCompile Include="program\atlib\Object\EnemyData.cpp">
       <Filter>program\[002] atlib\Object</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\Utilities\AtlString.cpp">
+      <Filter>program</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">

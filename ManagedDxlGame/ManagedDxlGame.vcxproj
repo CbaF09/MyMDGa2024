@@ -173,6 +173,7 @@
     <ClCompile Include="program\atlib\Utilities\Atl3DCamera.cpp" />
     <ClCompile Include="program\atlib\Utilities\AtlAstar.cpp" />
     <ClCompile Include="program\atlib\Utilities\AtlRandom.cpp" />
+    <ClCompile Include="program\atlib\Utilities\AtlString.cpp" />
     <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_barrel.cpp" />
     <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_box.cpp" />
     <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_cone.cpp" />

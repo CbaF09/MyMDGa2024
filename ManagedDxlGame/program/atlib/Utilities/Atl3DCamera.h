@@ -28,6 +28,7 @@ namespace atl {
 		// ゲッター
 		inline const tnl::Quaternion& getCameraRot() const { return cameraRot_; }
 		inline const tnl::Vector3& getCurrentForwardDir() const { return currentForwardNormalDir_; }
+		inline const tnl::Vector2i& getCurrentForwardDirToV2i() const { return { static_cast<int>(currentForwardNormalDir_.x),static_cast<int>(currentForwardNormalDir_.z) }; }
 
 		// デバッグ用
 		void debug_displayCameraParam(int drawPosX = 0, int drawPosY = 0);

@@ -27,18 +27,16 @@ namespace atl {
         // ゲッター
         inline static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
         inline const e_turnState& getCurrentTurn() { return currentTurn_; }
-        inline const std::vector<Shared<EnemyPawn>>& getEnemyArray() const { return enemies_; }
-
-        // セッター
-        void setCurrenTurn(e_turnState nextTurn) { currentTurn_ = nextTurn; }
+        inline const std::list<Shared<EnemyPawn>>& getEnemyArray() const { return enemies_; }
 
     private: 
-        //----------------------
+        //----------------------------------------------
         // 変数
         
         // 汎用 ----------------------------------------
-        // セル一辺の全長
+        // セル一辺の全長 ( 3D上 )
         static const int32_t CELL_FULL_LENGTH = 1000;
+        // 現在のターン
         e_turnState currentTurn_ = e_turnState::KEY_INPUT;
 
         // 壁 用 ---------------------------------------
@@ -57,29 +55,43 @@ namespace atl {
         bool isOpenMenu_ = false;    // メニューを開いているか
 
         // エネミー関連 --------------------------------
-        std::vector<Shared<EnemyPawn>> enemies_;
+        std::list<Shared<EnemyPawn>> enemies_;
 
         // アイテム関連 --------------------------------
-        std::vector<Shared<ItemPawn>> items_;
+        std::list<Shared<ItemPawn>> items_;
 
         // UI 関連 -------------------------------------
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
 
-        //----------------------
+        // フェードイン ・ アウト関連 ------------------
+        int32_t fadeAlphaValue_ = 255; // 0 ... 透明、 255 ... 真っ黒
+        const int32_t fadeSpeed_ = 3;
+        enum class e_FadeState{
+            FADE_NONE, // フェード中でない
+            FADE_IN, // フェードイン中 ( 透明に向かっている )
+            FADE_OUT // フェードアウト中 ( 真っ黒に向かっている )
+        }
+        currentFadeState_ = e_FadeState::FADE_NONE;
+
+        //----------------------------------------------
         // メソッド
 
         void sceneUpdate(float deltaTime) override;
 
         // 3Dのレンダー
         void render(float deltaTime , const Shared<Atl3DCamera> camera);
-        // 2D系の描画
+        // 2D系の描画 ( 2D系をまとめて描画する )
         void draw2D(float deltaTime);
-        // UI の描画
+        // 2D UI の描画
         void drawUI(float deltaTime);
-        // HPbar
+        // 2D HPbar の描画
         void drawHPbar();
+        // フェードイン ・ アウト用黒色短径の透明度を徐々に変化
+        void fadeBlackRect();
+        // フェードイン ・ アウト用の黒色短形の描画
+        void drawFadeBlackRect(float deltaTime);
 
         // ダンジョンの初期化
         void initDungeon();
@@ -88,16 +100,20 @@ namespace atl {
         void generateDungeon();
 
         // 壁を生成
-        // arg ... 生成する2D座標位置
+        // arg ... 2D座標位置
         void generateWall(int generatePosX, int generatePosZ);
         // 地面を生成
-        // arg ... 生成する2D座標位置
+        // arg ... 2D座標位置
         void generateGround(int generatePosX, int generatePosZ);
 
         // シーケンス
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);
         bool seqInit(float deltaTime);
+        // 現在のターンに応じた処理を実行
         bool seqTurnStateProcess(float deltaTime);
+        // 死んだエネミーの消滅処理
+        bool seqDeadEnemyProcess(float deltaTime);
+        // 敵とプレイヤーの行動完了フラグをオフにする
         bool seqAllTurnFlagOff(float deltaTime);
 
         void processKeyInput(float deltaTime);

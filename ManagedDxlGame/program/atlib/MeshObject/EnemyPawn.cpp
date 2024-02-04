@@ -88,17 +88,41 @@ namespace atl {
 	bool EnemyPawn::seqStateTransition(float deltaTime) {
 		if (!isAlreadyAction_ || !isAlreadyMove_) {
 
+			// HPがゼロになっている場合
+			if (enemyData_->isZeroHP()) currentState_ = e_EnemyState::Deading;
 			// プレイヤーと隣接していた場合
-			if (isNeighborPlayer()) turnState_ = e_EnemyMoveState::PlayerNeighboring;
+			else if (isNeighborPlayer()) currentState_ = e_EnemyState::PlayerNeighboring;
 			// それ以外の場合
-			else turnState_ = e_EnemyMoveState::Wandering;
+			else currentState_ = e_EnemyState::Wandering;
 
-			switch (turnState_) {
-			case e_EnemyMoveState::Wandering:			seq_.change(&EnemyPawn::seqWandering); break;
-			case e_EnemyMoveState::PlayerNeighboring:	seq_.change(&EnemyPawn::seqPlayerNeighboring); break;
+			switch (currentState_) {
+			case e_EnemyState::Wandering:			seq_.change(&EnemyPawn::seqWandering); break;
+			case e_EnemyState::PlayerNeighboring:	seq_.change(&EnemyPawn::seqPlayerNeighboring); break;
+			case e_EnemyState::Deading:				seq_.change(&EnemyPawn::seqDeading); break;
+			case e_EnemyState::Dead:				seq_.change(&EnemyPawn::seqDead); break;
 			}
 		}
 		return true;
+	}
+
+	bool EnemyPawn::seqDeading(float deltaTime) {
+		if (seq_.isStart()) {
+			waitTime_ = DEADING_TIME;
+		}
+		getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(10));
+		
+		totalDeltaTimer_ += deltaTime;
+		if (totalDeltaTimer_ > waitTime_) {
+			totalDeltaTimer_ = 0;
+			isAlreadyAction_ = true;
+			isAlreadyMove_ = true;
+			currentState_ = e_EnemyState::Dead;
+		}
+		return true;
+	}
+
+	bool EnemyPawn::seqDead(float deltaTime) {
+		return false;
 	}
 	
 	// 乱数でランダムに四方移動
@@ -162,7 +186,7 @@ namespace atl {
 	bool EnemyPawn::seqActionAttack(float deltaTime) {
 		auto player = weakPlayer.lock();
 		if (player->getIsAlreadyTurn()) {
-			auto damage = player->getPlayerData()->damaged(enemyData_->getattackPower());
+			auto damage = player->getPlayerData()->damaged(enemyData_->getAttackPower());
 
 			TextLogManager::getTextLogManager()->addTextLog("プレイヤーは " + convertFullWidthNumber(damage) + " のダメージを受けた");
 			PlaySoundFile("sound/test_se.wav", 2);

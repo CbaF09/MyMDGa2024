@@ -31,6 +31,7 @@ namespace atl {
 		debug_displayDungeonParam(deltaTime);
 		if (!isOpenMenu_) { TextLogManager::getTextLogManager()->displayTextLog(60, 400, deltaTime); }
 		drawUI(deltaTime);
+		drawFadeBlackRect(deltaTime);
 	}
 
 	void DungeonScene::drawUI(float deltaTime) {
@@ -62,40 +63,71 @@ namespace atl {
 		}
 	}
 
-	void DungeonScene::sceneUpdate(float deltaTime) {
-		seq_.update(deltaTime);
+	void DungeonScene::fadeBlackRect() {
+		switch (currentFadeState_) {
+			// フェード状態でないなら何もしない
+		case e_FadeState::FADE_NONE : return;
 
-		{// カメラのアップデート
-			player_->getPlayerCamera()->update();
-		}
+			// フェードイン ( 画面を見えるようにしていく )
+		case e_FadeState::FADE_IN:
+			fadeAlphaValue_ -= fadeSpeed_;
+			if (fadeAlphaValue_ < 0) {
+				fadeAlphaValue_ = 0;
+				currentFadeState_ = e_FadeState::FADE_NONE;
+			}
+			return;
 
-		{// レンダー ( カメラアップデートの後 )
-			render(deltaTime, player_->getPlayerCamera());
-		}
-
-		{// 2D系の描画
-			draw2D(deltaTime);
-		}
-
-		{// デバッグ用操作
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) 	generateDungeon();;
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN)) player_->getPlayerData()->damaged(10);
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
+			// フェードアウト ( 画面を真っ黒に向かわせる )
+		case e_FadeState::FADE_OUT:
+			fadeAlphaValue_ += fadeSpeed_;
+			if (fadeAlphaValue_ > 255) {
+				fadeAlphaValue_ = 255;
+				currentFadeState_ = e_FadeState::FADE_NONE;
+			}
+			return;
 		}
 	}
 
+	void DungeonScene::drawFadeBlackRect(float deltaTime) {
+		fadeBlackRect();
+		// 完全透明の場合は描画しない
+		if (fadeAlphaValue_ == 0) return;
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, fadeAlphaValue_);
+		DrawBox(0, 0, DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT, GetColor(0, 0, 0), true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+	}
+
+	void DungeonScene::sceneUpdate(float deltaTime) {
+		seq_.update(deltaTime);
+
+		// カメラのアップデート
+		player_->getPlayerCamera()->update();
+
+		// レンダー ( カメラアップデートの後 )
+		render(deltaTime, player_->getPlayerCamera());
+
+		// 2D系の描画
+		draw2D(deltaTime);
+
+		{// デバッグ用操作
+			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) 	generateDungeon();;
+			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
+		}
+	}
 
 	//---------------------
 	// シーケンス
 	//---------------------
 
-
-	// 初期化
+	// 初期設定
 	bool DungeonScene::seqInit(float deltaTime) {
 		// 最初の1フレームで行う前処理
 		if (seq_.isStart()) {
 			player_ = std::make_shared<PlayerPawn>();
 			player_->initialize(shared_from_this());
+			
+			currentFadeState_ = e_FadeState::FADE_IN;
+
 			generateDungeon();;
 		}
 		else { // その後の処理
@@ -127,6 +159,9 @@ namespace atl {
 	}
 
 	void DungeonScene::processKeyInput(float deltaTime) {
+		// フェードイン ・ アウト中であれば操作不能
+		if (currentFadeState_ != e_FadeState::FADE_NONE) return;
+
 		if (!isOpenMenu_) {
 			if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
 				// プレイヤー側でもキー入力待ちをしていて、プレイヤー操作は 1 フレーム分遅れるので、一回 呼ぶ
@@ -172,7 +207,32 @@ namespace atl {
 		}
 
 		// プレイヤー移動完了・エネミー行動完了したら、シーケンス遷移
-		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.immediatelyChange(&DungeonScene::seqAllTurnFlagOff);
+		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.change(&DungeonScene::seqDeadEnemyProcess);
+	}
+
+	bool DungeonScene::seqDeadEnemyProcess(float deltaTime) {
+		bool allEnemyAlive = true;
+
+		for (auto it = enemies_.begin(); it != enemies_.end();) {
+			if ((*it)->getEnemyData()->isZeroHP()) {
+				// HP がゼロになっている敵を発見
+				allEnemyAlive = false;
+				// HP がゼロになっている enemy の update を回す ( enemy の 死亡演出 は、enemyUpdate で管理 )
+				(*it)->enemyUpdate(deltaTime);
+				// Dead になったエネミーを削除する
+				if ((*it)->getCurrentState() == EnemyPawn::e_EnemyState::Dead) {
+					it = enemies_.erase(it);
+					continue;
+				}
+			}
+			++it;
+		}
+
+		if (allEnemyAlive) {
+			seq_.change(&DungeonScene::seqAllTurnFlagOff);
+		}
+		
+		return true;
 	}
 
 	//---------------------
@@ -182,8 +242,8 @@ namespace atl {
 	void DungeonScene::initDungeon() {
 		walls_.clear();
 		groundTiles_.clear();
-		enemies_.resize(DungeonCreater::getDungeonCreater()->getEnemySpawnNum());
-		items_.resize(DungeonCreater::getDungeonCreater()->getItemSpawnNum());
+		enemies_.clear();
+		items_.clear();
 	}
 
 	void DungeonScene::generateDungeon() {
@@ -207,24 +267,30 @@ namespace atl {
 		}
 
 		{// 各種スポーン ( DungeonCreaterが作ったスポーン位置を取得し、生成 )
+			// プレイヤー
 			auto& playerSpawnPos = dungeonCreater->getPlayerSpawnPos();
 			player_->playerSpawn2Dpos(playerSpawnPos);
 
+			// 階段
 			auto& stairsSpawnPos = dungeonCreater->getStairsSpawnPos();
 			// セル全長の半分の大きさで生成
 			originStairs_ = std::make_shared<Stairs>(stairsSpawnPos, tnl::Vector3{ CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2 });
 
+			// エネミー
 			auto& enemySpawnPos = dungeonCreater->getEnemySpawnPos();
 			for (int i = 0; i < dungeonCreater->getEnemySpawnNum(); ++i) {
-				// TODO : マジックナンバー。後でエネミーの見た目を変えた時に変更する事。
-				enemies_[i] = std::make_shared<EnemyPawn>(enemySpawnPos[i], tnl::Vector3{ 200, 200, 200 });
-				enemies_[i]->assignWeakPlayer(player_);
+				// TODO: マジックナンバー。本番用エネミーを作った時に同時になんとかするべし
+				auto enemy = std::make_shared<EnemyPawn>(enemySpawnPos[i], tnl::Vector3{ 200, 200, 200 });
+				enemy->assignWeakPlayer(player_);
+				enemies_.emplace_back(enemy);
 			}
 
+			// アイテム
 			auto& itemSpawnPos = dungeonCreater->getItemSpawnPos();
 			for (int i = 0; i < dungeonCreater->getItemSpawnNum(); ++i) {
-				items_[i] = std::make_shared<ItemPawn>(itemSpawnPos[i]);
-				items_[i]->assignWeakPlayer(player_);
+				auto item = std::make_shared<ItemPawn>(itemSpawnPos[i]);
+				item->assignWeakPlayer(player_);
+				items_.emplace_back(item);
 			}
 		}
 

@@ -29,8 +29,6 @@ namespace atl {
         // arg ... Œo‰ßŠÔBgameMain ‚Ìˆø”‚ğ‚»‚Ì‚Ü‚Ü“ü‚ê‚ê‚ÎOK
         void nowSceneUpdate(float deltaTime);
 
-
-
     private:
         std::shared_ptr<Base_Scene> p_nowScene_ = nullptr;
         std::shared_ptr<Base_Scene> p_nextScene_ = nullptr;
