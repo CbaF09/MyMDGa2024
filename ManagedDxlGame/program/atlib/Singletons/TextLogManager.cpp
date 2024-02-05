@@ -26,10 +26,10 @@ namespace atl {
     }
     void TextLogManager::displayTextLog(int x, int y, float deltaTime) {
 
-        accumDeltaTime_ += deltaTime;
-        if (accumDeltaTime_ >= CHAR_INTERVAL) {
+        totalDeltaTime_ += deltaTime;
+        if (totalDeltaTime_ >= CHAR_INTERVAL) {
             drawCharCount_ += 2;
-            accumDeltaTime_ = 0.0f;
+            totalDeltaTime_ = 0.0f;
         }
 
         drawLogLine_ = 0;

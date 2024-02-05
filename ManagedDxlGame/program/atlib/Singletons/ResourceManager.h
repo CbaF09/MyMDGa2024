@@ -15,15 +15,14 @@ namespace atl {
 		static ResourceManager* p_instance_;
 	//------------------------------------------
 	public:
-		int getUiRes(const std::string& filepath);
-		int getIllustRes(const std::string& filepath);
+		int getGraphRes(const std::string& filepath);
 
 		// 指定パスのリソースを解放する。成功 => false , 失敗 => false
 		bool deleteResource(const std::string& filepath);
 
 	private:
-		std::unordered_map<std::string, int> uiResourceMap_;
-		std::unordered_map<std::string, int> illustResourceMap_;
+		// 2D イラスト用 resourceMap
+		std::unordered_map<std::string, int> graphResourceMap_;
 	};
 
 }

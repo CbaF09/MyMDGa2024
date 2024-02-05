@@ -35,7 +35,6 @@ namespace atl {
 			}
 			tnl::DebugTrace("\n------------------------------\n"); // ƒƒO‚ªŒ©‚Ã‚ç‚¢‚Ì‚ÅÅŒã‚É‰üs‚ÆØ‚èæ‚èü‚ğ“ü‚ê‚é
 		}
-
 	}
 
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
@@ -49,7 +48,6 @@ namespace atl {
 			for (const auto& item : items_) { item->renderObjects(camera); }
 			if (player_)player_->render(deltaTime);
 		}
-
 	}
 
 	void DungeonScene::draw2D(float deltaTime) {
@@ -65,11 +63,11 @@ namespace atl {
 
 	void DungeonScene::drawHPbar() {
 		// ”wŒi ( ˜g ) ‚Ì•`‰æ
-		auto HPbarBackGround = ResourceManager::getResourceManager()->getUiRes("graphics/UI/HPbarBackGround.png");
+		auto HPbarBackGround = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/HPbarBackGround.png");
 		DrawExtendGraph(HP_BAR_LEFT_UP_POINT.x, HP_BAR_LEFT_UP_POINT.y, HP_BAR_RIGHT_DOWN_POINT.x,HP_BAR_RIGHT_DOWN_POINT.y,HPbarBackGround,true);
 
 		// ÔƒQ[ƒW‚Ì•`‰æ
-		auto HPbarRed = ResourceManager::getResourceManager()->getUiRes("graphics/UI/HPbarRed.bmp");
+		auto HPbarRed = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/HPbarRed.bmp");
 		DrawExtendGraph(
 			HP_BAR_LEFT_UP_POINT.x + HP_BAR_ADJUST_VALUE.x, 
 			HP_BAR_LEFT_UP_POINT.y + HP_BAR_ADJUST_VALUE.y, 
@@ -79,7 +77,7 @@ namespace atl {
 		// —ÎƒQ[ƒW‚Ì•`‰æ ( HP ‚ªƒ[ƒ‚Å‚È‚¢ê‡‚Ì‚İ•`‰æ )
 		if (!player_->getPlayerData()->isZeroHP()) {
 			auto hpPersent = player_->getPlayerData()->getCurrentHPpersent();
-			auto HPbarGreen = ResourceManager::getResourceManager()->getUiRes("graphics/UI/HPbarGreen.bmp");
+			auto HPbarGreen = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/HPbarGreen.bmp");
 			DrawExtendGraph(
 				HP_BAR_LEFT_UP_POINT.x + HP_BAR_ADJUST_VALUE.x,
 				HP_BAR_LEFT_UP_POINT.y + HP_BAR_ADJUST_VALUE.y,

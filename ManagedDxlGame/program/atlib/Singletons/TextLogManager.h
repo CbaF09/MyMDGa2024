@@ -37,7 +37,7 @@ namespace atl {
 		// 文字列描画アニメーション用 
 		int32_t drawCharCount_ = 0;
 		int32_t drawLogLine_ = 0;
-		float accumDeltaTime_ = 0.0f;	// 累積時間
+		float totalDeltaTime_ = 0.0f;	// 累積時間
 		const float CHAR_INTERVAL = 0.05f; // 表示文字を増やす間隔 ( 秒 )
 
 		const int32_t MAX_LOG_COUNT = 5;
