@@ -306,7 +306,10 @@
       <Filter>program\[002] atlib\Scenes</Filter>
     </ClCompile>
     <ClCompile Include="program\atlib\Scenes\GameClearScene.cpp">
-      <Filter>program</Filter>
+      <Filter>program\[002] atlib\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Scenes\GameOverScene.cpp">
+      <Filter>program\[002] atlib\Scenes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -615,6 +618,9 @@
       <Filter>program\[002] atlib\Object</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\Scenes\GameClearScene.h">
+      <Filter>program\[002] atlib\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Scenes\GameOverScene.h">
       <Filter>program\[002] atlib\Scenes</Filter>
     </ClInclude>
   </ItemGroup>

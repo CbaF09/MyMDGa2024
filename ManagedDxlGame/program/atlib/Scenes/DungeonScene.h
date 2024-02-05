@@ -117,6 +117,8 @@ namespace atl {
         bool seqInit(float deltaTime);
         // 現在のターンに応じた処理を実行
         bool seqTurnStateProcess(float deltaTime);
+        // ゲームオーバーの処理 ( ゲームオーバーシーンに遷移 )
+        bool seqGameOver(float deltaTime);
         // 死んだエネミーの消滅処理
         bool seqDeadEnemyProcess(float deltaTime);
         // 敵とプレイヤーの行動完了フラグをオフにする

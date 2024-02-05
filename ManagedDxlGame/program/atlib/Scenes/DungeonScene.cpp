@@ -1,6 +1,7 @@
 #include <string>
 #include "DungeonScene.h"
 #include "TitleScene.h"
+#include "GameOverScene.h"
 #include "GameClearScene.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
@@ -35,6 +36,14 @@ namespace atl {
 				else { tnl::DebugTrace("\n------------------------------\nDungeonScene::デストラクタ メモリ解放 => 正常"); }
 			}
 			tnl::DebugTrace("\n------------------------------\n"); // ログが見づらいので最後に改行と切り取り線を入れる
+		}
+
+		{// ダンジョンクリエイターのシングルトンを解放
+			DungeonCreater::getDungeonCreater()->deleteDungeonCreater();
+		}
+
+		{// テキストログのシングルトンを解放
+			TextLogManager::getTextLogManager()->deleteTextLogManager();
 		}
 	}
 
@@ -173,8 +182,8 @@ namespace atl {
 	bool DungeonScene::seqTurnStateProcess(float deltaTime) {
 		// ターンの特別遷移がある場合、記述
 		if (seq_.isStart()) {
-			auto player2Dpos = player_->getPlayer2Dpos();
 
+			auto player2Dpos = player_->getPlayer2Dpos();
 			{// 階段に乗った場合
 				// 階段に乗るフラグが立っていない場合、階段に乗ったフラグを立てる
 				if (!isPlayerOnStairs_) {
@@ -183,6 +192,12 @@ namespace atl {
 						isPlayerOnStairs_ = true;
 						currentTurn_ = e_turnState::PLAYER_ON_STAIRS;
 					}
+				}
+			}
+
+			{// プレイヤーのHPがゼロになっている場合、直接ゲームオーバーシーケンスに遷移
+				if (player_->getPlayerData()->isZeroHP()) {
+					seq_.change(&DungeonScene::seqGameOver);
 				}
 			}
 		}
@@ -197,6 +212,18 @@ namespace atl {
 		case e_turnState::PLAYER_ON_STAIRS:
 			processPlayerOnStairs(deltaTime);
 			break;
+		}
+		return true;
+	}
+
+	bool DungeonScene::seqGameOver(float deltaTime) {
+		// 最初のフレームでフェードアウトを行い、フェードアウトが完了したらゲームオーバーシーンに遷移
+		if (seq_.isStart()) {
+			FadeInOutManager::getFadeInOutManager()->startFadeOut();
+		}
+
+		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
+			SceneManager::getSceneManager()->changeScene(std::make_shared<GameOverScene>());
 		}
 		return true;
 	}

@@ -166,6 +166,7 @@
     <ClCompile Include="program\atlib\Object\PlayerData.cpp" />
     <ClCompile Include="program\atlib\Scenes\DungeonScene.cpp" />
     <ClCompile Include="program\atlib\Scenes\GameClearScene.cpp" />
+    <ClCompile Include="program\atlib\Scenes\GameOverScene.cpp" />
     <ClCompile Include="program\atlib\Scenes\Scene_Dummy.cpp" />
     <ClCompile Include="program\atlib\Scenes\TitleScene.cpp" />
     <ClCompile Include="program\atlib\Singletons\DungeonCreater.cpp" />
@@ -257,6 +258,7 @@
     <ClInclude Include="program\atlib\Scenes\Base_Scene.h" />
     <ClInclude Include="program\atlib\Scenes\DungeonScene.h" />
     <ClInclude Include="program\atlib\Scenes\GameClearScene.h" />
+    <ClInclude Include="program\atlib\Scenes\GameOverScene.h" />
     <ClInclude Include="program\atlib\Scenes\IE_SceneUpdater.h" />
     <ClInclude Include="program\atlib\Scenes\Scene_Dummy.h" />
     <ClInclude Include="program\atlib\Scenes\TitleScene.h" />

@@ -12,6 +12,7 @@
 #include "../atlib/Scenes/TitleScene.h"
 #include "../atlib/Scenes/Scene_Dummy.h"
 #include "../atlib/Scenes/GameClearScene.h"
+#include "../atlib/Scenes/GameOverScene.h"
 #include "gm_main.h"
 
 void gameStart() {
@@ -26,7 +27,7 @@ void gameStart() {
     LockCursorToWindow();
 
 	//atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
-	atl::SceneManager::getSceneManager(std::make_shared<atl::GameClearScene>());
+	atl::SceneManager::getSceneManager(std::make_shared<atl::TitleScene>());
 }
 
 void gameMain(float delta_time) {
