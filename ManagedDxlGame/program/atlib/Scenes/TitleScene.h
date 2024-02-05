@@ -47,12 +47,11 @@ namespace atl {
 			"ワイズマンの修練塔――",
 			"いつからかそう呼ばれるようになったその塔に、私はようやく辿り着いた。",
 			"(エンターキーかスペースキーで戻る)",
-
 		};
 		const int32_t PROROGUE_BACKGROUND_BRIGHT = 126;	// プロローグ中の背景の明るさ ( 0 で元と同じ、255 で真っ黒 )
 		const tnl::Vector2i TEXT_POSITION{ 25,250 };	// 一番上の行の表示位置
 		const tnl::Vector2i TEXT_OFFSET{ 5,40 };		// 一行ごとにオフセットされる量
-		const int32_t PROROGUE_STRING_FONTSIZE = 25;	// ボタンのフォントサイズ
+		const int32_t PROROGUE_STRING_FONTSIZE = 25;	// プロローグのフォントサイズ
 		const int32_t PROROGUE_FIRST_LOG = 3;			// 一番最初に表示される行数
 		const float LOG_LINE_INTERVAL = 5.0f;			// 表示行を増やす間隔 ( 秒 )
 		int32_t drawLogLine_ = 0;
@@ -88,8 +87,6 @@ namespace atl {
 		bool selectButtonUp();
 		// 選択中のボタンを一つ下に
 		bool selectButtonDown();
-
-
 
 		// デバッグ用
 		void debug_keyInput();

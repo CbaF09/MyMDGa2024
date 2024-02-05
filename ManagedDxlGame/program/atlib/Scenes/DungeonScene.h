@@ -43,8 +43,9 @@ namespace atl {
         Shared<GroundTile> originGroundTile_ = nullptr; // クローン元になる地面メッシュへのポインタ
         std::vector<Shared<GroundTile>> groundTiles_;   // 地面メッシュ群のリスト
 
-        // 階段 用 -------------------------------------
+        // 階段関連 -------------------------------------
         Shared<Stairs> originStairs_ = nullptr; // 階段へのポインタ
+        bool isPlayerOnStairs_ = false;
 
         // プレイヤー関連 ------------------------------
         Shared<PlayerPawn> player_ = nullptr; // プレイヤーポーンへのポインタ
@@ -57,8 +58,9 @@ namespace atl {
         std::list<Shared<ItemPawn>> items_; // フィールドにあるアイテムリスト
 
         // 階層管理用 ----------------------------------
-        int32_t currentFloor_ = 0;      // 現在階層
-        const int32_t MAX_FLOOR = 4;    // 最大階層
+        int32_t currentFloor_ = 1;      // 現在階層
+        const int32_t MAX_FLOOR = 3;    // 最上階 ( 到達したらクリア階 )
+        bool isNextFloorTransition = false;
 
         // ターン制御用 --------------------------------
         enum class e_turnState {
@@ -71,6 +73,10 @@ namespace atl {
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
+        const int NEXT_FLOOR_TEXT_FONTSIZE = 30;
+
+        // テキストログ関連 ----------------------------
+        const tnl::Vector2i TEXT_LOG_POSITION{ 20,550 };   // テキストログを描画する位置 ( 一番上の行 )
 
 
 
@@ -83,10 +89,15 @@ namespace atl {
         void render(float deltaTime , const Shared<Atl3DCamera> camera);
         // 2D系の描画 ( 2D系をまとめて描画する )
         void draw2D(float deltaTime);
+
         // 2D UI の描画
         void drawUI(float deltaTime);
         // 2D HPbar の描画
         void drawHPbar();
+        // 階段に乗っている時の選択肢を描画する
+        void drawOnStairsChoice();
+        // 次の階層に遷移中に、現在の階層を表示する
+        void drawNextFloorTransition();
 
         // ダンジョンの初期化
         void initDungeon();

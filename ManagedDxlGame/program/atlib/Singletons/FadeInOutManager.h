@@ -28,6 +28,13 @@ namespace atl {
 		// シーンの最初は透明か黒か、などを指定する時に
 		inline void setFadeAlphaValue(int32_t alphaValue) { fadeAlphaValue_ = alphaValue; }
 
+		// フェード用黒色短形の透明度を取得 0 ... 透明 , 255 ... 真っ黒
+		// 中途半端な透明度でフェードを止めたりしたい時に
+		inline const int32_t getFadeAlphaValue() const { return fadeAlphaValue_; }
+
+		// フェードを止める
+		inline void stopFade() { currentFadeState_ = e_FadeState::FADE_NONE; }
+
 	private:
 		// -----------------------------------
 		// メンバ変数

@@ -40,7 +40,7 @@ namespace atl {
 		float totalDeltaTime_ = 0.0f;	// —İÏŠÔ
 		const float CHAR_INTERVAL = 0.05f; // •\¦•¶š‚ğ‘‚â‚·ŠÔŠu ( •b )
 
-		const int32_t MAX_LOG_COUNT = 5;
+		const int32_t MAX_LOG_COUNT = 7;
 	};
 
 }

@@ -1,6 +1,7 @@
 #include <string>
 #include "DungeonScene.h"
 #include "TitleScene.h"
+#include "GameClearScene.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/ResourceManager.h"
@@ -51,14 +52,47 @@ namespace atl {
 	}
 
 	void DungeonScene::draw2D(float deltaTime) {
+		// デバッグ用
 		debug_displayDungeonParam(deltaTime);
-		if (!isOpenMenu_) { TextLogManager::getTextLogManager()->displayTextLog(60, 400, deltaTime); }
+
 		drawUI(deltaTime);
+
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
+		
+		// 現在階層の描画は真っ黒な画面の上にやりたいので、この位置
+		if (isNextFloorTransition) { drawNextFloorTransition(); }
+
+	}
+
+	// 次の階層を描画する
+	void DungeonScene::drawNextFloorTransition() {
+		// フォントサイズ変更
+		int beforeFontSize = GetFontSize();
+		SetFontSize(NEXT_FLOOR_TEXT_FONTSIZE);
+
+		// 現在階層が、最上階 ( クリア階 ) でない場合の描画
+		if (currentFloor_ != MAX_FLOOR) {
+			DrawStringEx(DXE_WINDOW_WIDTH >> 1, DXE_WINDOW_HEIGHT >> 1, -1, "ワイズマンの修練塔 [%d / %d]", currentFloor_,MAX_FLOOR);
+		}
+		else { // クリア階の場合の描画
+			DrawStringEx(DXE_WINDOW_WIDTH >> 1, DXE_WINDOW_HEIGHT >> 1, -1, "ワイズマンの修練塔 [ 最上階 ]", currentFloor_);
+		}
+		
+		SetFontSize(beforeFontSize);
+	}
+
+	void DungeonScene::drawOnStairsChoice() {
 	}
 
 	void DungeonScene::drawUI(float deltaTime) {
+		// HP バー 表示
 		drawHPbar();
+
+		// メニューを開いている時はログ表示無し
+		if (!isOpenMenu_) { TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); }
+
+		// 階段の上に乗った時の選択肢描画
+		if (isPlayerOnStairs_) { drawOnStairsChoice(); }
 	}
 
 	void DungeonScene::drawHPbar() {
@@ -110,20 +144,18 @@ namespace atl {
 
 	// 初期設定 ( DungeonSceneのインスタンス生成後、一度だけ通る ) 
 	bool DungeonScene::seqInit(float deltaTime) {
-		// 真っ黒にしてフェードインからスタート
-		auto fadeManager = FadeInOutManager::getFadeInOutManager();
-		fadeManager->setFadeAlphaValue(255);
-		fadeManager->startFadeIn();
+		// フェードは真っ黒からスタート
+		FadeInOutManager::getFadeInOutManager()->setFadeAlphaValue(255);
 
 		// プレイヤーの生成と初期化
 		player_ = std::make_shared<PlayerPawn>();
 		player_->initialize(shared_from_this());
 
-		// ダンジョン生成
-		generateDungeon();;
+		// 現在の階層を 初期化
+		currentFloor_ = 0;
 
 		// 本シーケンスに遷移
-		seq_.change(&DungeonScene::seqAllTurnFlagOff);
+		seq_.change(&DungeonScene::seqToNextFloor);
 		return true;
 	}
 
@@ -144,9 +176,13 @@ namespace atl {
 			auto player2Dpos = player_->getPlayer2Dpos();
 
 			{// 階段に乗った場合
-				auto stairs2Dpos = originStairs_->get2Dpos();
-				if (stairs2Dpos.x == player2Dpos.x && stairs2Dpos.y == player2Dpos.y) {
-					currentTurn_ = e_turnState::PLAYER_ON_STAIRS;
+				// 階段に乗るフラグが立っていない場合、階段に乗ったフラグを立てる
+				if (!isPlayerOnStairs_) {
+					auto stairs2Dpos = originStairs_->get2Dpos();
+					if (stairs2Dpos.x == player2Dpos.x && stairs2Dpos.y == player2Dpos.y) {
+						isPlayerOnStairs_ = true;
+						currentTurn_ = e_turnState::PLAYER_ON_STAIRS;
+					}
 				}
 			}
 		}
@@ -173,6 +209,8 @@ namespace atl {
 			if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
 				// プレイヤー側でもキー入力待ちをしていて、プレイヤー操作は 1 フレーム分遅れるので、一回 呼ぶ
 				player_->playerUpdate(deltaTime);
+				// 移動した場合、階段に乗っているフラグをオフにする
+				isPlayerOnStairs_ = false;
 				currentTurn_ = e_turnState::PLAYER_MOVE;
 			}
 
@@ -219,12 +257,12 @@ namespace atl {
 
 	// 階段に乗った時の処理
 	void DungeonScene::processPlayerOnStairs(float deltaTime) {
-		
-		// 移動しますか？にイエスの時
+		// ( デバッグ中 ) 移動しますか？にイエスの時
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_1)) {
 			seq_.change(&DungeonScene::seqToNextFloor);
 		}
 		else if (tnl::Input::IsKeyDownTrigger(eKeys::KB_2)) { // ノーの時
+			isPlayerOnStairs_ = false;
 			currentTurn_ = e_turnState::KEY_INPUT;
 		}
 	}
@@ -233,16 +271,38 @@ namespace atl {
 	bool DungeonScene::seqToNextFloor(float deltaTime) {
 		// 最初のフレームでフェードアウト開始
 		if (seq_.isStart()) {
+			// 階段に乗っているフラグをオフにする
+			isPlayerOnStairs_ = false;
 			FadeInOutManager::getFadeInOutManager()->startFadeOut();
+			// フロア数をインクリメント
+			++currentFloor_;
+
 		}
 
 		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
-			generateDungeon();
-			FadeInOutManager::getFadeInOutManager()->startFadeIn();
-			seq_.change(&DungeonScene::seqAllTurnFlagOff);
+			// 次階層に遷移中フラグを立てる
+			isNextFloorTransition = true;
+
+			// 三秒待機
+			SEQ_CO_YIELD_RETURN_TIME(3.0f, deltaTime, [&] {})
+
+
+			// 最大階層に到達したら、クリアシーンに遷移
+			if (currentFloor_ >= MAX_FLOOR) {
+				SceneManager::getSceneManager()->changeScene(std::make_shared<GameClearScene>());
+			}
+			else {
+				// ダンジョンを生成し、フェードインし画面を表示させる
+				generateDungeon();
+				FadeInOutManager::getFadeInOutManager()->startFadeIn();
+				seq_.change(&DungeonScene::seqAllTurnFlagOff);
+			}
+			
+			// 次階層へ遷移中フラグをオフに
+			isNextFloorTransition = false;
 		}
 
-		return true;
+		SEQ_CO_END
 	}
 
 	bool DungeonScene::seqDeadEnemyProcess(float deltaTime) {
@@ -364,8 +424,10 @@ namespace atl {
 		DrawStringEx(0, 75, -1, "curentTurn ... [ %d ]", currentTurn_);
 
 		// 階段の位置
-		auto& stairsPos = originStairs_->get2Dpos();
-		DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
+		if (originStairs_) {
+			auto& stairsPos = originStairs_->get2Dpos();
+			DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
+		}
 
 		DrawStringEx(0, 125, -1, "currentFloor ... [ %d ]", currentFloor_);
 	}

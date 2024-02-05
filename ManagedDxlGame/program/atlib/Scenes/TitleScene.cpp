@@ -25,8 +25,6 @@ namespace atl {
 		}
 	}
 	void TitleScene::sceneUpdate(float deltaTime) {
-		debug_keyInput();
-		
 		draw(deltaTime);
 		seq_.update(deltaTime);
 	}
@@ -39,9 +37,6 @@ namespace atl {
 		if (isDisplayButton) {
 			drawButton(deltaTime);
 		}
-
-		DrawStringEx(0, 0, -1, "currentButton ... [ %d ] ", currentSelectButton_);
-
 		// フェードインアウト用描画
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
 	}
