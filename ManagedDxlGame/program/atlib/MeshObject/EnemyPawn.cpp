@@ -106,19 +106,15 @@ namespace atl {
 	}
 
 	bool EnemyPawn::seqDeading(float deltaTime) {
-		if (seq_.isStart()) {
-			waitTime_ = DEADING_TIME;
-		}
-		getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(10));
+		SEQ_CO_YIELD_RETURN_TIME(2.5f, deltaTime, [&] {
+			getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(10));
+		})
 		
-		totalDeltaTimer_ += deltaTime;
-		if (totalDeltaTimer_ > waitTime_) {
-			totalDeltaTimer_ = 0;
-			isAlreadyAction_ = true;
-			isAlreadyMove_ = true;
-			currentState_ = e_EnemyState::Dead;
-		}
-		return true;
+		isAlreadyAction_ = true;
+		isAlreadyMove_ = true;
+		currentState_ = e_EnemyState::Dead;
+		
+		SEQ_CO_END
 	}
 
 	bool EnemyPawn::seqDead(float deltaTime) {
@@ -127,6 +123,7 @@ namespace atl {
 	
 	// 乱数でランダムに四方移動
 	bool EnemyPawn::seqWandering(float deltaTime) {
+		// 乱数で 0 ~ 3 の値を取り出し、ランダムに移動する
 		int32_t rand = mtRandomRangeInt(0, 3);
 		switch (rand) {
 		case 0: 

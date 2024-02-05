@@ -108,28 +108,29 @@ namespace atl {
 	// シーケンス
 	//---------------------
 
-	// 初期設定
+	// 初期設定 ( DungeonSceneのインスタンス生成後、一度だけ通る ) 
 	bool DungeonScene::seqInit(float deltaTime) {
-		// 最初の1フレームで行う前処理
-		if (seq_.isStart()) {
-			player_ = std::make_shared<PlayerPawn>();
-			player_->initialize(shared_from_this());
-			
-			auto fadeManager = FadeInOutManager::getFadeInOutManager();
-			fadeManager->setFadeAlphaValue(255);
-			fadeManager->startFadeIn();
+		// 真っ黒にしてフェードインからスタート
+		auto fadeManager = FadeInOutManager::getFadeInOutManager();
+		fadeManager->setFadeAlphaValue(255);
+		fadeManager->startFadeIn();
 
-			generateDungeon();;
-		}
-		else { // その後の処理
-			seq_.change(&DungeonScene::seqAllTurnFlagOff);
-		}return true;
+		// プレイヤーの生成と初期化
+		player_ = std::make_shared<PlayerPawn>();
+		player_->initialize(shared_from_this());
+
+		// ダンジョン生成
+		generateDungeon();;
+
+		// 本シーケンスに遷移
+		seq_.change(&DungeonScene::seqAllTurnFlagOff);
+		return true;
 	}
 
 	// 行動フラグオフ用シーケンス
 	bool DungeonScene::seqAllTurnFlagOff(float deltaTime) {
-		player_->setIsAlreadyTurn();
-		for (auto& enemy : enemies_) { enemy->setIsAlreadyTurn(); }
+		player_->offFlagIsAlreadyTurn();
+		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
 
 		currentTurn_ = e_turnState::KEY_INPUT;
 		seq_.change(&DungeonScene::seqTurnStateProcess);
@@ -193,10 +194,11 @@ namespace atl {
 		if (!player_->getIsAlreadyTurn()) {
 			player_->playerUpdate(deltaTime);
 		}
-
-		// エネミーのターン
-		bool allEnemyTurned = true;
 		
+		// エネミーのターン
+		// 全エネミーの行動が終わったかフラグ作る
+		bool allEnemyTurned = true;
+
 		// 移動処理
 		for (auto& enemy : enemies_) {
 			if (enemy->getIsAlreadyMove()) { continue; }
@@ -210,14 +212,21 @@ namespace atl {
 			enemy->enemyUpdate(deltaTime);
 			allEnemyTurned = false;
 		}
-
-		// プレイヤー移動完了・エネミー行動完了したら、シーケンス遷移
+		
+		// プレイヤー・エネミーが行動完了したら、シーケンス遷移
 		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.change(&DungeonScene::seqDeadEnemyProcess);
 	}
 
 	// 階段に乗った時の処理
 	void DungeonScene::processPlayerOnStairs(float deltaTime) {
-		seq_.change(&DungeonScene::seqToNextFloor);
+		
+		// 移動しますか？にイエスの時
+		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_1)) {
+			seq_.change(&DungeonScene::seqToNextFloor);
+		}
+		else if (tnl::Input::IsKeyDownTrigger(eKeys::KB_2)) { // ノーの時
+			currentTurn_ = e_turnState::KEY_INPUT;
+		}
 	}
 
 	// 次の階層に進む処理
@@ -357,6 +366,8 @@ namespace atl {
 		// 階段の位置
 		auto& stairsPos = originStairs_->get2Dpos();
 		DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
+
+		DrawStringEx(0, 125, -1, "currentFloor ... [ %d ]", currentFloor_);
 	}
 
 }

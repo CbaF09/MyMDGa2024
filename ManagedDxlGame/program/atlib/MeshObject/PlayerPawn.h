@@ -24,7 +24,7 @@ namespace atl {
 		inline const Shared<PlayerData> getPlayerData() const {return playerData_;}
 
 		// セッター
-		inline void setIsAlreadyTurn(bool flag = false) { isAlreadyTurn_ = flag; }
+		inline void offFlagIsAlreadyTurn() { isAlreadyTurn_ = false; }
 		void setPlayerAndCamera3Dpos(const tnl::Vector3& newPos);
 
 		// 2D座標上の位置で Spawn する

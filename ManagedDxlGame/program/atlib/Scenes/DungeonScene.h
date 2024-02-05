@@ -20,16 +20,10 @@ namespace atl {
     public:
         ~DungeonScene();
 
-        // ターン制御用 enum
-        enum class e_turnState {
-            KEY_INPUT,
-            PLAYER_MOVE,
-            PLAYER_ON_STAIRS,
-        };
-        
         // ゲッター
+        // 3D上のセル一辺の全長を取得。色々なクラスで取得するので static に
         inline static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
-        inline const e_turnState& getCurrentTurn() { return currentTurn_; }
+        // 現在存在しているエネミーのリストを取得
         inline const std::list<Shared<EnemyPawn>>& getEnemyArray() const { return enemies_; }
 
     private: 
@@ -37,36 +31,48 @@ namespace atl {
         // 変数
         
         // 汎用 ----------------------------------------
-        // セル一辺の全長 ( 3D上 )
+        // セル一辺の全長 ( 3D上 ) 色々な所で取得したいので static
         static const int32_t CELL_FULL_LENGTH = 1000;
         // 現在のターン
-        e_turnState currentTurn_ = e_turnState::KEY_INPUT;
 
         // 壁 用 ---------------------------------------
-        Shared<Wall> originWall_ = nullptr;
-        std::vector<Shared<Wall>> walls_;
+        Shared<Wall> originWall_ = nullptr; // クローン元になる壁メッシュへのポインタ
+        std::vector<Shared<Wall>> walls_;   // 壁メッシュ群のリスト
 
         // 地面 用 -------------------------------------
-        Shared<GroundTile> originGroundTile_ = nullptr;
-        std::vector<Shared<GroundTile>> groundTiles_;
+        Shared<GroundTile> originGroundTile_ = nullptr; // クローン元になる地面メッシュへのポインタ
+        std::vector<Shared<GroundTile>> groundTiles_;   // 地面メッシュ群のリスト
 
         // 階段 用 -------------------------------------
-        Shared<Stairs> originStairs_ = nullptr;
+        Shared<Stairs> originStairs_ = nullptr; // 階段へのポインタ
 
         // プレイヤー関連 ------------------------------
-        Shared<PlayerPawn> player_ = nullptr;
+        Shared<PlayerPawn> player_ = nullptr; // プレイヤーポーンへのポインタ
         bool isOpenMenu_ = false;    // メニューを開いているか
 
         // エネミー関連 --------------------------------
-        std::list<Shared<EnemyPawn>> enemies_;
+        std::list<Shared<EnemyPawn>> enemies_;  // フィールドに存在するエネミーリスト
 
         // アイテム関連 --------------------------------
-        std::list<Shared<ItemPawn>> items_;
+        std::list<Shared<ItemPawn>> items_; // フィールドにあるアイテムリスト
+
+        // 階層管理用 ----------------------------------
+        int32_t currentFloor_ = 0;      // 現在階層
+        const int32_t MAX_FLOOR = 4;    // 最大階層
+
+        // ターン制御用 --------------------------------
+        enum class e_turnState {
+            KEY_INPUT,
+            PLAYER_MOVE,
+            PLAYER_ON_STAIRS,
+        }currentTurn_ = e_turnState::KEY_INPUT;
 
         // UI 関連 -------------------------------------
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
+
+
 
         //----------------------------------------------
         // メソッド

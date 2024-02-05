@@ -50,18 +50,22 @@ namespace atl {
 		// 移動先が、移動可能かどうかチェックする
 		bool isCanMoveFieldCellPos(const tnl::Vector2i& toMovePos);
 
-		// --- デバッグ用関数
-
+		// ------------------------------------------
+		//  デバッグ用
 		// 分割したエリアを文字列で可視表示
-		// arg ... 頂点(左上)をオフセットし、表示位置を補正
+		// arg ... 頂点(左上)をオフセットし、表示位置を補正 ( ほぼほぼ必要ないのでデフォルト引数 0 )
 		void debag_DisplayArea(int offsetDisplayPosX = 0, int offsetDisplayPosY = 0) const;
 		
 		// フィールドを文字列で可視表示
-		// arg ... 頂点(左上)をオフセットし、表示位置を補正
+		// arg ... 頂点(左上)をオフセットし、表示位置を補正 ( ほぼほぼ必要ないのでデフォルト引数 0 )
 		void debag_DisplayFieldCells(int offsetDisplayPosX = 0, int offsetDisplayPosY = 0) const;
 
+		// エネミー・アイテム・プレイヤー・階段の位置も含め文字列で可視表示
+		// arg ... 頂点(左上)をオフセットし、表示位置を補正 ( ほぼほぼ必要ないのでデフォルト引数 0 )
+		void debag_DisplayFieldData(int offsetDisplayPosX = 0, int offsetDisplayPosY = 0) const;
+
 		// ログにダンジョンの情報を出力
-		void debag_OutputLogGeneratedData() const;
+		void debag_OutputLogGeneratedAreaRoomData() const;
 
 	private:
 

@@ -30,7 +30,7 @@ namespace atl {
 		inline const Shared<EnemyData> getEnemyData() const { return enemyData_; }
 
 		// セッター
-		inline void setIsAlreadyTurn(bool flag = false) { isAlreadyAction_ = flag; isAlreadyMove_ = flag; }
+		inline void offFlagIsAlreadyTurn() { isAlreadyAction_ = false; isAlreadyMove_ = false; }
 		
 		// エネミーの毎フレームの行動
 		bool enemyUpdate(float deltaTime) {
@@ -56,9 +56,6 @@ namespace atl {
 		
 		bool isAlreadyMove_ = false;
 		bool isAlreadyAction_ = false;
-		float totalDeltaTimer_ = 0; // 行動停止用 ( 累積時間 )
-		float waitTime_ = 0;	// 行動停止用 ( 停止時間設定 )
-		const float DEADING_TIME = 2.5f; // 死亡演出の時間
 		tnl::Vector3 enemySize_{ 0,0,0 };
 
 		// 移動用

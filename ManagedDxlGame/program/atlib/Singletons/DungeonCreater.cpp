@@ -281,12 +281,14 @@ namespace atl {
 	}
 
 	void DungeonCreater::choiceEnemySpawnPos() {
+		enemySpawnPosArray_.clear();
 		for (int i = 0;i < ENEMY_SPAWN_NUM;++i) {
 			enemySpawnPosArray_.emplace_back(randomChoiceCanSpawnFieldCellPos());
 		}
 	}
 
 	void DungeonCreater::choiceItemSpawnPos() {
+		itemSpawnPosArray_.clear();
 		for (int i = 0; i < ITEM_SPAWN_NUM;++i) {
 			itemSpawnPosArray_.emplace_back(randomChoiceCanSpawnFieldCellPos());
 		}
@@ -317,7 +319,33 @@ namespace atl {
 		}
 	}
 
-	void DungeonCreater::debag_OutputLogGeneratedData() const {
+	void DungeonCreater::debag_DisplayFieldData(int offsetDisplayPosX, int offsetDisplayPosY) const {
+		for (int x = 0; x < FIELD_WIDTH; ++x) {
+			for (int y = 0; y < FIELD_HEIGHT; ++y) {
+				if (fieldCells_[x][y].cellType_ == e_FieldCellType::CELL_TYPE_ROOM) {
+					DrawStringEx((x * 15) + offsetDisplayPosX, (y * 15) + offsetDisplayPosY, -1, " ");
+				}
+				if (fieldCells_[x][y].cellType_ == e_FieldCellType::CELL_TYPE_PATH) {
+					DrawStringEx((x * 15) + offsetDisplayPosX, (y * 15) + offsetDisplayPosY, -1, "-");
+				}
+				if (fieldCells_[x][y].cellType_ == e_FieldCellType::CELL_TYPE_WALL) {
+					DrawStringEx((x * 15) + offsetDisplayPosX, (y * 15) + offsetDisplayPosY, -1, "*");
+				}
+			}
+		}
+
+		for (const auto& enemyPos : enemySpawnPosArray_) {
+			DrawStringEx(enemyPos.x * 15 + offsetDisplayPosX, enemyPos.y * 15 + offsetDisplayPosY,GetColor(255,0,0),"e");
+		}
+
+		for (const auto& itemPos : itemSpawnPosArray_) {
+			DrawStringEx(itemPos.x * 15 + offsetDisplayPosX, itemPos.y * 15 + offsetDisplayPosY, GetColor(0, 255, 0), "I");
+		}
+
+		DrawStringEx(playerSpawnPos_.x * 15 + offsetDisplayPosX, playerSpawnPos_.y * 15 + offsetDisplayPosY, GetColor(0, 0, 255), "P");
+	}
+
+	void DungeonCreater::debag_OutputLogGeneratedAreaRoomData() const {
 		for (int i = 0; i < areas_.size(); ++i) {
 			tnl::DebugTrace("\n -------------- debag_OutputLogGeneratedData による デバッグログ ------------");
 			tnl::DebugTrace("\n area => %d , posX,Y = [%d,%d] , width,height = [%d,%d]", i, areas_[i].posX_, areas_[i].posY_, areas_[i].width_, areas_[i].height_);
