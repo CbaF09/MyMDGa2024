@@ -25,6 +25,8 @@ namespace atl {
         inline static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
         // 現在存在しているエネミーのリストを取得
         inline const std::list<Shared<EnemyPawn>>& getEnemyArray() const { return enemies_; }
+        // プレイヤーポーンを取得
+        inline const Shared<PlayerPawn> getPlayerPawn() const { return player_; }
 
     private: 
         //----------------------------------------------
@@ -135,5 +137,6 @@ namespace atl {
 
         // デバッグ用 ----------------------------------
         void debug_displayDungeonParam(float deltaTime);
+        void debug_displayMap(float deltaTime);
     };
 };

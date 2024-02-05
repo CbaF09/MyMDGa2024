@@ -4,8 +4,8 @@ namespace atl {
 
     PlayerData::PlayerData() {
         setAttackPower(10);
-        setMaxHP(15);
-        setCurrentHP(15);
+        setMaxHP(100);
+        setCurrentHP(100);
     }
 
 }

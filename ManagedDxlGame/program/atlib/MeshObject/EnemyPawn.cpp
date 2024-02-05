@@ -1,5 +1,4 @@
 #include "EnemyPawn.h"
-#include "../Scenes/DungeonScene.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Utilities/AtlRandom.h"
@@ -8,7 +7,7 @@
 
 namespace atl {
 
-	EnemyPawn::EnemyPawn(const tnl::Vector2i& enemyPos, const tnl::Vector3& enemySize) : enemySize_(enemySize){
+	EnemyPawn::EnemyPawn(const tnl::Vector2i& enemyPos) {
 		set2Dpos(enemyPos);
 		auto cellLength = DungeonScene::getCellLength();
 		tnl::Vector3 enemy3Dpos = { static_cast<float>(enemyPos.x * cellLength), 400 ,static_cast<float>(enemyPos.y * cellLength) };
@@ -16,7 +15,7 @@ namespace atl {
 		auto texture = enemyData_->getEnemyTexture();
 
 		auto rootMesh = dxe::Mesh::CreateBoxMV(
-			enemySize,
+			ENEMY_SIZE,
 			texture,
 			texture,
 			texture,
@@ -27,7 +26,7 @@ namespace atl {
 		setRootMesh(rootMesh);
 
 		auto dirArrow = dxe::Mesh::CreateBoxMV(
-			enemySize / 2,
+			ENEMY_SIZE / 2,
 			dxe::Texture::CreateFromFile("graphics/box/box_left.bmp"),
 			dxe::Texture::CreateFromFile("graphics/box/box_right.bmp"),
 			dxe::Texture::CreateFromFile("graphics/box/box_up.bmp"),
@@ -35,7 +34,7 @@ namespace atl {
 			dxe::Texture::CreateFromFile("graphics/box/box_forward.bmp"),
 			dxe::Texture::CreateFromFile("graphics/box/box_back.bmp")
 		);
-		dirArrow->pos_ = rootMesh->pos_ + tnl::Vector3{ 0, 0, enemySize_.z / 2 };
+		dirArrow->pos_ = rootMesh->pos_ + tnl::Vector3{ 0, 0, ENEMY_SIZE.z / 2 };
 		addChildMesh(dirArrow);
 
 	}
@@ -45,15 +44,15 @@ namespace atl {
 		auto& childs = getChildMeshes();
 
 		childs[0]->rot_ = rootMesh->rot_;
-		childs[0]->pos_ = rootMesh->pos_ + tnl::Vector3::TransformCoord(tnl::Vector3{ 0,0,enemySize_.z / 2 }, childs[0]->rot_);
+		childs[0]->pos_ = rootMesh->pos_ + tnl::Vector3::TransformCoord(tnl::Vector3{ 0,0,ENEMY_SIZE.z / 2 }, childs[0]->rot_);
 	}
 
-	void EnemyPawn::assignWeakPlayer(std::weak_ptr<PlayerPawn> player) {
-		weakPlayer = player;
+	void EnemyPawn::assignWeakDungeonScene(std::weak_ptr<DungeonScene> dungeonScene) {
+		weakDungeonScene_ = dungeonScene;
 	}
 
 	bool EnemyPawn::isNeighborPlayer() {
-		auto& player2Dpos = weakPlayer.lock()->getPlayer2Dpos();
+		auto& player2Dpos = weakDungeonScene_.lock()->getPlayerPawn()->getPlayer2Dpos();
 		auto& enemy2Dpos = get2Dpos();
 
 		if (player2Dpos.x == enemy2Dpos.x + 1 && player2Dpos.y == enemy2Dpos.y) return true;
@@ -63,22 +62,35 @@ namespace atl {
 		else return false;
 	}
 
-	bool EnemyPawn::assignMoveTarget(const tnl::Vector2i& moveToPos) {
+	bool EnemyPawn::isCanMovePos(const tnl::Vector2i& moveToPos) {
+		auto newPos = get2Dpos() + moveToPos;
+
+		// ダンジョンセルが移動不可 ( 壁など ) なら移動不可
+		if (!DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(newPos)) {
+			return false;
+		}
+
+		// エネミーがいたら移動不可
+		auto& enemies = weakDungeonScene_.lock()->getEnemyArray();
+		for (auto& enemy : enemies) {
+			if (newPos == enemy->get2Dpos()) return false;
+		}
+
+		return true;
+	}
+
+	void EnemyPawn::setMoveTarget(const tnl::Vector2i& moveToPos) {
 		auto cellLength = DungeonScene::getCellLength();
-		// 移動先が移動可能か確認
-		if (DungeonCreater::getDungeonCreater()->isCanMoveFieldCellPos(get2Dpos() + moveToPos)) {
-			auto meshPos = getRootMesh()->pos_;
+		auto meshPos = getRootMesh()->pos_;
+		// 移動可能ならmoveTarget を設定
+		if (isCanMovePos(moveToPos)) {
 			moveTarget_ = { meshPos.x + (moveToPos.x * cellLength),meshPos.y,meshPos.z + (moveToPos.y * cellLength) };
-			getRootMesh()->rot_ = tnl::Quaternion::LookAt({ 0,0,0 }, { static_cast<float>(moveToPos.x),0,static_cast<float>(moveToPos.y) }, { 0,1,0 });
+			getRootMesh()->rot_ = tnl::Quaternion::LookAt(getRootMesh()->pos_, moveTarget_, { 0,1,0 });
 			add2Dpos(moveToPos);
-			return true;
 		}
-		// 移動不可能な場合、現在位置をmoveTargetに ( 足踏み )
 		else {
-			moveTarget_ = getRootMesh()->pos_;
-			return true;
+			moveTarget_ = meshPos;
 		}
-		return false;
 	}
 
 	/// --------------------------
@@ -121,22 +133,20 @@ namespace atl {
 		return false;
 	}
 	
-	// 乱数でランダムに四方移動
 	bool EnemyPawn::seqWandering(float deltaTime) {
-		// 乱数で 0 ~ 3 の値を取り出し、ランダムに移動する
 		int32_t rand = mtRandomRangeInt(0, 3);
 		switch (rand) {
 		case 0: 
-			assignMoveTarget({ 0,1 });
+			setMoveTarget({ 0,1 });
 			break;
 		case 1:
-			assignMoveTarget({ 0,-1 });
+			setMoveTarget({ 0,-1 });
 			break;
 		case 2:
-			assignMoveTarget({ 1,0 });
+			setMoveTarget({ 1,0 });
 			break;
 		case 3:
-			assignMoveTarget({ -1,0 });
+			setMoveTarget({ -1,0 });
 		}
 		seq_.change(&EnemyPawn::seqMoveToTarget);
 		return true;
@@ -154,6 +164,7 @@ namespace atl {
 			isAlreadyMove_ = true;
 			seq_.change(&EnemyPawn::seqActionNone);
 		}
+
 		return true;
 	}
 
@@ -164,7 +175,7 @@ namespace atl {
 	}
 
 	bool EnemyPawn::seqPlayerNeighboring(float deltaTime) {
-		auto player = weakPlayer.lock();
+		auto player = weakDungeonScene_.lock()->getPlayerPawn();
 		if (player->getIsAlreadyTurn()) {
 			// プレイヤーの行動が終わってから、プレイヤーの方を向く
 			auto meshPos = getRootMesh()->pos_;
@@ -181,7 +192,7 @@ namespace atl {
 	}
 
 	bool EnemyPawn::seqActionAttack(float deltaTime) {
-		auto player = weakPlayer.lock();
+		auto player = weakDungeonScene_.lock()->getPlayerPawn();
 		if (player->getIsAlreadyTurn()) {
 			auto damage = player->getPlayerData()->damaged(enemyData_->getAttackPower());
 

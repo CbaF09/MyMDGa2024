@@ -20,6 +20,7 @@ namespace atl {
 
 		float cellLength = static_cast<float>(DungeonScene::getCellLength());
 		tnl::Vector3 initPos = { spawn2Dpos.x * cellLength, PLAYER_HEAD_LINE, spawn2Dpos.y * cellLength };
+		moveTarget_ = initPos;
 
 		setPlayerAndCamera3Dpos(initPos);
 	}
@@ -61,11 +62,6 @@ namespace atl {
 		tnl::Vector2i rightV2i = { static_cast<int>(rightNormalDir.x),static_cast<int>(rightNormalDir.z) };
 		tnl::Vector2i leftV2i = -rightV2i;
 
-		//// moveTargetが初期状態の場合、例外処理
-		//if (moveTarget_.x == 0 && moveTarget_.y == 0 && moveTarget_.z == 0) {
-		//	setMoveTarget(getPlayer2Dpos());
-		//}
-
 		if (tnl::Input::IsKeyDown(eKeys::KB_W)) {
 			if (isCanMovePos(forwardV2i)) {	setMoveTarget(forwardV2i); }
 		}
@@ -105,7 +101,7 @@ namespace atl {
 		if (seq_.isStart()) {
 			// moveTarget が設定されていない場合、例外処理
 			if (moveTarget_.x == 0 && moveTarget_.y == 0 && moveTarget_.z == 0) {
-				moveTarget_ = playerCamera_->pos_;
+//				setMoveTarget(getPlayerPos());
 			}
 		}
 		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_TIME, moveLerpTimeCount_);

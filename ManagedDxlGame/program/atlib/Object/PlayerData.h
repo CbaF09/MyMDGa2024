@@ -8,7 +8,6 @@ namespace atl {
 		PlayerData();
 
 	private:
-		int32_t level;
 	};
 
 }

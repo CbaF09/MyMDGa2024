@@ -27,7 +27,7 @@ void gameStart() {
     LockCursorToWindow();
 
 	//atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
-	atl::SceneManager::getSceneManager(std::make_shared<atl::TitleScene>());
+	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
 }
 
 void gameMain(float delta_time) {

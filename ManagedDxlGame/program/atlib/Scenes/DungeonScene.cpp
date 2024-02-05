@@ -61,8 +61,6 @@ namespace atl {
 	}
 
 	void DungeonScene::draw2D(float deltaTime) {
-		// デバッグ用
-		debug_displayDungeonParam(deltaTime);
 
 		drawUI(deltaTime);
 
@@ -71,6 +69,8 @@ namespace atl {
 		// 現在階層の描画は真っ黒な画面の上にやりたいので、この位置
 		if (isNextFloorTransition) { drawNextFloorTransition(); }
 
+		debug_displayMap(deltaTime);
+		debug_displayDungeonParam(deltaTime);
 	}
 
 	// 次の階層を描画する
@@ -401,9 +401,8 @@ namespace atl {
 			// エネミー
 			auto& enemySpawnPos = dungeonCreater->getEnemySpawnPos();
 			for (int i = 0; i < dungeonCreater->getEnemySpawnNum(); ++i) {
-				// TODO: マジックナンバー。本番用エネミーを作った時に同時になんとかするべし
-				auto enemy = std::make_shared<EnemyPawn>(enemySpawnPos[i], tnl::Vector3{ 200, 200, 200 });
-				enemy->assignWeakPlayer(player_);
+				auto enemy = std::make_shared<EnemyPawn>(enemySpawnPos[i]);
+				enemy->assignWeakDungeonScene(shared_from_this());
 				enemies_.emplace_back(enemy);
 			}
 
@@ -457,6 +456,41 @@ namespace atl {
 		}
 
 		DrawStringEx(0, 125, -1, "currentFloor ... [ %d ]", currentFloor_);
+	}
+
+	void DungeonScene::debug_displayMap(float deltaTime) {
+		auto dCreater = DungeonCreater::getDungeonCreater();
+		auto& field = dCreater->getFieldCells();
+
+		DrawBox(0, 0, 450, 450, GetColor(0, 0, 0), true);
+
+		// フィールド情報の描画
+		for (int x = 0; x < field.size(); ++x) {
+			for (int y = 0; y < field[x].size(); ++y) {
+				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM) {
+					DrawStringEx((x * 15),(y * 15), -1, " ");
+				}
+				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_PATH) {
+					DrawStringEx((x * 15), (y * 15), -1, "-");
+				}
+				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
+					DrawStringEx((x * 15), (y * 15), -1, "*");
+				}
+			}
+		}
+
+		for (const auto& enemy : enemies_) {
+			auto& enemyPos = enemy->get2Dpos();
+			DrawStringEx(enemyPos.x * 15, enemyPos.y * 15,GetColor(255,0,0),"e");
+		}
+
+		for (const auto& item : items_) {
+			auto& itemPos = item->get2Dpos();
+			DrawStringEx(itemPos.x * 15, itemPos.y * 15, GetColor(0, 255, 0), "I");
+		}
+
+		auto player2Dpos = player_->getPlayer2Dpos();
+		DrawStringEx(player2Dpos.x * 15, player2Dpos.y * 15, GetColor(0, 0, 255), "P");
 	}
 
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include "Base_MultiMeshObject.h"
 #include "../Object/EnemyData.h"
+#include "../Scenes/DungeonScene.h"
 
 namespace atl {
 
@@ -9,15 +10,14 @@ namespace atl {
 	class EnemyPawn : public Base_MultiMeshObject {
 	public:
 		// arg1 ... エネミーを生成する位置
-		// arg2 ... エネミーの大きさ
-		// arg3 ... １セルの全長
-		EnemyPawn(const tnl::Vector2i& enemyPos , const tnl::Vector3& enemySize);
+		EnemyPawn(const tnl::Vector2i& enemyPos);
 
 		void adjustChildsMeshes() override;
 
 		// ステート用 enum
 		enum class e_EnemyState {
 			Wandering,			// 目的のない探索
+			ChasePlayer,		// プレイヤーに向かう
 			PlayerNeighboring,	// その場で足踏み,プレイヤーの方を向く
 			Deading,			// 死亡中 ( 徐々に消えていくなどの処理 )
 			Dead,				// 死亡 ( Deading から遷移 )
@@ -34,11 +34,12 @@ namespace atl {
 		
 		// エネミーの毎フレームの行動
 		bool enemyUpdate(float deltaTime) {
-			return seq_.update(deltaTime);
+			seq_.update(deltaTime);
+			return true;
 		}
 
 		// プレイヤーへの弱参照を設定
-		void assignWeakPlayer(std::weak_ptr<PlayerPawn> player);
+		void assignWeakDungeonScene(std::weak_ptr<DungeonScene> player);
 
 	private:
 		//----------------------
@@ -46,7 +47,8 @@ namespace atl {
 		
 		// ret ... 移動できる => true , 移動できない => false
 		// arg ... 現在位置からの移動先
-		bool assignMoveTarget(const tnl::Vector2i& moveToPos);
+		bool isCanMovePos(const tnl::Vector2i& moveToPos);
+		void setMoveTarget(const tnl::Vector2i& moveToPos);
 		// プレイヤーと前後左右で隣接しているか
 		bool isNeighborPlayer();
 
@@ -54,9 +56,8 @@ namespace atl {
 		//-----------------------
 		// メンバ変数
 		
-		bool isAlreadyMove_ = false;
-		bool isAlreadyAction_ = false;
-		tnl::Vector3 enemySize_{ 0,0,0 };
+		// メッシュの生成用
+		const tnl::Vector3 ENEMY_SIZE{ 200,200,200 };
 
 		// 移動用
 		tnl::Vector3 moveTarget_{ 0,0,0 };
@@ -64,11 +65,13 @@ namespace atl {
 		const float MOVE_END_BORDER = 0.1f; // 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
 		float moveLerpTimeCount_ = 0;
 
-		// 現在のステート
+		// ターン制御用
 		e_EnemyState currentState_ = e_EnemyState::Wandering;
+		bool isAlreadyMove_ = false;
+		bool isAlreadyAction_ = false;
 
-		// プレイヤーへの弱参照
-		std::weak_ptr<PlayerPawn> weakPlayer;
+		// ダンジョンシーンへの弱参照
+		std::weak_ptr<DungeonScene> weakDungeonScene_;
 
 		// データ保持
 		Shared<EnemyData> enemyData_ = std::make_shared<EnemyData>();

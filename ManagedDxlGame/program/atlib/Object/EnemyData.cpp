@@ -6,6 +6,7 @@ namespace atl {
 	EnemyData::EnemyData() {
 		auto csv = tnl::LoadCsv("csv/EnemyCSV.csv");
 
+		// CSV‚Ì’†‚©‚çƒ‰ƒ“ƒ_ƒ€‚Éİ’è
 		auto rand = mtRandomRangeInt(1, csv.size() - 1);
 
 		enemyID_ = csv[rand][0].getInt();

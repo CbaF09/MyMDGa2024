@@ -15,11 +15,6 @@ namespace atl {
 	private:
 		static DungeonCreater* p_instance_;
 	//------------------------------------------
-
-		class Area;
-		class Room;
-		class FieldCell;
-
 	public:
 		// セルの状態用 enum
 		enum class e_FieldCellType {
@@ -27,6 +22,23 @@ namespace atl {
 			CELL_TYPE_ROOM,
 			CELL_TYPE_PATH,
 			CELL_TYPE_WALL,
+		};
+
+		class Room {
+		public:
+			int32_t posX_ = 0, posY_ = 0, width_ = 0, height_ = 0;
+		};
+
+		class Area {
+		public:
+			int32_t posX_ = 0, posY_ = 0, width_ = 0, height_ = 0;
+			Room room_;
+		};
+
+		class FieldCell {
+		public:
+			e_FieldCellType cellType_ = e_FieldCellType::CELL_TYPE_NONE;
+			bool isAlreadySpawnSomething = false;
 		};
 
 		// ダンジョンを生成。fieldCells_ に保存される
@@ -42,6 +54,7 @@ namespace atl {
 		inline const int32_t getItemSpawnNum() { return ITEM_SPAWN_NUM; }
 		inline const std::vector<tnl::Vector2i>& getEnemySpawnPos() const { return enemySpawnPosArray_; }
 		inline const std::vector<tnl::Vector2i>& getItemSpawnPos() const { return itemSpawnPosArray_; }
+		inline const FieldCell getFieldCellByV2i(tnl::Vector2i pos) const { return fieldCells_[pos.x][pos.y]; }
 
 		// fieldCells_ から、スポーン可能状態の空セルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 選ばれた XY地点の fieldCell は、スポーン不可状態に切り替わる
@@ -82,23 +95,6 @@ namespace atl {
 			PATH_DIR_LEFT,
 			PATH_DIR_RIGHT,
 			PATH_DIR_MAX,
-		};
-
-		class Room {
-		public:
-			int32_t posX_ = 0, posY_ = 0, width_ = 0, height_ = 0;
-		};
-
-		class Area {
-		public:
-			int32_t posX_ = 0, posY_ = 0, width_ = 0, height_ = 0;
-			Room room_;
-		};
-
-		class FieldCell {
-		public:
-			e_FieldCellType cellType_ = e_FieldCellType::CELL_TYPE_NONE;
-			bool isAlreadySpawnSomething = false;
 		};
 
 		//----------------------- 
