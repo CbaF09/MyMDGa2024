@@ -14,6 +14,7 @@
 #include "../MeshObject/EnemyPawn.h"
 #include "../MeshObject/PlayerPawn.h"
 #include "../MeshObject/ItemPawn.h"
+#include "../Object/SelectWindow.h"
 #include "../Utilities/Atl3DCamera.h"
 
 
@@ -48,21 +49,22 @@ namespace atl {
 	}
 
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
+		//MeshObject 群をレンダリング
+		for (const auto& wall : walls_) { wall->renderObject(camera); }
+		for (const auto& groundTile : groundTiles_) { groundTile->renderObject(camera); }
 
-		{//MeshObject 群をレンダリング
-			for (const auto& wall : walls_) { wall->renderObject(camera); }
-			for (const auto& groundTile : groundTiles_) { groundTile->renderObject(camera); }
-
-			if (originStairs_) originStairs_->renderObjects(camera);
-			for (const auto& enemy : enemies_) { enemy->renderObjects(camera); }
-			for (const auto& item : items_) { item->renderObjects(camera); }
-			if (player_)player_->render(deltaTime);
-		}
+		if (originStairs_) originStairs_->renderObjects(camera);
+		for (const auto& enemy : enemies_) { enemy->renderObjects(camera); }
+		for (const auto& item : items_) { item->renderObjects(camera); }
+		if (player_)player_->render(deltaTime);
 	}
 
 	void DungeonScene::draw2D(float deltaTime) {
 
 		drawUI(deltaTime);
+
+		// セレクトウィンドウがある時は、描画する
+		if (selectWindow_) selectWindow_->draw(deltaTime);
 
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
 		
@@ -90,18 +92,12 @@ namespace atl {
 		SetFontSize(beforeFontSize);
 	}
 
-	void DungeonScene::drawOnStairsChoice() {
-	}
-
 	void DungeonScene::drawUI(float deltaTime) {
 		// HP バー 表示
 		drawHPbar();
 
 		// メニューを開いている時はログ表示無し
 		if (!isOpenMenu_) { TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); }
-
-		// 階段の上に乗った時の選択肢描画
-		if (isPlayerOnStairs_) { drawOnStairsChoice(); }
 	}
 
 	void DungeonScene::drawHPbar() {
@@ -284,13 +280,21 @@ namespace atl {
 
 	// 階段に乗った時の処理
 	void DungeonScene::processPlayerOnStairs(float deltaTime) {
-		// ( デバッグ中 ) 移動しますか？にイエスの時
-		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_1)) {
-			seq_.change(&DungeonScene::seqToNextFloor);
-		}
-		else if (tnl::Input::IsKeyDownTrigger(eKeys::KB_2)) { // ノーの時
-			isPlayerOnStairs_ = false;
-			currentTurn_ = e_turnState::KEY_INPUT;
+		// ウィンドウがまだ無い場合は生成する
+		if (!selectWindow_) selectWindow_ = std::make_shared<SelectWindow>("次の階層に進みますか？");
+
+		// ポインタが有効化どうか
+		if (selectWindow_) {
+			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
+				selectWindow_.reset();
+				seq_.change(&DungeonScene::seqToNextFloor);
+				
+			}
+			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) { // いいえ、の時
+				selectWindow_.reset();
+				isPlayerOnStairs_ = false;
+				currentTurn_ = e_turnState::KEY_INPUT;
+			}
 		}
 	}
 

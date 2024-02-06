@@ -12,6 +12,7 @@ namespace atl {
     class GroundTile;
     class DungeonCreater;
     class Atl3DCamera;
+    class SelectWindow;
 
     // ダンジョンシーン
     // 役割 ... ダンジョン探索シーン
@@ -81,7 +82,8 @@ namespace atl {
         // テキストログ関連 ----------------------------
         const tnl::Vector2i TEXT_LOG_POSITION{ 20,550 };   // テキストログを描画する位置 ( 一番上の行 )
 
-
+        // 選択肢ウィンドウ関連 ------------------------
+        Shared<SelectWindow> selectWindow_ = nullptr;
 
         //----------------------------------------------
         // メソッド
@@ -97,8 +99,6 @@ namespace atl {
         void drawUI(float deltaTime);
         // 2D HPbar の描画
         void drawHPbar();
-        // 階段に乗っている時の選択肢を描画する
-        void drawOnStairsChoice();
         // 次の階層に遷移中に、現在の階層を表示する
         void drawNextFloorTransition();
 

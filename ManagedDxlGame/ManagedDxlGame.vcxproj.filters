@@ -311,6 +311,9 @@
     <ClCompile Include="program\atlib\Scenes\GameOverScene.cpp">
       <Filter>program\[002] atlib\Scenes</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\Object\SelectWindow.cpp">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">
@@ -614,7 +617,7 @@
     <ClInclude Include="program\atlib\Singletons\FadeInOutManager.h">
       <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\Object\SelectMenuWindow.h">
+    <ClInclude Include="program\atlib\Object\SelectWindow.h">
       <Filter>program\[002] atlib\Object</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\Scenes\GameClearScene.h">

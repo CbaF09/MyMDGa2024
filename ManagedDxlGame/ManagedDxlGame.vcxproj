@@ -164,6 +164,7 @@
     <ClCompile Include="program\atlib\Object\EnemyData.cpp" />
     <ClCompile Include="program\atlib\Object\ItemData.cpp" />
     <ClCompile Include="program\atlib\Object\PlayerData.cpp" />
+    <ClCompile Include="program\atlib\Object\SelectWindow.cpp" />
     <ClCompile Include="program\atlib\Scenes\DungeonScene.cpp" />
     <ClCompile Include="program\atlib\Scenes\GameClearScene.cpp" />
     <ClCompile Include="program\atlib\Scenes\GameOverScene.cpp" />
@@ -254,7 +255,7 @@
     <ClInclude Include="program\atlib\Object\EnemyData.h" />
     <ClInclude Include="program\atlib\Object\ItemData.h" />
     <ClInclude Include="program\atlib\Object\PlayerData.h" />
-    <ClInclude Include="program\atlib\Object\SelectMenuWindow.h" />
+    <ClInclude Include="program\atlib\Object\SelectWindow.h" />
     <ClInclude Include="program\atlib\Scenes\Base_Scene.h" />
     <ClInclude Include="program\atlib\Scenes\DungeonScene.h" />
     <ClInclude Include="program\atlib\Scenes\GameClearScene.h" />

@@ -11,6 +11,7 @@
 #include "../MeshObject/MagicWand.h"
 #include "../MeshObject/MenuBook.h"
 #include "../MeshObject/ItemPawn.h"
+#include "../Object/SelectWindow.h"
 #include "../Collision/Collision.h"
 
 namespace atl {
@@ -24,7 +25,6 @@ namespace atl {
 
     private:
 
-
         void sceneUpdate(float deltaTime) override {
             seq_.update(deltaTime);
             render(deltaTime);
@@ -32,8 +32,7 @@ namespace atl {
 
         void render(float deltaTime) {
             
-
-            DrawDefaultLightGuiController();
+//            DrawDefaultLightGuiController();
 //            DrawGridGround(player_->getPlayerCamera(), 50, 20);
             DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
         }
@@ -42,21 +41,19 @@ namespace atl {
         SEQUENCE(Scene_Dummy, &Scene_Dummy::seqInit);
 
         bool seqInit(float deltaTime) {
-            DungeonCreater::getDungeonCreater()->createDungeon();
+
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
         }
 
         bool seqProcess(float deltaTime) {
-            DungeonCreater::getDungeonCreater()->debag_DisplayFieldData();
 
             {// デバッグ用。ESCキーでウィンドウ落とす。
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) {
                     exit(1);
                 }
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
-                    DungeonCreater::getDungeonCreater()->createDungeon();
                 }
             }
 
