@@ -1,2 +1,2 @@
-ItemID,ItemName,繧､繝ｩ繧ｹ繝医ヱ繧ｹ
-0,GreenPotion,graphics/ItemIllust/GreenPotion.png
+ItemID,アイテム名,画像ファイルパス
+0,回復薬,graphics/ItemIllust/GreenPotion.png

@@ -251,31 +251,79 @@ namespace atl {
 
 	// プレイヤーの移動入力
 	void DungeonScene::processPlayerMoveTurn(float deltaTime) {
-		// プレイヤーのターン
+		// プレイヤーのターン処理 ( 移動 )
 		if (!player_->getIsAlreadyTurn()) {
 			player_->playerUpdate(deltaTime);
 		}
 		
-		// エネミーのターン
 		// 全エネミーの行動が終わったかフラグ作る
 		bool allEnemyTurned = true;
+		{// エネミーの行動処理
+			// エネミー移動処理
+			enemyMove(deltaTime, allEnemyTurned);
+			// エネミー行動処理
+			enemyAction(deltaTime, allEnemyTurned);
+		}
 
-		// 移動処理
+		// HP がゼロになり、死亡演出が終わった敵を削除
+		deadEnemyErase();
+
+		{// アイテムを拾う処理
+			auto& player2Dpos = player_->getPlayer2Dpos();
+			for (auto it = items_.begin(); it != items_.end();) {
+				auto& item2Dpos = (*it)->get2Dpos();
+				// アイテムと重なっているか判定
+				if (player2Dpos.x == item2Dpos.x && player2Dpos.y == item2Dpos.y) {
+					auto itemData = (*it)->getItemData();
+					// インベントリにアイテムデータを格納
+					player_->getPlayerData()->getInventory()->pushBackItem(itemData);
+					
+					// テキストログに拾ったアイテム名を出力
+					auto itemName = itemData->getItemName();
+					std::string textLog = "　" + itemName + "を拾った";
+					TextLogManager::getTextLogManager()->addTextLog(textLog);
+
+					// アイテムを削除
+					it = items_.erase(it);
+				}
+				else {
+					++it;
+				}
+			}
+		}
+
+		// プレイヤー・エネミーが行動完了したら、シーケンス遷移
+		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.change(&DungeonScene::seqAllTurnFlagOff);
+	}
+
+	void DungeonScene::enemyMove(float deltaTime, bool& allEnemyTurned) {
 		for (auto& enemy : enemies_) {
 			if (enemy->getIsAlreadyMove()) { continue; }
 			enemy->enemyUpdate(deltaTime);
 			allEnemyTurned = false;
 		}
+	}
 
-		// 行動処理
+	void DungeonScene::enemyAction(float deltaTime, bool& allEnemyTurned) {
 		for (auto& enemy : enemies_) {
 			if (enemy->getIsAlreadyAction()) { continue; }
 			enemy->enemyUpdate(deltaTime);
 			allEnemyTurned = false;
 		}
-		
-		// プレイヤー・エネミーが行動完了したら、シーケンス遷移
-		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.change(&DungeonScene::seqDeadEnemyProcess);
+	}
+
+	void DungeonScene::deadEnemyErase() {
+		for (auto it = enemies_.begin(); it != enemies_.end();) {
+			// HP がゼロの敵を発見
+			if ((*it)->getEnemyData()->isZeroHP()) {
+				// 死亡演出が終わっているかどうか ( Deading なら死亡演出中 )
+				if ((*it)->getCurrentState() == EnemyPawn::e_EnemyState::Dead) {
+					it = enemies_.erase(it);
+					continue;
+				}
+			}
+			++it;
+		}
 	}
 
 	// 階段に乗った時の処理
@@ -334,31 +382,6 @@ namespace atl {
 		}
 
 		SEQ_CO_END
-	}
-
-	bool DungeonScene::seqDeadEnemyProcess(float deltaTime) {
-		bool allEnemyAlive = true;
-
-		for (auto it = enemies_.begin(); it != enemies_.end();) {
-			if ((*it)->getEnemyData()->isZeroHP()) {
-				// HP がゼロになっている敵を発見
-				allEnemyAlive = false;
-				// HP がゼロになっている enemy の update を回す ( enemy の 死亡演出 は、enemyUpdate で管理 )
-				(*it)->enemyUpdate(deltaTime);
-				// Dead になったエネミーを削除する
-				if ((*it)->getCurrentState() == EnemyPawn::e_EnemyState::Dead) {
-					it = enemies_.erase(it);
-					continue;
-				}
-			}
-			++it;
-		}
-
-		if (allEnemyAlive) {
-			seq_.change(&DungeonScene::seqAllTurnFlagOff);
-		}
-		
-		return true;
 	}
 
 	//---------------------

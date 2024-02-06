@@ -314,6 +314,9 @@
     <ClCompile Include="program\atlib\Object\SelectWindow.cpp">
       <Filter>program\[002] atlib\Object</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\Object\Inventory.cpp">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">
@@ -625,6 +628,9 @@
     </ClInclude>
     <ClInclude Include="program\atlib\Scenes\GameOverScene.h">
       <Filter>program\[002] atlib\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Object\Inventory.h">
+      <Filter>program\[002] atlib\Object</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

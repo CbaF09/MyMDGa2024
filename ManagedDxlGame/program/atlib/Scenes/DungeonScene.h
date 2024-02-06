@@ -122,8 +122,6 @@ namespace atl {
         bool seqTurnStateProcess(float deltaTime);
         // ゲームオーバーの処理 ( ゲームオーバーシーンに遷移 )
         bool seqGameOver(float deltaTime);
-        // 死んだエネミーの消滅処理
-        bool seqDeadEnemyProcess(float deltaTime);
         // 敵とプレイヤーの行動完了フラグをオフにする
         bool seqAllTurnFlagOff(float deltaTime);
         // 次の階層に移動している間
@@ -135,6 +133,13 @@ namespace atl {
         void processPlayerMoveTurn(float deltaTime);
         // プレイヤーが階段に乗った時
         void processPlayerOnStairs(float deltaTime);
+
+        // エネミーの移動処理
+        void enemyMove(float deltaTime, bool& allEnemyTurned);
+        // エネミーの行動処理
+        void enemyAction(float deltaTime, bool& allEnemyTurned);
+        // HP がゼロになり、死亡演出が終わった敵を削除
+        void deadEnemyErase();
 
         // デバッグ用 ----------------------------------
         void debug_displayDungeonParam(float deltaTime);

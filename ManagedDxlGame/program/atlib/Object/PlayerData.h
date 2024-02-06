@@ -1,5 +1,6 @@
 #pragma once
 #include "Base_ActorData.h"
+#include "Inventory.h"
 
 namespace atl {
 
@@ -7,7 +8,11 @@ namespace atl {
 	public:
 		PlayerData();
 
+		inline const Shared<Inventory> getInventory() { return playerInventory_; }
+
 	private:
+		// プレイヤーのインベントリ
+		Shared<Inventory> playerInventory_ = std::make_shared<Inventory>();
 	};
 
 }
