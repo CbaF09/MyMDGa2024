@@ -62,7 +62,7 @@ namespace atl {
 		else return false;
 	}
 
-	bool EnemyPawn::isCanMovePos(const tnl::Vector2i& moveToPos) {
+	bool EnemyPawn::isCanMove(const tnl::Vector2i& moveToPos) {
 		auto newPos = get2Dpos() + moveToPos;
 
 		// ダンジョンセルが移動不可 ( 壁など ) なら移動不可
@@ -83,7 +83,7 @@ namespace atl {
 		auto cellLength = DungeonScene::getCellLength();
 		auto meshPos = getRootMesh()->pos_;
 		// 移動可能ならmoveTarget を設定
-		if (isCanMovePos(moveToPos)) {
+		if (isCanMove(moveToPos)) {
 			moveTarget_ = { meshPos.x + (moveToPos.x * cellLength),meshPos.y,meshPos.z + (moveToPos.y * cellLength) };
 			getRootMesh()->rot_ = tnl::Quaternion::LookAt(getRootMesh()->pos_, moveTarget_, { 0,1,0 });
 			add2Dpos(moveToPos);
@@ -91,6 +91,20 @@ namespace atl {
 		else {
 			moveTarget_ = meshPos;
 		}
+	}
+
+	// プレイヤーと同じエリアにいるか
+	bool EnemyPawn::isSameAreaPlayer() {
+		auto dungeonCreater = DungeonCreater::getDungeonCreater();
+		auto player2Dpos = weakDungeonScene_.lock()->getPlayerPawn()->getPlayer2Dpos();
+
+		auto enemyAreaID = dungeonCreater->getFieldCellID(get2Dpos());
+		auto playerAreaID = dungeonCreater->getFieldCellID(player2Dpos);
+
+		// 自分のエリアID とプレイヤーのエリア IDが一致した場合、true
+		if (enemyAreaID == playerAreaID) return true;
+
+		return false;
 	}
 
 	/// --------------------------
@@ -104,20 +118,24 @@ namespace atl {
 			if (enemyData_->isZeroHP()) currentState_ = e_EnemyState::Deading;
 			// プレイヤーと隣接していた場合
 			else if (isNeighborPlayer()) currentState_ = e_EnemyState::PlayerNeighboring;
+			// プレイヤーと同じエリアにいる場合
+			else if (isSameAreaPlayer()) currentState_ = e_EnemyState::ChasePlayer;
 			// それ以外の場合
 			else currentState_ = e_EnemyState::Wandering;
 
 			switch (currentState_) {
 			case e_EnemyState::Wandering:			seq_.change(&EnemyPawn::seqWandering); break;
 			case e_EnemyState::PlayerNeighboring:	seq_.change(&EnemyPawn::seqPlayerNeighboring); break;
+			case e_EnemyState::ChasePlayer:			seq_.change(&EnemyPawn::seqChasePlayer); break;
 			case e_EnemyState::Deading:				seq_.change(&EnemyPawn::seqDeading); break;
-			case e_EnemyState::Dead:				seq_.change(&EnemyPawn::seqDead); break;
+			case e_EnemyState::Dead:				break; // 死んだ場合、ダンジョンシーン側で削除されるので、こちらでは何も無し
 			}
 		}
 		return true;
 	}
 
 	bool EnemyPawn::seqDeading(float deltaTime) {
+		// 2.5秒間、くるくる回転してから死亡する
 		SEQ_CO_YIELD_RETURN_TIME(2.5f, deltaTime, [&] {
 			getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(10));
 		})
@@ -127,10 +145,6 @@ namespace atl {
 		currentState_ = e_EnemyState::Dead;
 		
 		SEQ_CO_END
-	}
-
-	bool EnemyPawn::seqDead(float deltaTime) {
-		return false;
 	}
 	
 	bool EnemyPawn::seqWandering(float deltaTime) {
@@ -148,6 +162,31 @@ namespace atl {
 		case 3:
 			setMoveTarget({ -1,0 });
 		}
+		seq_.change(&EnemyPawn::seqMoveToTarget);
+		return true;
+	}
+
+	// プレイヤーを直線で追う 
+	bool EnemyPawn::seqChasePlayer(float deltaTime) {
+		auto& player2Dpos = weakDungeonScene_.lock()->getPlayerPawn()->getPlayer2Dpos();
+		auto& currentPos = get2Dpos();
+
+		if (player2Dpos.x > currentPos.x && isCanMove({1,0})) {
+			setMoveTarget({ 1,0 });
+		}
+		else if (player2Dpos.x < currentPos.x && isCanMove({ -1, 0 })) {
+			setMoveTarget({ -1,0 });
+		}
+		else if (player2Dpos.y > currentPos.y && isCanMove({0,1})) {
+			setMoveTarget({ 0,1 });
+		}
+		else if (player2Dpos.y < currentPos.y && isCanMove({0,-1})) {
+			setMoveTarget({ 0,-1 });
+		}
+		else {
+			setMoveTarget({ 0,0 });
+		}
+		
 		seq_.change(&EnemyPawn::seqMoveToTarget);
 		return true;
 	}

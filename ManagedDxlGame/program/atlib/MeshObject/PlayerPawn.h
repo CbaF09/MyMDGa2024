@@ -21,7 +21,7 @@ namespace atl {
 		inline const tnl::Vector3& getPlayerPos() const { return player3Dpos_; }
 		inline const tnl::Vector2i& getPlayer2Dpos() const { return player2Dpos_; }
 		inline bool getIsAlreadyTurn() const { return isAlreadyTurn_; }
-		inline const Shared<PlayerData> getPlayerData() const {return playerData_;}
+		inline const Shared<PlayerData> getPlayerData() const { return playerData_; }
 
 		// セッター
 		inline void offFlagIsAlreadyTurn() { isAlreadyTurn_ = false; }

@@ -1,54 +1,43 @@
-//------------------------------------------
-// A* 実装中に中断。残骸。余裕があれば実装
-
-
 //#pragma once
 //#include "../dxlib_ext/dxlib_ext.h"
 //
 //namespace atl {
 //
 //	class AtlAstar {
-//		// インナークラス
 //		enum class e_AstarNodeState {
 //			NONE,
-//			WALL, 
 //			CLOSED,
 //			OPEN,
-//			START,
-//			GOAL
 //		};
 //
+//		// ノードクラス
 //		class AstarNode {
 //		public:
+//			// XY座標
 //			tnl::Vector2i pos_{ 0,0 };
+//			// ステート
 //			e_AstarNodeState state = e_AstarNodeState::NONE;
-//
+//			// 実コスト
 //			int32_t realCost_ = 0;
+//			// 推定コスト
 //			int32_t guessCost_ = 0;
+//			// 通過コスト
 //			int32_t score_ = 0;
 //
+//			// 親ノードへのポインタ
 //			Shared<AstarNode> parentNode = nullptr;
 //
+//			// スコア比較用 ( 親ノードと比較
 //			bool operator < (const AstarNode& node) const {	return score_ > node.score_; }
-//
 //		};
 //		
 //
 //	public:
-//		static void settingAstarMapdata(int32_t mapW, int32_t mapH);
-//		static void settingAstarStartAndGoal(const tnl::Vector2i& startPos, const tnl::Vector2i& goalPos);
 //		// A*経路探索実行
-//		static std::vector<Shared<AstarNode>> doAster(std::vector<std::vector<Shared<AstarNode>>>& nodes, Shared<AstarNode> nowNode);
+//		static std::vector<Shared<AstarNode>> doAster(std::vector<);
 //
 //
 //	private:
-//		static int32_t mapWidth_;
-//		static int32_t mapHeight_;
-//		static std::vector<std::vector<Shared<AstarNode>>> nodeData;
-//
-//		// 指定座標が有効か ( OPEN 可能か ) 判定
-//		static bool isEnableMapPosition(const tnl::Vector2i& pos, const std::vector<std::vector<Shared<AstarNode>>>& nodes);
-//		Shared<AstarNode> getSmallestScoreNodeFromOpenNodes(const std::vector<std::vector<Shared<AstarNode>>>& nodes);
 //
 //	};
 //

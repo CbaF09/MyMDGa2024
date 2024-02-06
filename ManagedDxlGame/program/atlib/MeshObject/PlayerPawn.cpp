@@ -185,14 +185,14 @@ namespace atl {
 			"playerCameraPos ... [ %.2f , %.2f , %.2f ]", playerCamera_->pos_.x, playerCamera_->pos_.y, playerCamera_->pos_.z);
 		DrawStringEx(drawPosX, drawPosY + 45, -1,
 			"moveTarget_ ... [ %.2f , %.2f, %.2f ]", moveTarget_.x, moveTarget_.y, moveTarget_.z);
-		if (playerHaveMagicWand_) {
-			DrawStringEx(drawPosX, drawPosY + 60, -1,
-				"playerWandPos ... [ %.2f , %.2f, %.2f ]", playerHaveMagicWand_->getRootMesh()->pos_.x, playerHaveMagicWand_->getRootMesh()->pos_.y, playerHaveMagicWand_->getRootMesh()->pos_.z);
-		}
+		// メニューを開いているか
 		if (playerHaveMenuBook_) {
 			DrawStringEx(drawPosX, drawPosY + 75, -1,
 				"menuOpen ... [ %d ]", playerHaveMenuBook_->isOpenMenu());
 		}
+		// 現在いるエリアのID
+		DrawStringEx(drawPosX, drawPosY + 100, -1,
+			"cellID ... [ %d ]", DungeonCreater::getDungeonCreater()->getFieldCellID(player2Dpos_));
 	}
 
 	void PlayerPawn::render(float deltaTime) {

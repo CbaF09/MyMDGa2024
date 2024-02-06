@@ -310,8 +310,8 @@ namespace atl {
 			// ŽŸŠK‘w‚É‘JˆÚ’†ƒtƒ‰ƒO‚ð—§‚Ä‚é
 			isNextFloorTransition = true;
 
-			// ŽO•b‘Ò‹@
-			SEQ_CO_YIELD_RETURN_TIME(3.0f, deltaTime, [&] {})
+			// ‘Ò‹@ 
+			SEQ_CO_YIELD_RETURN_TIME(nextFloorTransitionTime, deltaTime, [&] {})
 
 
 			// Å‘åŠK‘w‚É“ž’B‚µ‚½‚çAƒNƒŠƒAƒV[ƒ“‚É‘JˆÚ
@@ -442,10 +442,10 @@ namespace atl {
 	//------------------------
 	
 	void DungeonScene::debug_displayDungeonParam(float deltaTime) {
-		DrawGridGround(player_->getPlayerCamera(), 50, 20);
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
 		player_->debug_displayPlayerParam(600, 0);
+
 
 		DrawStringEx(0, 75, -1, "curentTurn ... [ %d ]", currentTurn_);
 

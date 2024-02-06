@@ -32,6 +32,9 @@ namespace atl {
 		class Area {
 		public:
 			int32_t posX_ = 0, posY_ = 0, width_ = 0, height_ = 0;
+			int32_t areaID_;
+
+			// エリアは一つの部屋を持つ
 			Room room_;
 		};
 
@@ -39,6 +42,7 @@ namespace atl {
 		public:
 			e_FieldCellType cellType_ = e_FieldCellType::CELL_TYPE_NONE;
 			bool isAlreadySpawnSomething = false;
+			int32_t regionAreaID_;
 		};
 
 		// ダンジョンを生成。fieldCells_ に保存される
@@ -54,7 +58,8 @@ namespace atl {
 		inline const int32_t getItemSpawnNum() { return ITEM_SPAWN_NUM; }
 		inline const std::vector<tnl::Vector2i>& getEnemySpawnPos() const { return enemySpawnPosArray_; }
 		inline const std::vector<tnl::Vector2i>& getItemSpawnPos() const { return itemSpawnPosArray_; }
-		inline const FieldCell getFieldCellByV2i(tnl::Vector2i pos) const { return fieldCells_[pos.x][pos.y]; }
+		// 引数に渡した座標のフィールドセルのIDを取得
+		inline const int32_t getFieldCellID(tnl::Vector2i pos) const { return fieldCells_[pos.x][pos.y].regionAreaID_; }
 
 		// fieldCells_ から、スポーン可能状態の空セルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 選ばれた XY地点の fieldCell は、スポーン不可状態に切り替わる
@@ -116,16 +121,26 @@ namespace atl {
 		//----------------------- 
 		// メソッド
 
+		// 初期化
 		void fieldCellsInit();
 		void areaInit();
 
+		// 区域分割 ( 再帰処理の為に引数があるが、直に呼び出す時は引数 0 で呼び出される前提なのでデフォルト引数 )
 		void areaSprit(int32_t areaID = 0);
+		// 部屋生成
 		void roomCreate();
+		// fieldCells_ の parentArea を設定
+		void setFieldCellsID();
+		// 通路設定
 		void pathwayCreate();
+
+		// 通路を生成する為の関数群
 		void createPathwayToTop(const Area& area);
 		void createPathwayToBottom(const Area& area);
 		void createPathwayToLeft(const Area& area);
 		void createPathwayToRight(const Area& area);
+
+		// スポーン候補地点を設定する関数群
 		void choicePlayerSpawnPos();
 		void choiceStairsSpawnPos();
 		void choiceEnemySpawnPos();

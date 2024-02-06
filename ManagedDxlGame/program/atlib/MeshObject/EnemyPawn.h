@@ -47,11 +47,12 @@ namespace atl {
 		
 		// ret ... 移動できる => true , 移動できない => false
 		// arg ... 現在位置からの移動先
-		bool isCanMovePos(const tnl::Vector2i& moveToPos);
+		bool isCanMove(const tnl::Vector2i& moveToPos);
 		void setMoveTarget(const tnl::Vector2i& moveToPos);
 		// プレイヤーと前後左右で隣接しているか
 		bool isNeighborPlayer();
-
+		// プレイヤーと同じエリアにいるか
+		bool isSameAreaPlayer();
 
 		//-----------------------
 		// メンバ変数
@@ -82,10 +83,14 @@ namespace atl {
 		SEQUENCE(EnemyPawn, &EnemyPawn::seqStateTransition);
 		bool seqStateTransition(float deltaTime);
 
+		// ランダム移動
 		bool seqWandering(float deltaTime);
+		// プレイヤーに向かって移動
+		bool seqChasePlayer(float deltaTime);
+		// プレイヤーに隣接している時
 		bool seqPlayerNeighboring(float deltaTime);
+		// 死亡時の演出
 		bool seqDeading(float deltaTime);
-		bool seqDead(float deltaTime);
 
 		// 移動 ( 隣一マスへ )
 		bool seqMoveToTarget(float deltaTime);

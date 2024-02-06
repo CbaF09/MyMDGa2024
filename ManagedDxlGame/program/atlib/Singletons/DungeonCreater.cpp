@@ -31,6 +31,8 @@ namespace atl {
 		roomCreate();
 		pathwayCreate();
 
+		setFieldCellsID();
+
 		// 各種スポーン
 		choicePlayerSpawnPos();
 		choiceStairsSpawnPos();
@@ -60,6 +62,7 @@ namespace atl {
 
 		areas_[0].posX_ = 0;
 		areas_[0].posY_ = 0;
+		areas_[0].areaID_ = 0;
 
 		areas_[0].height_ = FIELD_HEIGHT;
 		areas_[0].width_ = FIELD_WIDTH;
@@ -72,8 +75,10 @@ namespace atl {
 	//------------------------------
 
 	void DungeonCreater::areaSprit(int32_t areaID) {
+		// エリアの生成上限に達していたら終わり
 		if (areas_.size() == AREA_MAX) return;
 
+		// エリア増やす
 		areas_.emplace_back();
 
 		int32_t newAreaID = static_cast<int32_t>(areas_.size() - 1);
@@ -112,6 +117,7 @@ namespace atl {
 		// ---------------
 
 		areaSprit(areaID);		// 分割元だったエリアに対し再帰実行
+		areas_[newAreaID].areaID_ = newAreaID;
 		areaSprit(newAreaID);	// 分割後、増えたエリアに対し再帰実行
 	};
 
@@ -128,6 +134,17 @@ namespace atl {
 			for (int x = area.room_.posX_; x < area.room_.posX_ + area.room_.width_; ++x) {
 				for (int y = area.room_.posY_; y < area.room_.posY_ + area.room_.height_; ++y) {
 					fieldCells_[x][y].cellType_ = e_FieldCellType::CELL_TYPE_ROOM;
+				}
+			}
+		}
+	}
+
+	// フィールドセルIDを、所属しているareaIDに設定する
+	void DungeonCreater::setFieldCellsID() {
+		for (const auto& area : areas_) {
+			for (int x = area.posX_; x < area.posX_ + area.width_; ++x) {
+				for (int y = area.posY_; y < area.posY_ + area.height_; ++y) {
+						fieldCells_[x][y].regionAreaID_ = area.areaID_;
 				}
 			}
 		}
