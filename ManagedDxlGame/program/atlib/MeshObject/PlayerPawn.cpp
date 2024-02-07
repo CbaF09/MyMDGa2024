@@ -15,6 +15,14 @@ namespace atl {
 		playerCamera_->pos_ = newPos;
 	}
 
+	void PlayerPawn::openMenuBook() {
+		playerHaveMenuBook_->openMenu();
+	}
+
+	void PlayerPawn::closeMenuBook() {
+		playerHaveMenuBook_->closeMenu();
+	}
+
 	void PlayerPawn::playerSpawn2Dpos(const tnl::Vector2i& spawn2Dpos) {
 		player2Dpos_ = spawn2Dpos;
 

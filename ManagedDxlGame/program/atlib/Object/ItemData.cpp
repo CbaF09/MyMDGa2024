@@ -18,6 +18,8 @@ namespace atl {
 
 			auto& filepath = csv[itemID][2].getString();
 			itemIllust_ = dxe::Texture::CreateFromFile(filepath);
+			
+			descString_ = csv[itemID][3].getString();
 		}
 	}
 

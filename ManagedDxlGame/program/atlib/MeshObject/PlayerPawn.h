@@ -16,23 +16,29 @@ namespace atl {
 	public:
 		~PlayerPawn() { explosion_.reset(); }
 
+		// 遅延コンストラクタ。生成後に一回だけ呼ぶ事
+		void initialize(std::weak_ptr<DungeonScene> dungeonScene);
+		
 		// ゲッター
 		inline const Shared<Atl3DCamera> getPlayerCamera() const { return playerCamera_; }
 		inline const tnl::Vector3& getPlayerPos() const { return player3Dpos_; }
 		inline const tnl::Vector2i& getPlayer2Dpos() const { return player2Dpos_; }
 		inline bool getIsAlreadyTurn() const { return isAlreadyTurn_; }
 		inline const Shared<PlayerData> getPlayerData() const { return playerData_; }
-		inline const Shared<MenuBook> getMenuBook() const { return playerHaveMenuBook_; }
 
 		// セッター
 		inline void offFlagIsAlreadyTurn() { isAlreadyTurn_ = false; }
 		inline void onFlagIsAlreadyTurn() { isAlreadyTurn_ = true; }
 		void setPlayerAndCamera3Dpos(const tnl::Vector3& newPos);
 
+		// メニューを開く ( 本を正面の位置に ) 
+		void openMenuBook();
+		// メニューを閉じる ( 本を元の位置に ) 
+		void closeMenuBook();
+
 		// 2D座標上の位置で Spawn する
 		void playerSpawn2Dpos(const tnl::Vector2i& spawn2Dpos);
 		
-		void debug_displayPlayerParam(int drawPosX = 0, int drawPosY = 0);
 
 		// シーケンス管理実行用
 		bool playerUpdate(float deltaTime) {
@@ -43,8 +49,8 @@ namespace atl {
 		// render系
 		void render(float deltaTime);
 
-		// 遅延コンストラクタ。生成後に一回だけ呼ぶ事
-		void initialize(std::weak_ptr<DungeonScene> dungeonScene);
+
+		void debug_displayPlayerParam(int drawPosX = 0, int drawPosY = 0);
 
 	private:
 		// --------------------------------------------------

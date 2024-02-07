@@ -257,6 +257,7 @@ namespace atl {
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
 			if(!menuWindow_) { 
 				menuWindow_ = std::make_shared<MenuWindow>(player_->getPlayerData()->getInventory()); 
+				player_->openMenuBook();
 				seq_.change(&DungeonScene::seqMenuWindow);
 			}
 		}
@@ -283,7 +284,7 @@ namespace atl {
 		deadEnemyErase();
 
 		// プレイヤー・エネミーが行動完了したら、シーケンス遷移
-		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.change(&DungeonScene::seqOnItemPosition);
+		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.immediatelyChange(&DungeonScene::seqOnItemPosition);
 	}
 
 	bool DungeonScene::seqOnItemPosition(float deltaTime) {
@@ -348,8 +349,6 @@ namespace atl {
 		}
 	}
 
-
-
 	bool DungeonScene::seqMenuWindow(float deltaTime) {
 		if (!menuWindow_) return true; // メニューウィンドウが有効でない場合、早期リターン
 
@@ -357,6 +356,7 @@ namespace atl {
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
 			if (menuWindow_) {
 				menuWindow_.reset();
+				player_->closeMenuBook();
 				seq_.change(&DungeonScene::seqAllTurnFlagOff);
 			}
 		}
@@ -378,6 +378,7 @@ namespace atl {
 		case MenuWindow::e_SelectedMenuWindow::CloseMenu:
 		{
 			menuWindow_.reset();
+			player_->closeMenuBook();
 			seq_.change(&DungeonScene::seqAllTurnFlagOff);
 			break;
 		}
@@ -403,6 +404,7 @@ namespace atl {
 				player_->getPlayerData()->getInventory()->useItem(static_cast<int32_t>(selectedMenu));
 				selectWindow_.reset();
 				menuWindow_.reset();
+				player_->closeMenuBook();
 				player_->onFlagIsAlreadyTurn();
 				currentTurn_ = e_turnState::PLAYER_MOVE;
 				seq_.change(&DungeonScene::seqTurnStateProcess);

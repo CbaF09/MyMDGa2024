@@ -39,9 +39,9 @@ namespace atl {
 				mesh->rot_ = initRot_ * cameraRot;
 			}
 			else {
-				mesh->pos_ = cameraPos + tnl::Vector3::TransformCoord({ 0,0,60 }, cameraRot);
+				mesh->pos_ = cameraPos + tnl::Vector3::TransformCoord({ -35,0,65 }, cameraRot);
 				tnl::Quaternion identityRot;
-				mesh->rot_ = identityRot * cameraRot;
+				mesh->rot_ = identityRot * tnl::Quaternion::RotationAxis({ 0,1,0 },tnl::ToRadian(-30)) * cameraRot;
 			}
 		}
 

@@ -1,2 +1,2 @@
-ItemID,アイテム名,画像ファイルパス
-1,回復薬,graphics/ItemIllust/GreenPotion.png
+ItemID,アイテム名,画像ファイルパス,descString
+1,回復薬,graphics/ItemIllust/GreenPotion.png,体力を小回復できるポーション

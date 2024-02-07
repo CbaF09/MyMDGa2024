@@ -1,6 +1,7 @@
 #include "../dxlib_ext/dxlib_ext.h"
 #include "MenuWindow.h"
 #include "../Object/Inventory.h"
+#include "../Singletons/ResourceManager.h"
 
 namespace atl {
 
@@ -9,22 +10,14 @@ namespace atl {
 	}
 
 	MenuWindow::MenuWindow(std::weak_ptr<Inventory> inventory) : weakInventory_(inventory) {
-		auto& itemlist = weakInventory_.lock()->getItemList();
-		
-		int i = 0;
-		for (auto it = itemlist.begin(); it != itemlist.end();) {
-			auto& itemName = (*it)->getItemName();
+		auto inv = weakInventory_.lock();
 
-			// アイテムが名が空なら、空きスロットと書いてcontinue
-			if (itemName == "") {
-				itemStrings_.at(i) = "( 空きスロット )";
-				continue; 
+		for (int i = 0; i < inv->getItemList().size(); ++i) {
+			auto& itemData = inv->getItemData(i);
+			if (itemData) {
+				itemStrings_.at(i) = itemData->getItemName();
+				itemDesc_.at(i) = itemData->getItemDescString();
 			}
-
-			itemStrings_.at(i) = itemName;
-			
-			++it;
-			++i;
 		}
 	}
 
@@ -55,6 +48,7 @@ namespace atl {
 
 			// アイテムリストの描画
 			for (int i = 0; i < itemStrings_.size(); ++i) {
+
 				// 現在選択中の選択肢は強調する
 				if (currentSelectIndex_ == i) {
 					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), SELECTED_COLOR, MENU_FONT, itemStrings_.at(i).c_str());
@@ -78,6 +72,36 @@ namespace atl {
 				}
 				actualyPos.y += STRINGS_OFFSET;
 			}
+		}
+
+		{// 説明文を記述する UI を描画
+			SetDrawBlendMode(DX_BLENDMODE_ALPHA,DESC_UI_ALPHA);
+			DrawBox(DESC_UI_POSITION.x, DESC_UI_POSITION.y, DESC_UI_POSITION.x+ DESC_UI_SIZE.x, DESC_UI_POSITION.y + DESC_UI_SIZE.y, GetColor(0, 0, 255), true);
+			SetDrawBlendMode(DX_BLENDMODE_NOBLEND,0);
+		}
+
+		{// 説明文を描画
+			auto descString = getDescription(currentSelectIndex_);
+			DrawStringToHandleEx(DESC_STRING_POSITION.x, DESC_STRING_POSITION.y, -1, DESC_FONT, descString.c_str());
+		}
+	}
+
+	std::string MenuWindow::getDescription(int currentSelectIndex) const {
+		// アイテム一覧を指している場合
+		if (0 <= currentSelectIndex_ && currentSelectIndex_ < itemStrings_.size()) {
+			return itemDesc_[currentSelectIndex];
+		}
+
+		// システム一覧を指している場合
+		switch (currentSelectIndex_) {
+		case static_cast<int>(e_SelectedMenuWindow::Setting):
+			return "各種設定";
+		case static_cast<int>(e_SelectedMenuWindow::ReturnToTitle):
+			return "タイトル画面に戻る。進捗保存はありません";
+		case static_cast<int>(e_SelectedMenuWindow::CloseMenu):
+			return "メニューを閉じる。右クリックでも閉じる";
+		default:
+			return "";
 		}
 	}
 }

@@ -11,6 +11,7 @@ namespace atl {
 
 		const Shared<dxe::Texture> getItemIllust() { return itemIllust_; }
 		const std::string& getItemName() const { return itemName_; }
+		const std::string& getItemDescString() const { return descString_; }
 
 		// g—pŒø‰ÊBenum‚ÅŠÇ—
 		void executeItemPerformAction();
@@ -24,6 +25,7 @@ namespace atl {
 
 		e_itemList itemID_ = static_cast<e_itemList>(0);
 		std::string itemName_ = "";
+		std::string descString_ = "";
 		Shared<dxe::Texture> itemIllust_ = nullptr;
 
 
