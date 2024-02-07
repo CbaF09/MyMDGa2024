@@ -43,7 +43,7 @@ namespace atl {
                     exit(1);
                 }
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
-
+                    ResourceManager::getResourceManager()->playSoundRes("sound/explosion.ogg",DX_PLAYTYPE_BACK);
                 }
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN)) {
 

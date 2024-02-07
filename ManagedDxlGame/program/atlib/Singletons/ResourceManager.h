@@ -30,7 +30,7 @@ namespace atl {
 		void playSoundRes(const std::string& filepath,int playType, int topPositionFlag = TRUE);
 
 		// filepath ... 音量変更したいサウンドのfilepath
-		// volume ... 0 ~ 255 , 255で最大音量 ( デフォルト )
+		// volume ... 0 ~ 255 , 255で最大音量 ( 元音声データと同じ音量 )
 		void changeVolumeSoundRes(const std::string& filepath, int volume);
 
 		// 再生中のサウンドを停止する

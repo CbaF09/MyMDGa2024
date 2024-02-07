@@ -12,6 +12,8 @@ namespace atl {
 			// 解放するリソースのファイルパスの一時的配列を作成
 			std::vector<std::string> tempDeleteRes = {
 				"graphics/BackgroundIllust/ClearSceneBack.jpg",
+				"sound/BGM/GameClearBGM.ogg",
+				"sound/SE/NextPaper.ogg",
 			};
 
 			// リソースを解放
@@ -49,6 +51,8 @@ namespace atl {
 		if (fadeInOutManager->getFadeAlphaValue() < EPILOGUE_BACKGROUND_BRIGHT) {
 			fadeInOutManager->setFadeAlphaValue(EPILOGUE_BACKGROUND_BRIGHT);
 			fadeInOutManager->stopFade();
+			ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/BGM/GameClearBGM.ogg", 125);
+			ResourceManager::getResourceManager()->playSoundRes("sound/BGM/GameClearBGM.ogg",DX_PLAYTYPE_LOOP);
 			seq_.change(&GameClearScene::seqEpilogue1);
 		}
 
@@ -109,6 +113,7 @@ namespace atl {
 	}
 
 	void GameClearScene::invokeDrawLogLineIncrement() {
+		ResourceManager::getResourceManager()->playSoundRes("sound/SE/NextPaper.ogg", DX_PLAYTYPE_BACK);
 		++drawLogLine_; // 表示行増やす
 	}
 

@@ -30,9 +30,9 @@ void gameStart() {
 	SetMouseDispFlag(false);
     LockCursorToWindow();
 
-    atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
+    //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
 
-	//atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
+	atl::SceneManager::getSceneManager(std::make_shared<atl::GameClearScene>());
 }
 
 void gameMain(float delta_time) {
@@ -41,15 +41,21 @@ void gameMain(float delta_time) {
 
 void gameEnd() {
     // シングルトン群を解放
-    atl::TextLogManager::getTextLogManager()->deleteTextLogManager();
-    atl::DungeonCreater::getDungeonCreater()->deleteDungeonCreater();
-    atl::FadeInOutManager::getFadeInOutManager()->deleteFadeInOutManager();
-    atl::ResourceManager::getResourceManager()->deleteResourceManager();
-    atl::SceneManager::getSceneManager()->deleteSceneManager();
+    atl::TextLogManager::deleteTextLogManager();
+    atl::DungeonCreater::deleteDungeonCreater();
+    atl::FadeInOutManager::deleteFadeInOutManager();
+    atl::ResourceManager::deleteResourceManager();
+    atl::SceneManager::deleteSceneManager();
+
+    // DXlib の関数でメモリをまとめて解放
+    InitGraph();
+    InitFontToHandle();
+    InitSoundMem();
 }
 
+// カーソルをウィンドウに固定させる関数
 void LockCursorToWindow() {
-    HWND hwnd = GetMainWindowHandle(); // DXライブラリでウィンドウハンドルを取得
+    HWND hwnd = GetMainWindowHandle(); // ウィンドウハンドルを取得
     RECT rect;
     GetClientRect(hwnd, &rect); // クライアント領域のサイズを取得
 

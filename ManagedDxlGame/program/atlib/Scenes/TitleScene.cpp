@@ -1,8 +1,8 @@
 #include "TitleScene.h"
+#include "DungeonScene.h"
 #include "../Singletons/ResourceManager.h"
 #include "../Singletons/FadeInOutManager.h"
 #include "../Singletons/SceneManager.h"
-#include "DungeonScene.h"
 
 namespace atl {
 
@@ -11,10 +11,15 @@ namespace atl {
 			
 			// 解放するリソースのファイルパスの一時的配列を作成
 			std::vector<std::string> tempDeleteRes = {
-				"graphics/BackGroundIllust/TitleSceneBack.jpg"
-				"graphics/BackGroundIllust/TitleLogo.png"
+				"graphics/BackGroundIllust/TitleSceneBack.jpg",
+				"graphics/BackGroundIllust/TitleLogo.png",
+				"sound/BGM/TitleSceneBGM.ogg",
+				"sound/SE/TitleSceneCursorChange.ogg",
+				"sound/SE/TitleSceneStart.ogg",
+				"sound/SE/NextPaper.ogg",
 			};
 			
+
 			// リソース解放
 			for (const auto& res : tempDeleteRes) {
 				ResourceManager::getResourceManager()->deleteResource(res);
@@ -96,11 +101,25 @@ namespace atl {
 		auto fadeManager = FadeInOutManager::getFadeInOutManager();
 		fadeManager->setFadeAlphaValue(255);
 		fadeManager->startFadeIn();
+
+		volumeSetting();
 		
+		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/TitleSceneBGM.ogg",DX_PLAYTYPE_LOOP);
 		seq_.change(&TitleScene::seqKeyInputWait);
 		isDisplayButton = true;
 
 		return false;
+	}
+
+	void TitleScene::volumeSetting() {
+		auto rManager = ResourceManager::getResourceManager();
+		// BGM
+		rManager->changeVolumeSoundRes("sound/BGM/TitleSceneBGM.ogg", 180);
+
+		// SE
+		rManager->changeVolumeSoundRes("sound/SE/TitleSceneCursorChange.ogg", 170);
+		rManager->changeVolumeSoundRes("sound/SE/TitleSceneStart.ogg", 200);
+		rManager->changeVolumeSoundRes("sound/SE/NextPaper.ogg", 200);
 	}
 
 	bool TitleScene::seqKeyInputWait(float deltaTime) {
@@ -146,6 +165,7 @@ namespace atl {
 	bool TitleScene::selectButtonUp() {
 		int currentButtonInt = static_cast<int>(currentSelectButton_);
 
+		ResourceManager::getResourceManager()->playSoundRes("sound/SE/TitleSceneCursorChange.ogg",DX_PLAYTYPE_BACK);
 		--currentButtonInt;
 
 		// 上からさらに上入力したら、下に戻る
@@ -163,6 +183,7 @@ namespace atl {
 		int currentButtonInt = static_cast<int>(currentSelectButton_);
 
 		// インデックスをインクリメントして、一つ下のボタンを選択
+		ResourceManager::getResourceManager()->playSoundRes("sound/SE/TitleSceneCursorChange.ogg", DX_PLAYTYPE_BACK);
 		currentButtonInt++;
 		// インデックスが範囲外になった場合は、最上部のボタンを選択
 		if (currentButtonInt >= static_cast<int>(e_SelectTitleButton::BUTTON_MAX)) {
@@ -178,6 +199,7 @@ namespace atl {
 		// 最初の 1 フレームで、フェードアウトを開始
 		if (seq_.isStart()) {
 			FadeInOutManager::getFadeInOutManager()->startFadeOut();
+			ResourceManager::getResourceManager()->playSoundRes("sound/SE/TitleSceneStart.ogg", DX_PLAYTYPE_BACK);
 		}
 
 		// フェードが終わったら、ダンジョンシーンに切り替える
@@ -199,7 +221,7 @@ namespace atl {
 			totalDeltaTime_ = 0.0f;
 			// ボタンを消す
 			isDisplayButton = false;
-
+			ResourceManager::getResourceManager()->playSoundRes("sound/SE/NextPaper.ogg", DX_PLAYTYPE_BACK);
 		}
 
 
@@ -210,6 +232,7 @@ namespace atl {
 			if (totalDeltaTime_ >= LOG_LINE_INTERVAL) {
 				totalDeltaTime_ = 0.0f;
 				++drawLogLine_; // 表示行増やす
+				ResourceManager::getResourceManager()->playSoundRes("sound/SE/NextPaper.ogg", DX_PLAYTYPE_BACK);
 			}
 		}
 

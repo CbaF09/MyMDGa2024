@@ -77,6 +77,9 @@ namespace atl {
 		// 初期設定
 		bool seqInit(float deltaTime);
 
+		// 音源データのボリューム設定
+		void volumeSetting();
+
 		// キー入力待機
 		bool seqKeyInputWait(float deltaTime);
 		// スタートボタンを押した時の処理

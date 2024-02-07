@@ -9,8 +9,8 @@ namespace atl {
 	// エンターキーかスペースキーを押すとタイトルに戻る
 
 	class GameOverScene final : public Base_Scene {
-
 	public:
+		~GameOverScene();
 
 	private:
 
@@ -23,7 +23,7 @@ namespace atl {
 
 		SEQUENCE(GameOverScene, &GameOverScene::seqInit);
 		bool seqInit(float deltaTime);
-		bool seqDraw(float deltaTime);
+		bool seqUpdata(float deltaTime);
 
 	};
 

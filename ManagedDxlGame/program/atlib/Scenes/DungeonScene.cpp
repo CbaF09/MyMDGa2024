@@ -73,7 +73,7 @@ namespace atl {
 		if (isNextFloorTransition) { drawNextFloorTransition(); }
 
 		//debug_displayMap(deltaTime);
-		debug_displayDungeonParam(deltaTime);
+		//debug_displayDungeonParam(deltaTime);
 	}
 
 	// ŽŸ‚ÌŠK‘w‚ð•`‰æ‚·‚é

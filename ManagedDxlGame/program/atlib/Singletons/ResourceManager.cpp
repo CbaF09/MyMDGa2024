@@ -57,7 +57,7 @@ namespace atl {
 		auto handle = getSoundRes(filepath);
 		// ヴォリュームの値が正しいかチェック
 		if (0 <= volume || volume <= 255) {
-			// playSoundMemとハンドルを入れる引数の順が違いますが、DXlibの仕様です
+			// PlaySoundMemとハンドルを入れる引数の順が違いますが、DXlibの仕様なので問題なし
 			ChangeVolumeSoundMem(volume, handle);
 		}
 	}
@@ -80,9 +80,10 @@ namespace atl {
 		}
 
 		// soundResourceMap_ を走査
-		if (auto it = soundResouceMap_.find(filepath); it != graphResourceMap_.end()) {
+		if (auto it = soundResouceMap_.find(filepath); it != soundResouceMap_.end()) {
 			DeleteSoundMem(it->second);
 			soundResouceMap_.erase(filepath);
+			return true;
 		}
 		
 		// 発見できなかった場合
