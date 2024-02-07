@@ -13,6 +13,7 @@ namespace atl {
     class DungeonCreater;
     class Atl3DCamera;
     class SelectWindow;
+    class MenuWindow;
 
     // ダンジョンシーン
     // 役割 ... ダンジョン探索シーン
@@ -77,13 +78,17 @@ namespace atl {
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
-        const int NEXT_FLOOR_TEXT_FONTSIZE = 30;
+
+        const int NEXT_FLOOR_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
 
         // テキストログ関連 ----------------------------
         const tnl::Vector2i TEXT_LOG_POSITION{ 20,550 };   // テキストログを描画する位置 ( 一番上の行 )
 
         // 選択肢ウィンドウ関連 ------------------------
         Shared<SelectWindow> selectWindow_ = nullptr;
+
+        // メニュー関連 --------------------------------
+        Shared<MenuWindow> menuWindow_ = nullptr;
 
         //----------------------------------------------
         // メソッド

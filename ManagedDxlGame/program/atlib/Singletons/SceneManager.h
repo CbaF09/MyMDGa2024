@@ -35,34 +35,3 @@ namespace atl {
     };
 
 };
-
-/* Scene_Dummy‚ğŒÄ‚Ño‚·ƒTƒ“ƒvƒ‹
-
-#pragma once
-
-#include <time.h>
-#include <string>
-#include <numbers>
-#include <functional>
-#include "../dxlib_ext/dxlib_ext.h"
-#include "../atlib/Singletons/SceneManager.h"
-#include "../atlib/Scenes/Scene_Dummy.h"
-#include "../atlib/Utilities/AtlRandom.h"
-#include "gm_main.h"
-
-void gameStart() {
-    SetFontSize(15);
-    atl::mtRandomInit();
-    atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
-}
-
-void gameMain(float delta_time) {
-
-    atl::SceneManager::getSceneManager()->nowSceneUpdate(delta_time);
-}
-
-void gameEnd() {
-
-}
-
-*/

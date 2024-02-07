@@ -21,6 +21,9 @@ namespace atl {
 				else { tnl::DebugTrace("\n------------------------------\nDungeonScene::デストラクタ メモリ解放 => 正常"); }
 			}
 			tnl::DebugTrace("\n------------------------------\n"); // ログが見づらいので最後に改行と切り取り線を入れる
+
+			// フォントデータ解放
+			DeleteFontToHandle(EPILOGUE_FONT);
 		}
 	}
 
@@ -69,17 +72,13 @@ namespace atl {
 			seq_.cancelInvoke(&GameClearScene::invokeDrawLogLineIncrement);
 		}
 
-		// フォントサイズと透明度を設定しながらテキストを描画
-		int beforeFontSize = GetFontSize();
-		SetFontSize(EPILOGUE_STRING_FONTSIZE);
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, textAlpha_);
 		// 表示すべき行を全て表示する
 		for (int i = 0; i < drawLogLine_; ++i) {
-			DrawStringEx(TEXT_POSITION.x + (i * TEXT_OFFSET.x), TEXT_POSITION.y + (i * TEXT_OFFSET.y), -1, "%s", epiloguePage[static_cast<int>(currentPage_)][i].c_str());
+			DrawStringToHandleEx(static_cast<float>(TEXT_POSITION.x + (i * TEXT_OFFSET.x)), static_cast<float>(TEXT_POSITION.y + (i * TEXT_OFFSET.y)), -1,EPILOGUE_FONT, "%s", epiloguePage[static_cast<int>(currentPage_)][i].c_str());
 		}
 
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND,0);
-		SetFontSize(beforeFontSize);
 
 		// 全行表示されたら、透明化に入る
 		if (drawLogLine_ == epiloguePage[static_cast<int>(currentPage_)].size()) {

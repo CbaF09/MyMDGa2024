@@ -19,13 +19,15 @@ namespace atl {
 		const float LOGO_SIZE = 0.7f;						// タイトルロゴのサイズ ( 1 で画像元サイズ )
 		
 		// UI関連
-		// 現在選択中のボタンを表現する enum
+		
+		const int BUTTON_FONT = CreateFontToHandle(NULL, 30, -1);
+
 		enum class e_SelectTitleButton {
 			START,
 			PROROGUE,
 			EXIT,
 			BUTTON_MAX
-		}
+		} // 現在選択中のボタンを表現する enum
 		currentSelectButton_ = e_SelectTitleButton::START;
 		const tnl::Vector2i BUTTON_POSITION{ 1000,400 };	// 一番上のボタンの中心位置
 		const tnl::Vector2i BUTTON_OFFSET{ 0,100 };			// 一番上のボタンからオフセットされる量
@@ -36,6 +38,8 @@ namespace atl {
 		bool isDisplayButton = false;		// ボタンを表示するか否かのフラグ
 
 		// プロローグ関連
+		const int PROROGUE_FONT = CreateFontToHandle(NULL, 25, -1);
+
 		const std::vector<std::string> prorogueText = {
 			"(エンターキーかスペースキーで戻る)",
 			"",
@@ -51,7 +55,6 @@ namespace atl {
 		const int32_t PROROGUE_BACKGROUND_BRIGHT = 126;	// プロローグ中の背景の明るさ ( 0 で元と同じ、255 で真っ黒 )
 		const tnl::Vector2i TEXT_POSITION{ 25,250 };	// 一番上の行の表示位置
 		const tnl::Vector2i TEXT_OFFSET{ 5,40 };		// 一行ごとにオフセットされる量
-		const int32_t PROROGUE_STRING_FONTSIZE = 25;	// プロローグのフォントサイズ
 		const int32_t PROROGUE_FIRST_LOG = 3;			// 一番最初に表示される行数
 		const float LOG_LINE_INTERVAL = 5.0f;			// 表示行を増やす間隔 ( 秒 )
 		int32_t drawLogLine_ = 0;

@@ -16,15 +16,16 @@ namespace atl {
 		// 変数
 
 		// プロローグ関連
+		const int EPILOGUE_FONT = CreateFontToHandle(NULL, 25, -1);
+
 		const int32_t EPILOGUE_BACKGROUND_BRIGHT = 126;	// 背景の明るさ ( 0 で元と同じ、255 で真っ黒 )
 		const tnl::Vector2i TEXT_POSITION{ 25,150 };	// 一番上の行の表示位置
 		const tnl::Vector2i TEXT_OFFSET{ 0,45 };		// 一行ごとにオフセットされる量
-		const int32_t EPILOGUE_STRING_FONTSIZE = 25;	// 文字の大きさ
 		const float LOG_LINE_INTERVAL = 5.0f;			// 表示行を増やす間隔 ( 秒 )
 		int32_t drawLogLine_ = 0;		// 描画される行数
 		float totalDeltaTime_ = 0.0f;	// 累積時間
 		int32_t textAlpha_ = 255;		// テキストの透明度用変数
-		const int32_t ALPHA_MINUS_SPEED = 2.2f; // テキストが透明になっていく速度
+		const int32_t ALPHA_MINUS_SPEED = 2; // テキストが透明になっていく速度
 		const float FULL_ALPHA_TIME = 4.5;	// 全テキストが描画された後、最大透明度のままの待機時間
 		enum class e_EpiloguePage {
 			ZERO = 0,

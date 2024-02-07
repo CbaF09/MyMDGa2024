@@ -26,7 +26,8 @@ void gameStart() {
 	SetMouseDispFlag(false);
     LockCursorToWindow();
 
-	//atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
+    //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
+
 	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
 }
 
@@ -60,7 +61,7 @@ void LockCursorToWindow() {
     clipRect.right = lr.x;
     clipRect.bottom = lr.y;
 
-    ClipCursor(&clipRect); // カーソルをこの領域に制限
+    ClipCursor(&clipRect); // カーソルを制限
 }
 
 ////-----------------------------------------------------------------------------------------------------------

@@ -22,6 +22,9 @@ namespace atl {
 			else { tnl::DebugTrace("\n------------------------------\nSelectWindow::デストラクタ メモリ解放 => 正常"); }
 		}
 		tnl::DebugTrace("\n------------------------------\n"); // ログが見づらいので最後に改行と切り取り線を入れる
+
+		DeleteFontToHandle(QUESTION_FONT);
+		DeleteFontToHandle(YES_NO_FONT);
 	}
 
 
@@ -33,18 +36,14 @@ namespace atl {
 			auto questionTextUI = resourceManager->getGraphRes("graphics/UI/SelectWindowQuestionText.png");
 			DrawRotaGraph(QUESTION_UI_POSITION.x, QUESTION_UI_POSITION.y, QUESTION_UI_SIZE, 0, questionTextUI, true);
 
-			// 質問文を描画
-			int beforeFontSize = GetFontSize();
-			SetFontSize(QUESTION_STRING_FONTSIZE);
 			
 			// 中央揃えする為の計算
 			int textWidth = GetDrawStringWidth(questionText_.c_str(), strlen(questionText_.c_str()));
 			int drawPosX = QUESTION_UI_POSITION.x - textWidth / 2;
-			int drawPosY = QUESTION_UI_POSITION.y - QUESTION_STRING_FONTSIZE / 2;
+			int drawPosY = QUESTION_UI_POSITION.y - GetFontSizeToHandle(QUESTION_FONT) / 2;
 
 			// 黒文字で描画
-			DrawStringEx(drawPosX, drawPosY, GetColor(0,0,0), questionText_.c_str());
-			SetFontSize(beforeFontSize);
+			DrawStringToHandleEx(drawPosX, drawPosY, GetColor(0,0,0),QUESTION_FONT,questionText_.c_str());
 		}
 
 		{// はい、いいえを描画
@@ -54,20 +53,16 @@ namespace atl {
 			DrawRotaGraph(NO_UI_POSITION.x, NO_UI_POSITION.y, YES_NO_UI_SIZE, 0, yesNoTextUI,true);
 
 			// YES・NOを描画
-			int beforeFontSize = GetFontSize();
-			SetFontSize(YES_NO_STRING_FONTSIZE);
-
 			switch (currentSelectedChoice_) {
 			case e_SelectChoice::YES:
-				DrawStringEx(YES_STRING_POSITION.x, YES_STRING_POSITION.y, GetColor(255, 0, 0), "はい");
-				DrawStringEx(NO_STRING_POSITION.x, NO_STRING_POSITION.y, GetColor(200, 200, 200), "いいえ");
+				DrawStringToHandleEx(YES_STRING_POSITION.x, YES_STRING_POSITION.y, GetColor(255, 0, 0),YES_NO_FONT, "はい");
+				DrawStringToHandleEx(NO_STRING_POSITION.x, NO_STRING_POSITION.y, GetColor(200, 200, 200), YES_NO_FONT, "いいえ");
 				break;
 			case e_SelectChoice::NO:
-				DrawStringEx(YES_STRING_POSITION.x, YES_STRING_POSITION.y, GetColor(200, 200, 200), "はい");
-				DrawStringEx(NO_STRING_POSITION.x, NO_STRING_POSITION.y, GetColor(255, 0, 0), "いいえ");
+				DrawStringToHandleEx(YES_STRING_POSITION.x, YES_STRING_POSITION.y, GetColor(200, 200, 200), YES_NO_FONT, "はい");
+				DrawStringToHandleEx(NO_STRING_POSITION.x, NO_STRING_POSITION.y, GetColor(255, 0, 0), YES_NO_FONT, "いいえ");
 				break;
 			}
-			SetFontSize(beforeFontSize);
 		}
 
 		// A,Dで選択肢を変える

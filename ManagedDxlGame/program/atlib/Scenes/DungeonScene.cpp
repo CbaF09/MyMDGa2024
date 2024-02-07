@@ -15,12 +15,13 @@
 #include "../MeshObject/PlayerPawn.h"
 #include "../MeshObject/ItemPawn.h"
 #include "../Object/SelectWindow.h"
+#include "../Object/MenuWindow.h"
 #include "../Utilities/Atl3DCamera.h"
 
 
 namespace atl {
 
-	DungeonScene::~DungeonScene(){
+	DungeonScene::~DungeonScene() {
 		{// ダンジョンシーンで使っているリソースを解放
 
 			// 解放するリソースのファイルパスの一時的配列を作成
@@ -38,6 +39,9 @@ namespace atl {
 			}
 			tnl::DebugTrace("\n------------------------------\n"); // ログが見づらいので最後に改行と切り取り線を入れる
 		}
+
+		// フォントデータの解放
+		DeleteFontToHandle(NEXT_FLOOR_FONT);
 
 		{// ダンジョンクリエイターのシングルトンを解放
 			DungeonCreater::getDungeonCreater()->deleteDungeonCreater();
@@ -67,29 +71,23 @@ namespace atl {
 		if (selectWindow_) selectWindow_->draw(deltaTime);
 
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
-		
+
 		// 現在階層の描画は真っ黒な画面の上にやりたいので、この位置
 		if (isNextFloorTransition) { drawNextFloorTransition(); }
 
-		debug_displayMap(deltaTime);
+		//debug_displayMap(deltaTime);
 		debug_displayDungeonParam(deltaTime);
 	}
 
 	// 次の階層を描画する
 	void DungeonScene::drawNextFloorTransition() {
-		// フォントサイズ変更
-		int beforeFontSize = GetFontSize();
-		SetFontSize(NEXT_FLOOR_TEXT_FONTSIZE);
-
 		// 現在階層が、最上階 ( クリア階 ) でない場合の描画
 		if (currentFloor_ != MAX_FLOOR) {
-			DrawStringEx(DXE_WINDOW_WIDTH >> 1, DXE_WINDOW_HEIGHT >> 1, -1, "ワイズマンの修練塔 [%d / %d]", currentFloor_,MAX_FLOOR);
+			DrawStringToHandleEx(DXE_WINDOW_WIDTH >> 1, DXE_WINDOW_HEIGHT >> 1, -1, NEXT_FLOOR_FONT, "ワイズマンの修練塔 [%d / %d]", currentFloor_, MAX_FLOOR);
 		}
 		else { // クリア階の場合の描画
-			DrawStringEx(DXE_WINDOW_WIDTH >> 1, DXE_WINDOW_HEIGHT >> 1, -1, "ワイズマンの修練塔 [ 最上階 ]", currentFloor_);
+			DrawStringToHandleEx(DXE_WINDOW_WIDTH >> 1, DXE_WINDOW_HEIGHT >> 1, -1, NEXT_FLOOR_FONT, "ワイズマンの修練塔 [ 最上階 ]",  currentFloor_);
 		}
-		
-		SetFontSize(beforeFontSize);
 	}
 
 	void DungeonScene::drawUI(float deltaTime) {
@@ -98,19 +96,21 @@ namespace atl {
 
 		// メニューを開いている時はログ表示無し
 		if (!isOpenMenu_) { TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); }
+
+		if (menuWindow_) menuWindow_->update(deltaTime);
 	}
 
 	void DungeonScene::drawHPbar() {
 		// 背景 ( 枠 ) の描画
 		auto HPbarBackGround = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/HPbarBackGround.png");
-		DrawExtendGraph(HP_BAR_LEFT_UP_POINT.x, HP_BAR_LEFT_UP_POINT.y, HP_BAR_RIGHT_DOWN_POINT.x,HP_BAR_RIGHT_DOWN_POINT.y,HPbarBackGround,true);
+		DrawExtendGraph(HP_BAR_LEFT_UP_POINT.x, HP_BAR_LEFT_UP_POINT.y, HP_BAR_RIGHT_DOWN_POINT.x, HP_BAR_RIGHT_DOWN_POINT.y, HPbarBackGround, true);
 
 		// 赤ゲージの描画
 		auto HPbarRed = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/HPbarRed.bmp");
 		DrawExtendGraph(
-			HP_BAR_LEFT_UP_POINT.x + HP_BAR_ADJUST_VALUE.x, 
-			HP_BAR_LEFT_UP_POINT.y + HP_BAR_ADJUST_VALUE.y, 
-			HP_BAR_RIGHT_DOWN_POINT.x - HP_BAR_ADJUST_VALUE.x, 
+			HP_BAR_LEFT_UP_POINT.x + HP_BAR_ADJUST_VALUE.x,
+			HP_BAR_LEFT_UP_POINT.y + HP_BAR_ADJUST_VALUE.y,
+			HP_BAR_RIGHT_DOWN_POINT.x - HP_BAR_ADJUST_VALUE.x,
 			HP_BAR_RIGHT_DOWN_POINT.y - HP_BAR_ADJUST_VALUE.y, HPbarRed, true);
 
 		// 緑ゲージの描画 ( HP がゼロでない場合のみ描画 )
@@ -124,7 +124,7 @@ namespace atl {
 				HP_BAR_RIGHT_DOWN_POINT.y - HP_BAR_ADJUST_VALUE.y, HPbarGreen, true);
 		}
 	}
-	
+
 	void DungeonScene::sceneUpdate(float deltaTime) {
 		seq_.update(deltaTime);
 
@@ -228,7 +228,8 @@ namespace atl {
 		// フェードイン ・ アウト中であれば操作不能
 		if (FadeInOutManager::getFadeInOutManager()->isFading()) return;
 
-		if (!isOpenMenu_) {
+		// メニューウィンドウ表示中は、移動・攻撃できない
+		if (!menuWindow_) {
 			if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
 				// プレイヤー側でもキー入力待ちをしていて、プレイヤー操作は 1 フレーム分遅れるので、一回 呼ぶ
 				player_->playerUpdate(deltaTime);
@@ -243,8 +244,16 @@ namespace atl {
 			}
 		}
 
+		// 右クリックでメニューウィンドウの生成・削除を行う
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
-			isOpenMenu_ = !isOpenMenu_;
+			// メニューウィンドウがある場合は削除、無い場合は生成する
+			if (menuWindow_) {
+				menuWindow_.reset();
+			}
+			else if(!menuWindow_) { 
+				menuWindow_ = std::make_shared<MenuWindow>(player_->getPlayerData()->getInventory()); 
+			}
+
 			player_->playerUpdate(deltaTime);
 		}
 	}
@@ -255,7 +264,7 @@ namespace atl {
 		if (!player_->getIsAlreadyTurn()) {
 			player_->playerUpdate(deltaTime);
 		}
-		
+
 		// 全エネミーの行動が終わったかフラグ作る
 		bool allEnemyTurned = true;
 		{// エネミーの行動処理
@@ -277,7 +286,7 @@ namespace atl {
 					auto itemData = (*it)->getItemData();
 					// インベントリにアイテムデータを格納
 					player_->getPlayerData()->getInventory()->pushBackItem(itemData);
-					
+
 					// テキストログに拾ったアイテム名を出力
 					auto itemName = itemData->getItemName();
 					std::string textLog = "　" + itemName + "を拾った";
@@ -336,7 +345,7 @@ namespace atl {
 			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
 				selectWindow_.reset();
 				seq_.change(&DungeonScene::seqToNextFloor);
-				
+
 			}
 			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) { // いいえ、の時
 				selectWindow_.reset();
@@ -366,17 +375,17 @@ namespace atl {
 			SEQ_CO_YIELD_RETURN_TIME(nextFloorTransitionTime, deltaTime, [&] {})
 
 
-			// 最大階層に到達したら、クリアシーンに遷移
-			if (currentFloor_ >= MAX_FLOOR) {
-				SceneManager::getSceneManager()->changeScene(std::make_shared<GameClearScene>());
-			}
-			else {
-				// ダンジョンを生成し、フェードインし画面を表示させる
-				generateDungeon();
-				FadeInOutManager::getFadeInOutManager()->startFadeIn();
-				seq_.change(&DungeonScene::seqAllTurnFlagOff);
-			}
-			
+				// 最大階層に到達したら、クリアシーンに遷移
+				if (currentFloor_ >= MAX_FLOOR) {
+					SceneManager::getSceneManager()->changeScene(std::make_shared<GameClearScene>());
+				}
+				else {
+					// ダンジョンを生成し、フェードインし画面を表示させる
+					generateDungeon();
+					FadeInOutManager::getFadeInOutManager()->startFadeIn();
+					seq_.change(&DungeonScene::seqAllTurnFlagOff);
+				}
+
 			// 次階層へ遷移中フラグをオフに
 			isNextFloorTransition = false;
 		}
@@ -447,16 +456,18 @@ namespace atl {
 	}
 
 	void DungeonScene::generateWall(int generatePosX, int generatePosZ) {
-		if (!originWall_) originWall_ = std::make_shared<Wall>(tnl::Vector3{ CELL_FULL_LENGTH, CELL_FULL_LENGTH ,CELL_FULL_LENGTH });
+		// 複製元となるオリジンを生成
+		if (!originWall_) originWall_ = std::make_shared<Wall>(tnl::Vector3{ CELL_FULL_LENGTH, CELL_FULL_LENGTH * 2 ,CELL_FULL_LENGTH });
 		Shared<Wall> newWall = std::make_shared<Wall>(originWall_->getMesh());
 		newWall->getMesh()->pos_.x = static_cast<float>(generatePosX * CELL_FULL_LENGTH);
-		newWall->getMesh()->pos_.y = static_cast<float>(CELL_FULL_LENGTH) / 2;
+		newWall->getMesh()->pos_.y = static_cast<float>(CELL_FULL_LENGTH);
 		newWall->getMesh()->pos_.z = static_cast<float>(generatePosZ * CELL_FULL_LENGTH);
 		newWall->setMeshSizeVector3(tnl::Vector3{ CELL_FULL_LENGTH, CELL_FULL_LENGTH, CELL_FULL_LENGTH });
 		walls_.emplace_back(newWall);
 	}
 
 	void DungeonScene::generateGround(int generatePosX, int generatePosZ) {
+		// 複製元となるオリジンを生成
 		if (!originGroundTile_) originGroundTile_ = std::make_shared<GroundTile>(tnl::Vector3{ CELL_FULL_LENGTH,CELL_FULL_LENGTH,0 }); // Plane モデルの生成における関係で、Yの所にZの値を入れてます
 		Shared<GroundTile> newGroundTile = std::make_shared<GroundTile>(originGroundTile_->getMesh());
 		newGroundTile->getMesh()->pos_.x = static_cast<float>(generatePosX * CELL_FULL_LENGTH);
@@ -467,7 +478,7 @@ namespace atl {
 	//------------------------
 	// デバッグ用
 	//------------------------
-	
+
 	void DungeonScene::debug_displayDungeonParam(float deltaTime) {
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
@@ -495,7 +506,7 @@ namespace atl {
 		for (int x = 0; x < field.size(); ++x) {
 			for (int y = 0; y < field[x].size(); ++y) {
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM) {
-					DrawStringEx((x * 15),(y * 15), -1, " ");
+					DrawStringEx((x * 15), (y * 15), -1, " ");
 				}
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_PATH) {
 					DrawStringEx((x * 15), (y * 15), -1, "-");
@@ -508,7 +519,7 @@ namespace atl {
 
 		for (const auto& enemy : enemies_) {
 			auto& enemyPos = enemy->get2Dpos();
-			DrawStringEx(enemyPos.x * 15, enemyPos.y * 15,GetColor(255,0,0),"e");
+			DrawStringEx(enemyPos.x * 15, enemyPos.y * 15, GetColor(255, 0, 0), "e");
 		}
 
 		for (const auto& item : items_) {

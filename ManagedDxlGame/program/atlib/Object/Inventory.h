@@ -6,8 +6,12 @@ namespace atl {
 
 	class Inventory final {
 	public:
-		Inventory();
+		Inventory() {};
 
+		// デバッグ用
+		Inventory(Shared<ItemData> items);
+
+		// ゲッター
 		const std::list<Shared<ItemData>>& getItemList() const { return itemList_; }
 		
 		// アイテムをリストに追加する

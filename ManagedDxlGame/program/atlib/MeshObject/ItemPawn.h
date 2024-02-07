@@ -26,7 +26,7 @@ namespace atl {
 		// プレイヤーへの弱参照
 		std::weak_ptr<PlayerPawn> weakPlayer_;
 		// アイテムポーンは、アイテムデータを持つ
-		Shared<ItemData> itemData_ = std::make_shared<ItemData>();
+		Shared<ItemData> itemData_ = std::make_shared<ItemData>(1);
 		// アイテムの周りに浮かぶパーティクル用
 		Shared<dxe::Particle> itemParticle_ = std::make_shared<dxe::Particle>("graphics/particle/ItemEffect.bin");
 	};

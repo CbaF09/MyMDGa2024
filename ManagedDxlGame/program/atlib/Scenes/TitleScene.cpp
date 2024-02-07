@@ -23,6 +23,10 @@ namespace atl {
 			}
 			tnl::DebugTrace("\n------------------------------\n"); // ログが見づらいので最後に改行と切り取り線を入れる
 		}
+
+		// フォントデータ解放
+		DeleteFontToHandle(PROROGUE_FONT);
+		DeleteFontToHandle(BUTTON_FONT);
 	}
 	void TitleScene::sceneUpdate(float deltaTime) {
 		draw(deltaTime);
@@ -53,10 +57,6 @@ namespace atl {
 	void TitleScene::drawButton(float deltaTime) {
 		auto resourceManager = ResourceManager::getResourceManager();
 
-		// 元のフォントサイズを保存
-		int beforeFontSize = GetFontSize();
-		SetFontSize(30);
-
 		// ボタン enum の数だけ、ボタンを描画する
 		for (int i = 0; i < static_cast<int>(e_SelectTitleButton::BUTTON_MAX); ++i) {
 			
@@ -84,16 +84,13 @@ namespace atl {
 				break;
 			}
 
-			DrawStringEx(actualButtonPos.x + BUTTON_STRING_OFFSET.x, actualButtonPos.y + BUTTON_STRING_OFFSET.y, -1, buttonName.c_str());
+			DrawStringToHandleEx(actualButtonPos.x + BUTTON_STRING_OFFSET.x, actualButtonPos.y + BUTTON_STRING_OFFSET.y, -1, BUTTON_FONT, buttonName.c_str());
 
 			if (static_cast<e_SelectTitleButton>(i) == currentSelectButton_) {
 				// 元に戻す
 				SetDrawBright(255, 255, 255);
 			}
 		}
-		
-		// フォントサイズを元に戻す
-		SetFontSize(beforeFontSize);
 	}
 
 	bool TitleScene::seqInit(float deltaTime) {
@@ -216,13 +213,10 @@ namespace atl {
 			}
 		}
 
-		int beforeFontSize = GetFontSize();
-		SetFontSize(PROROGUE_STRING_FONTSIZE);
 		// 表示すべき行を全て表示する
 		for (int i = 0; i < drawLogLine_; ++i) {
-			DrawStringEx(TEXT_POSITION.x + (i * TEXT_OFFSET.x), TEXT_POSITION.y + (i * TEXT_OFFSET.y), -1, "%s", prorogueText[i].c_str());
+			DrawStringToHandleEx(TEXT_POSITION.x + (i * TEXT_OFFSET.x), TEXT_POSITION.y + (i * TEXT_OFFSET.y), -1,PROROGUE_FONT, "%s", prorogueText[i].c_str());
 		}
-		SetFontSize(beforeFontSize);
 
 		// エンターキーかスペースキーでシーケンス遷移
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE,eKeys::KB_RETURN)) {

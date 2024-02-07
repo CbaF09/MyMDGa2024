@@ -27,14 +27,14 @@ namespace atl {
 
 		const tnl::Vector2i QUESTION_UI_POSITION{ DXE_WINDOW_WIDTH/2,200 };	// 質問のUI位置
 		const float QUESTION_UI_SIZE = 0.6f;									// 質問のUIサイズ ( 1 で画像元サイズ )
-		const int QUESTION_STRING_FONTSIZE = 25;							// 質問のフォントサイズ
 		const tnl::Vector2i YES_UI_POSITION{ DXE_WINDOW_WIDTH / 4,400 };	// YES の選択肢の位置
 		const tnl::Vector2i NO_UI_POSITION{ DXE_WINDOW_WIDTH - DXE_WINDOW_WIDTH / 4,400 };	// NO の選択肢の位置
 		const tnl::Vector2i YES_STRING_POSITION{300,390};	// はい、の文字を表示する位置
 		const tnl::Vector2i NO_STRING_POSITION{935,390};	// いいえ、の文字を表示する位置
 		const float YES_NO_UI_SIZE = 0.4f;									// YES・NO のUIサイズ ( 1 で画像元サイズ )
-		const int YES_NO_STRING_FONTSIZE = 25;								// YES・NO のフォントサイズ
 
+		const int QUESTION_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
+		const int YES_NO_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
 
 	};
 

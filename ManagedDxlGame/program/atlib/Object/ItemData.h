@@ -6,6 +6,8 @@ namespace atl {
 	class ItemData final {
 	public:
 		ItemData();
+		// デバッグ用 アイテムIDからアイテムを生成する
+		explicit ItemData(int32_t itemID);
 
 		const Shared<dxe::Texture> getItemIllust() { return itemIllust_; }
 		const std::string& getItemName() const { return itemName_; }
@@ -16,8 +18,9 @@ namespace atl {
 		Shared<dxe::Texture> itemIllust_ = nullptr;
 
 		enum class e_itemList {
-			HealPotion = 0,
-
+			NONE = 0,
+			HealPotion = 1,
+			ITEM_MAX,
 		};
 	};
 

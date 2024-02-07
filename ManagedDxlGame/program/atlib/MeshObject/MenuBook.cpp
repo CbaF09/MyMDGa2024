@@ -8,14 +8,18 @@ namespace atl {
 
 		tnl::Vector3 size{ 40,50,15 };
 
+		auto texture = dxe::Texture::CreateFromFile("graphics/texture/MenuBookTexture.png");
+		auto textureFront = dxe::Texture::CreateFromFile("graphics/texture/MenuBookFrontTexture.png");
+
 		auto mesh = dxe::Mesh::CreateBoxMV(size,
-			dxe::Texture::CreateFromFile("graphics/box/box_left.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_right.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_up.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_down.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_back.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_forword.bmp")
+			texture,
+			texture,
+			texture,
+			texture,
+			texture,
+			textureFront
 		);
+
 		mesh->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(-50));
 		mesh->rot_ *= tnl::Quaternion::RotationAxis({ 1,0,0 }, tnl::ToRadian(15));
 		initRot_ = mesh->rot_;

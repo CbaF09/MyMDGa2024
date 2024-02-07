@@ -317,6 +317,9 @@
     <ClCompile Include="program\atlib\Object\Inventory.cpp">
       <Filter>program\[002] atlib\Object</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\Object\MenuWindow.cpp">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">
@@ -630,6 +633,9 @@
       <Filter>program\[002] atlib\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\Object\Inventory.h">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Object\MenuWindow.h">
       <Filter>program\[002] atlib\Object</Filter>
     </ClInclude>
   </ItemGroup>
