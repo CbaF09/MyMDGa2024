@@ -56,7 +56,6 @@ namespace atl {
 
         bool seqProcess(float deltaTime) {
 
-            menu_->update(deltaTime);
 
             {// デバッグ用。ESCキーでウィンドウ落とす。
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) {

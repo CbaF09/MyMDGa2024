@@ -12,16 +12,21 @@ namespace atl {
 		const Shared<dxe::Texture> getItemIllust() { return itemIllust_; }
 		const std::string& getItemName() const { return itemName_; }
 
-	private:
-		int32_t itemID_ = 0;
-		std::string itemName_ = "";
-		Shared<dxe::Texture> itemIllust_ = nullptr;
+		// g—pŒø‰ÊBenum‚ÅŠÇ—
+		void executeItemPerformAction();
 
+	private:
 		enum class e_itemList {
 			NONE = 0,
 			HealPotion = 1,
 			ITEM_MAX,
 		};
+
+		e_itemList itemID_ = static_cast<e_itemList>(0);
+		std::string itemName_ = "";
+		Shared<dxe::Texture> itemIllust_ = nullptr;
+
+
 	};
 
 }

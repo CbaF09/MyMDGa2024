@@ -20,7 +20,7 @@ namespace atl {
 		
 		// UI関連
 		
-		const int BUTTON_FONT = CreateFontToHandle(NULL, 30, -1);
+		const int BUTTON_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
 
 		enum class e_SelectTitleButton {
 			START,
@@ -38,7 +38,7 @@ namespace atl {
 		bool isDisplayButton = false;		// ボタンを表示するか否かのフラグ
 
 		// プロローグ関連
-		const int PROROGUE_FONT = CreateFontToHandle(NULL, 25, -1);
+		const int PROROGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
 
 		const std::vector<std::string> prorogueText = {
 			"(エンターキーかスペースキーで戻る)",

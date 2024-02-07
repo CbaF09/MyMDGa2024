@@ -5,8 +5,10 @@ namespace atl {
 
 	void Base_ActorData::changeCurrentHP(int32_t addsumValue) {
 		currentHP_ += addsumValue;
-		// HPがゼロ以下になったら、ゼロにする
+		// HPがゼロを下回ったら、ゼロにクランプ
 		if (currentHP_ < 0) { currentHP_ = 0; }
+		// HP が maxHP を超えたら、maxHP にクランプ
+		if (currentHP_ > maxHP_) { currentHP_ = maxHP_; }
 
 		// 現在HPの割合を計算
 		calcAndSetCurrentHPpersent();

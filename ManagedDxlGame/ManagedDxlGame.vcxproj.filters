@@ -602,9 +602,6 @@
     <ClInclude Include="program\atlib\MeshObject\ForwardArrow.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\Singletons\TextLogManager.h">
-      <Filter>program\[002] atlib\Singletons</Filter>
-    </ClInclude>
     <ClInclude Include="program\atlib\Object\ItemData.h">
       <Filter>program\[002] atlib\Object</Filter>
     </ClInclude>
@@ -637,6 +634,9 @@
     </ClInclude>
     <ClInclude Include="program\atlib\Object\MenuWindow.h">
       <Filter>program\[002] atlib\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Singletons\TextLogManager.h">
+      <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

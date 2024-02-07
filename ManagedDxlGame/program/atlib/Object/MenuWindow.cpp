@@ -80,11 +80,4 @@ namespace atl {
 			}
 		}
 	}
-
-	MenuWindow::e_SelectedMenuWindow MenuWindow::update(float deltaTime) {
-		auto retEnum = process(deltaTime);
-		draw(deltaTime);
-		return retEnum;
-	}
-
 }

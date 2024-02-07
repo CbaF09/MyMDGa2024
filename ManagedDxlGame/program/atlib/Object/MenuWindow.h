@@ -25,12 +25,11 @@ namespace atl {
 			NONE,
 		};
 
-		e_SelectedMenuWindow update(float deltaTime);
 		e_SelectedMenuWindow process(float deltaTime);
 		void draw(float deltaTime);
 
 	private:
-		const tnl::Vector2i TOP_STRINGS_POSITION{ DXE_WINDOW_WIDTH / 2,200 }; // 一番上の行の描画位置
+		const tnl::Vector2i TOP_STRINGS_POSITION{ DXE_WINDOW_WIDTH / 3,200 }; // 一番上の行の描画位置
 		const int32_t STRINGS_OFFSET = 30;		// 行間
 		const int32_t ITEM_SYSTEM_OFFSET = 50;  // アイテム一覧とシステム選択肢の間の行間
 		const int SELECTED_COLOR = GetColor(255, 0, 0); // 選択中のカラーの色

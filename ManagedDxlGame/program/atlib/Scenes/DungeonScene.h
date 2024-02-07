@@ -1,5 +1,6 @@
 #pragma once
 #include "../dxlib_ext/dxlib_ext.h"
+#include "../Object/MenuWindow.h"
 #include "Base_Scene.h"
 
 namespace atl {
@@ -13,7 +14,6 @@ namespace atl {
     class DungeonCreater;
     class Atl3DCamera;
     class SelectWindow;
-    class MenuWindow;
 
     // ダンジョンシーン
     // 役割 ... ダンジョン探索シーン
@@ -89,6 +89,7 @@ namespace atl {
 
         // メニュー関連 --------------------------------
         Shared<MenuWindow> menuWindow_ = nullptr;
+        MenuWindow::e_SelectedMenuWindow selectedMenu = MenuWindow::e_SelectedMenuWindow::Item1;
 
         //----------------------------------------------
         // メソッド
@@ -125,12 +126,22 @@ namespace atl {
         bool seqInit(float deltaTime);
         // 現在のターンに応じた処理を実行
         bool seqTurnStateProcess(float deltaTime);
+        // メニューウィンドウ開いている間の処理
+        bool seqMenuWindow(float deltaTime);
+        // アイテムを使う処理
+        bool seqReallyUseItem(float deltaTime);
         // ゲームオーバーの処理 ( ゲームオーバーシーンに遷移 )
         bool seqGameOver(float deltaTime);
         // 敵とプレイヤーの行動完了フラグをオフにする
         bool seqAllTurnFlagOff(float deltaTime);
         // 次の階層に移動している間
         bool seqToNextFloor(float deltaTime);
+        // メニューからタイトルに戻るを選択した時 ( 確認画面 )
+        bool seqReallyReturnToTitle(float deltaTime);
+        // タイトルに戻る間のフェードなどの処理
+        bool seqReturnToTitle(float deltaTime);
+        // アイテムの上に乗った時の処理 ( 拾う、拾えない、など )
+        bool seqOnItemPosition(float deltaTime);
 
         // キー入力待ち
         void processKeyInput(float deltaTime);
@@ -138,6 +149,7 @@ namespace atl {
         void processPlayerMoveTurn(float deltaTime);
         // プレイヤーが階段に乗った時
         void processPlayerOnStairs(float deltaTime);
+
 
         // エネミーの移動処理
         void enemyMove(float deltaTime, bool& allEnemyTurned);

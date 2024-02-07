@@ -90,9 +90,6 @@ namespace atl {
 			if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 				seq_.change(&PlayerPawn::actionAttack);
 			}
-			if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
-				playerHaveMenuBook_->isOpenMenu() ? playerHaveMenuBook_->closeMenu() : playerHaveMenuBook_->openMenu();
-			}
 		}
 		return true;
 	}
@@ -185,11 +182,6 @@ namespace atl {
 			"playerCameraPos ... [ %.2f , %.2f , %.2f ]", playerCamera_->pos_.x, playerCamera_->pos_.y, playerCamera_->pos_.z);
 		DrawStringEx(drawPosX, drawPosY + 45, -1,
 			"moveTarget_ ... [ %.2f , %.2f, %.2f ]", moveTarget_.x, moveTarget_.y, moveTarget_.z);
-		// メニューを開いているか
-		if (playerHaveMenuBook_) {
-			DrawStringEx(drawPosX, drawPosY + 75, -1,
-				"menuOpen ... [ %d ]", playerHaveMenuBook_->isOpenMenu());
-		}
 		// 現在いるエリアのID
 		DrawStringEx(drawPosX, drawPosY + 100, -1,
 			"cellID ... [ %d ]", DungeonCreater::getDungeonCreater()->getFieldCellID(player2Dpos_));

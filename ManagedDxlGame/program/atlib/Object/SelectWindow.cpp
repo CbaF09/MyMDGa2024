@@ -38,7 +38,7 @@ namespace atl {
 
 			
 			// 中央揃えする為の計算
-			int textWidth = GetDrawStringWidth(questionText_.c_str(), strlen(questionText_.c_str()));
+			int textWidth = GetDrawStringWidthToHandle(questionText_.c_str(), strlen(questionText_.c_str()),QUESTION_FONT);
 			int drawPosX = QUESTION_UI_POSITION.x - textWidth / 2;
 			int drawPosY = QUESTION_UI_POSITION.y - GetFontSizeToHandle(QUESTION_FONT) / 2;
 
@@ -74,9 +74,10 @@ namespace atl {
 		}
 	}
 
-	// エンター or スペースを押した時、currentSelectedChoice == YES なら true を返す。NO なら false を返す。
+	// エンター or スペース or 左クリックを押した時、currentSelectedChoice == YES なら true を返す。NO なら false を返す。
 	const SelectWindow::e_SelectChoice& SelectWindow::windowChoice() {
-		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)) {
+		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)||
+			tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 			return currentSelectedChoice_;
 		}
 		return e_SelectChoice::NONE;

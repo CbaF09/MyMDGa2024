@@ -95,9 +95,10 @@ namespace atl {
 		drawHPbar();
 
 		// メニューを開いている時はログ表示無し
-		if (!isOpenMenu_) { TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); }
+		if (!menuWindow_) { TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); }
 
-		if (menuWindow_) menuWindow_->update(deltaTime);
+		// メニューを開いている間の描画
+		if (menuWindow_) { menuWindow_->draw(deltaTime); }
 	}
 
 	void DungeonScene::drawHPbar() {
@@ -196,6 +197,12 @@ namespace atl {
 					seq_.change(&DungeonScene::seqGameOver);
 				}
 			}
+
+			{// メニューウィンドウを開いている場合の処理
+				if (menuWindow_) {
+					seq_.change(&DungeonScene::seqMenuWindow);
+				}
+			}
 		}
 
 		switch (currentTurn_) {
@@ -211,6 +218,8 @@ namespace atl {
 		}
 		return true;
 	}
+
+
 
 	bool DungeonScene::seqGameOver(float deltaTime) {
 		// 最初のフレームでフェードアウトを行い、フェードアウトが完了したらゲームオーバーシーンに遷移
@@ -244,19 +253,15 @@ namespace atl {
 			}
 		}
 
-		// 右クリックでメニューウィンドウの生成・削除を行う
+		// 右クリックでメニューウィンドウの生成を行う
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
-			// メニューウィンドウがある場合は削除、無い場合は生成する
-			if (menuWindow_) {
-				menuWindow_.reset();
-			}
-			else if(!menuWindow_) { 
+			if(!menuWindow_) { 
 				menuWindow_ = std::make_shared<MenuWindow>(player_->getPlayerData()->getInventory()); 
+				seq_.change(&DungeonScene::seqMenuWindow);
 			}
-
-			player_->playerUpdate(deltaTime);
 		}
 	}
+
 
 	// プレイヤーの移動入力
 	void DungeonScene::processPlayerMoveTurn(float deltaTime) {
@@ -277,32 +282,40 @@ namespace atl {
 		// HP がゼロになり、死亡演出が終わった敵を削除
 		deadEnemyErase();
 
-		{// アイテムを拾う処理
-			auto& player2Dpos = player_->getPlayer2Dpos();
-			for (auto it = items_.begin(); it != items_.end();) {
-				auto& item2Dpos = (*it)->get2Dpos();
-				// アイテムと重なっているか判定
-				if (player2Dpos.x == item2Dpos.x && player2Dpos.y == item2Dpos.y) {
-					auto itemData = (*it)->getItemData();
-					// インベントリにアイテムデータを格納
-					player_->getPlayerData()->getInventory()->pushBackItem(itemData);
+		// プレイヤー・エネミーが行動完了したら、シーケンス遷移
+		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.change(&DungeonScene::seqOnItemPosition);
+	}
 
-					// テキストログに拾ったアイテム名を出力
-					auto itemName = itemData->getItemName();
-					std::string textLog = "　" + itemName + "を拾った";
-					TextLogManager::getTextLogManager()->addTextLog(textLog);
+	bool DungeonScene::seqOnItemPosition(float deltaTime) {
+		auto& player2Dpos = player_->getPlayer2Dpos();
+		for (auto it = items_.begin(); it != items_.end();) {
+			auto& item2Dpos = (*it)->get2Dpos();
+			// アイテムと重なっていない場合、早期　continue
+			if (player2Dpos.x != item2Dpos.x || player2Dpos.y != item2Dpos.y) {
+				++it;
+				continue;
+			}
 
-					// アイテムを削除
-					it = items_.erase(it);
-				}
-				else {
-					++it;
-				}
+			auto itemData = (*it)->getItemData();
+			// インベントリにアイテムデータを格納した時
+			if (player_->getPlayerData()->getInventory()->pushbackItemToInventory(itemData)) {
+				// テキストログに拾ったアイテム名を出力
+				auto itemName = itemData->getItemName();
+				std::string textLog = "　" + itemName + "を拾った";
+				TextLogManager::getTextLogManager()->addTextLog(textLog);
+
+				// アイテムを削除
+				it = items_.erase(it);
+				// １マスにアイテムが二つある事はないので、一個拾ったらbreak
+			}
+			else
+			{
+				TextLogManager::getTextLogManager()->addTextLog("荷物がいっぱいで拾えない");
+				break;
 			}
 		}
-
-		// プレイヤー・エネミーが行動完了したら、シーケンス遷移
-		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.change(&DungeonScene::seqAllTurnFlagOff);
+		seq_.change(&DungeonScene::seqAllTurnFlagOff);
+		return true;
 	}
 
 	void DungeonScene::enemyMove(float deltaTime, bool& allEnemyTurned) {
@@ -333,6 +346,110 @@ namespace atl {
 			}
 			++it;
 		}
+	}
+
+
+
+	bool DungeonScene::seqMenuWindow(float deltaTime) {
+		if (!menuWindow_) return true; // メニューウィンドウが有効でない場合、早期リターン
+
+		// 右クリックで menuWindowを閉じる
+		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
+			if (menuWindow_) {
+				menuWindow_.reset();
+				seq_.change(&DungeonScene::seqAllTurnFlagOff);
+			}
+		}
+
+		selectedMenu = menuWindow_->process(deltaTime);
+
+		// MenuWindowクラスから、何を選択中かのインデックスがenum型に変換されて返ってくるので、それに応じて処理
+		switch (selectedMenu) {
+		case MenuWindow::e_SelectedMenuWindow::NONE: break; // 何も選択されなかったフレームは何もしない
+		case MenuWindow::e_SelectedMenuWindow::Item1: // ブレイクスルー
+		case MenuWindow::e_SelectedMenuWindow::Item2: // ブレイクスルー
+		case MenuWindow::e_SelectedMenuWindow::Item3: // ブレイクスルー
+		case MenuWindow::e_SelectedMenuWindow::Item4: // ブレイクスルー
+		case MenuWindow::e_SelectedMenuWindow::Item5: // ブレイクスルー
+		case MenuWindow::e_SelectedMenuWindow::Item6: 
+			// 範囲外アクセスチェックをしてから、本当に使うかの確認シーケンスに遷移
+			if (player_->getPlayerData()->getInventory()->getItemData(static_cast<int>(selectedMenu)) != nullptr) { seq_.change(&DungeonScene::seqReallyUseItem); } break;
+		case MenuWindow::e_SelectedMenuWindow::Setting: break; // 現状何も無し
+		case MenuWindow::e_SelectedMenuWindow::CloseMenu:
+		{
+			menuWindow_.reset();
+			seq_.change(&DungeonScene::seqAllTurnFlagOff);
+			break;
+		}
+		case MenuWindow::e_SelectedMenuWindow::ReturnToTitle:
+		{
+			seq_.change(&DungeonScene::seqReallyReturnToTitle);
+			break;
+		}
+		}
+
+		return true;
+	}
+
+	// 本当にアイテムを使うか確認
+	bool DungeonScene::seqReallyUseItem(float deltaTime) {
+		auto& item = player_->getPlayerData()->getInventory()->getItemData(static_cast<int>(selectedMenu));
+		if (seq_.isStart()) {
+			selectWindow_ = std::make_shared<SelectWindow>(item->getItemName() + "\nを使いますか？");
+		}
+		if (selectWindow_) {
+			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
+				// アイテム使用してメニューウィンドウを閉じる。エネミーが行動する
+				player_->getPlayerData()->getInventory()->useItem(static_cast<int32_t>(selectedMenu));
+				selectWindow_.reset();
+				menuWindow_.reset();
+				player_->onFlagIsAlreadyTurn();
+				currentTurn_ = e_turnState::PLAYER_MOVE;
+				seq_.change(&DungeonScene::seqTurnStateProcess);
+			}
+			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
+				selectWindow_.reset();
+				seq_.change(&DungeonScene::seqMenuWindow);
+			}
+		}
+		return true;
+	}
+
+	// タイトルに戻るかどうか確認中
+	bool DungeonScene::seqReallyReturnToTitle(float deltaTime) {
+		if (seq_.isStart()) {
+			selectWindow_ = std::make_shared<SelectWindow>("タイトル画面に戻りますか？\n進捗データは残りません");
+		}
+
+		if (selectWindow_) {
+			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
+				selectWindow_.reset();
+				seq_.change(&DungeonScene::seqReturnToTitle);
+			}
+			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
+				selectWindow_.reset();
+				seq_.change(&DungeonScene::seqAllTurnFlagOff);
+				currentTurn_ = e_turnState::KEY_INPUT;
+			}
+		}
+
+		return true;
+	}
+
+	// タイトルに戻る処理
+	bool DungeonScene::seqReturnToTitle(float deltaTime) {
+		if (seq_.isStart()) {
+			FadeInOutManager::getFadeInOutManager()->startFadeOut();
+		}
+
+		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
+			// 待機 
+			SEQ_CO_YIELD_RETURN_TIME(nextFloorTransitionTime, deltaTime, [&] {})
+
+			SceneManager::getSceneManager()->changeScene(std::make_shared<TitleScene>());
+		}
+
+		SEQ_CO_END
 	}
 
 	// 階段に乗った時の処理

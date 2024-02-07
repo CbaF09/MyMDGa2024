@@ -36,7 +36,7 @@ namespace atl {
         for (const auto& log : textLogList_) {
             if (drawLogLine_ == 0) {
                 std::string drawLog = log.substr(0, drawCharCount_);
-                DrawStringEx(x, y, -1, "%s", drawLog.c_str());
+                DrawStringEx(x, y, GetColor(255,0,0), "%s", drawLog.c_str());
             }
             else {
                 DrawStringEx(x, y + drawLogLine_ * 20, GetColor(200,200,200), "%s", log.c_str());

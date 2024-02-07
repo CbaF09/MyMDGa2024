@@ -22,9 +22,11 @@ namespace atl {
 		inline const tnl::Vector2i& getPlayer2Dpos() const { return player2Dpos_; }
 		inline bool getIsAlreadyTurn() const { return isAlreadyTurn_; }
 		inline const Shared<PlayerData> getPlayerData() const { return playerData_; }
+		inline const Shared<MenuBook> getMenuBook() const { return playerHaveMenuBook_; }
 
 		// セッター
 		inline void offFlagIsAlreadyTurn() { isAlreadyTurn_ = false; }
+		inline void onFlagIsAlreadyTurn() { isAlreadyTurn_ = true; }
 		void setPlayerAndCamera3Dpos(const tnl::Vector3& newPos);
 
 		// 2D座標上の位置で Spawn する
