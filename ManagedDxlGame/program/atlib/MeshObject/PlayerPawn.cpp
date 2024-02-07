@@ -169,7 +169,6 @@ namespace atl {
 		}
 
 		{// サウンド
-			PlaySoundFile("sound/explosion.wav", 2);
 		}
 
 		{// ログ

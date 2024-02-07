@@ -14,13 +14,10 @@ namespace atl {
 				"graphics/BackgroundIllust/ClearSceneBack.jpg",
 			};
 
-			// ファイルパスを一つずつ解放。解放の成功失敗をデバッグログに出力
+			// リソースを解放
 			for (const auto& res : tempDeleteRes) {
-				bool isDelete = ResourceManager::getResourceManager()->deleteResource(res);
-				if (!isDelete) { tnl::DebugTrace("\n------------------------------\nDungeonScene::デストラクタ メモリ解放 => 正常に解放されていません"); }
-				else { tnl::DebugTrace("\n------------------------------\nDungeonScene::デストラクタ メモリ解放 => 正常"); }
+				ResourceManager::getResourceManager()->deleteResource(res);
 			}
-			tnl::DebugTrace("\n------------------------------\n"); // ログが見づらいので最後に改行と切り取り線を入れる
 
 			// フォントデータ解放
 			DeleteFontToHandle(EPILOGUE_FONT);

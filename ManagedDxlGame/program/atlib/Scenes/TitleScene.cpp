@@ -15,18 +15,17 @@ namespace atl {
 				"graphics/BackGroundIllust/TitleLogo.png"
 			};
 			
-			// ファイルパスを一つずつ解放。解放の成功失敗をデバッグログに出力
+			// リソース解放
 			for (const auto& res : tempDeleteRes) {
-				bool isDelete = ResourceManager::getResourceManager()->deleteResource(res);
-				if(!isDelete) { tnl::DebugTrace("\n------------------------------\nTitleScene::デストラクタ メモリ解放 => 正常に解放されていません"); }
-				else { tnl::DebugTrace("\n------------------------------\nTitleScene::デストラクタ メモリ解放 => 正常"); }
+				ResourceManager::getResourceManager()->deleteResource(res);
 			}
-			tnl::DebugTrace("\n------------------------------\n"); // ログが見づらいので最後に改行と切り取り線を入れる
+
+			// フォントデータ解放
+			DeleteFontToHandle(PROROGUE_FONT);
+			DeleteFontToHandle(BUTTON_FONT);
 		}
 
-		// フォントデータ解放
-		DeleteFontToHandle(PROROGUE_FONT);
-		DeleteFontToHandle(BUTTON_FONT);
+
 	}
 	void TitleScene::sceneUpdate(float deltaTime) {
 		draw(deltaTime);
@@ -84,7 +83,7 @@ namespace atl {
 				break;
 			}
 
-			DrawStringToHandleEx(actualButtonPos.x + BUTTON_STRING_OFFSET.x, actualButtonPos.y + BUTTON_STRING_OFFSET.y, -1, BUTTON_FONT, buttonName.c_str());
+			DrawStringToHandleEx(static_cast<float>(actualButtonPos.x + BUTTON_STRING_OFFSET.x), static_cast<float>(actualButtonPos.y + BUTTON_STRING_OFFSET.y), -1, BUTTON_FONT, buttonName.c_str());
 
 			if (static_cast<e_SelectTitleButton>(i) == currentSelectButton_) {
 				// 元に戻す
@@ -108,8 +107,9 @@ namespace atl {
 		// フェード中は操作不能 ( 早期リターン )
 		if (FadeInOutManager::getFadeInOutManager()->isFading()) return true;
 
-		// スペース,エンターキーを押した時、現在選択中のボタンに応じてシーケンスを遷移
-		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)) {
+		// スペース,エンターキー,左クリックを押した時、現在選択中のボタンに応じてシーケンスを遷移
+		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE) ||
+			tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 
 			// 選択中のボタン
 			switch (currentSelectButton_) {
@@ -215,7 +215,7 @@ namespace atl {
 
 		// 表示すべき行を全て表示する
 		for (int i = 0; i < drawLogLine_; ++i) {
-			DrawStringToHandleEx(TEXT_POSITION.x + (i * TEXT_OFFSET.x), TEXT_POSITION.y + (i * TEXT_OFFSET.y), -1,PROROGUE_FONT, "%s", prorogueText[i].c_str());
+			DrawStringToHandleEx(static_cast<float>(TEXT_POSITION.x + (i * TEXT_OFFSET.x)), static_cast<float>(TEXT_POSITION.y + (i * TEXT_OFFSET.y)), -1,PROROGUE_FONT, "%s", prorogueText[i].c_str());
 		}
 
 		// エンターキーかスペースキーでシーケンス遷移

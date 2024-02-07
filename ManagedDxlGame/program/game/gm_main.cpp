@@ -8,6 +8,10 @@
 #include "../atlib/Utilities/Atl3DCamera.h"
 #include "../atlib/Utilities/AtlRandom.h"
 #include "../atlib/Singletons/SceneManager.h"
+#include "../atlib/Singletons/FadeInOutManager.h"
+#include "../atlib/Singletons/DungeonCreater.h"
+#include "../atlib/Singletons/ResourceManager.h"
+#include "../atlib/Singletons/TextLogManager.h"
 #include "../atlib/Scenes/DungeonScene.h"
 #include "../atlib/Scenes/TitleScene.h"
 #include "../atlib/Scenes/Scene_Dummy.h"
@@ -26,9 +30,9 @@ void gameStart() {
 	SetMouseDispFlag(false);
     LockCursorToWindow();
 
-    //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
+    atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
 
-	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
+	//atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
 }
 
 void gameMain(float delta_time) {
@@ -36,7 +40,12 @@ void gameMain(float delta_time) {
 }
 
 void gameEnd() {
-
+    // ƒVƒ“ƒOƒ‹ƒgƒ“ŒQ‚ð‰ð•ú
+    atl::TextLogManager::getTextLogManager()->deleteTextLogManager();
+    atl::DungeonCreater::getDungeonCreater()->deleteDungeonCreater();
+    atl::FadeInOutManager::getFadeInOutManager()->deleteFadeInOutManager();
+    atl::ResourceManager::getResourceManager()->deleteResourceManager();
+    atl::SceneManager::getSceneManager()->deleteSceneManager();
 }
 
 void LockCursorToWindow() {

@@ -1,6 +1,7 @@
 #include "EnemyPawn.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
+#include "../Singletons/ResourceManager.h"
 #include "../Utilities/AtlRandom.h"
 #include "../Utilities/AtlString.h"
 #include "PlayerPawn.h"
@@ -236,7 +237,6 @@ namespace atl {
 			auto damage = player->getPlayerData()->damaged(enemyData_->getAttackPower());
 
 			TextLogManager::getTextLogManager()->addTextLog("プレイヤーは " + convertFullWidthNumber(damage) + " のダメージを受けた");
-			PlaySoundFile("sound/test_se.wav", 2);
 			isAlreadyAction_ = true;
 			seq_.change(&EnemyPawn::seqStateTransition);
 		}

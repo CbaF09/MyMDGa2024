@@ -82,7 +82,7 @@ namespace atl {
 
 		{// ê‡ñæï∂Çï`âÊ
 			auto descString = getDescription(currentSelectIndex_);
-			DrawStringToHandleEx(DESC_STRING_POSITION.x, DESC_STRING_POSITION.y, -1, DESC_FONT, descString.c_str());
+			DrawStringToHandleEx(static_cast<float>(DESC_STRING_POSITION.x), static_cast<float>(DESC_STRING_POSITION.y), -1, DESC_FONT, descString.c_str());
 		}
 	}
 
