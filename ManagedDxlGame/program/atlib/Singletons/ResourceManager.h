@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <string>
-#include "../dxlib_ext/dxlib_ext.h"
+#include "../../dxlib_ext/dxlib_ext.h"
 
 namespace atl {
 

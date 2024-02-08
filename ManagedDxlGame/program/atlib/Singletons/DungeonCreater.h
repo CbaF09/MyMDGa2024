@@ -63,7 +63,7 @@ namespace atl {
 
 		// fieldCells_ から、スポーン可能状態の空セルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 選ばれた XY地点の fieldCell は、スポーン不可状態に切り替わる
-		const tnl::Vector2i& randomChoiceCanSpawnFieldCellPos();
+		tnl::Vector2i randomChoiceCanSpawnFieldCellPos();
 
 		// 移動先が、移動可能かどうかチェックする
 		bool isCanMoveFieldCellPos(const tnl::Vector2i& toMovePos);

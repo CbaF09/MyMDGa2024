@@ -18,7 +18,6 @@
 #include "../Object/MenuWindow.h"
 #include "../Utilities/Atl3DCamera.h"
 
-
 namespace atl {
 
 	DungeonScene::~DungeonScene() {
@@ -75,8 +74,11 @@ namespace atl {
 		// 現在階層の描画は真っ黒な画面の上にやりたいので、この位置
 		if (isNextFloorTransition) { drawNextFloorTransition(); }
 
-		//debug_displayMap(deltaTime);
-		//debug_displayDungeonParam(deltaTime);
+		// デバッグモード中に描画するマップやその他情報
+		if (isDebug) {
+			debug_displayMap(deltaTime);
+			debug_displayDungeonParam(deltaTime);
+		}
 	}
 
 	// 次の階層を描画する
@@ -127,7 +129,7 @@ namespace atl {
 	}
 
 	void DungeonScene::sceneUpdate(float deltaTime) {
-
+		if (tnl::Input::IsKeyDown(eKeys::KB_LSHIFT, eKeys::KB_O) && tnl::Input::IsKeyDownTrigger(eKeys::KB_P)) isDebug = !isDebug;
 
 		seq_.update(deltaTime);
 
@@ -140,9 +142,11 @@ namespace atl {
 		// 2D系の描画
 		draw2D(deltaTime);
 
-		{// デバッグ用操作
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) 	generateDungeon();;
-			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
+		{// デバッグモード中に可能な操作
+			if (isDebug) {
+				if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) 	generateDungeon();;
+				if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
+			}
 		}
 	}
 
@@ -673,8 +677,11 @@ namespace atl {
 			DrawStringEx(itemPos.x * 15, itemPos.y * 15, GetColor(0, 255, 0), "I");
 		}
 
-		auto player2Dpos = player_->getPlayer2Dpos();
+		auto& player2Dpos = player_->getPlayer2Dpos();
 		DrawStringEx(player2Dpos.x * 15, player2Dpos.y * 15, GetColor(0, 0, 255), "P");
+
+		auto& stairs2Dpos = originStairs_->get2Dpos();
+		DrawStringEx(stairs2Dpos.x * 15, stairs2Dpos.y * 15, GetColor(200, 200, 200), "S");
 	}
 
 }

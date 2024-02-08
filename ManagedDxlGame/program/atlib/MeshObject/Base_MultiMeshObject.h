@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include "../dxlib_ext/dxlib_ext.h"
-#include "../atlib/Utilities/Atl3DCamera.h"
+#include "../../dxlib_ext/dxlib_ext.h"
+#include "../Utilities/Atl3DCamera.h"
 
 namespace atl {
 

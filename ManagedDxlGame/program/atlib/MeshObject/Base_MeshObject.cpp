@@ -1,5 +1,5 @@
 #include <memory>
-#include "../dxlib_ext/dxlib_ext.h"
+#include "../../dxlib_ext/dxlib_ext.h"
 #include "Base_MeshObject.h"
 
 namespace atl {

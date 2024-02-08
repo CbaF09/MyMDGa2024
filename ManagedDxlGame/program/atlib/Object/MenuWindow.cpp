@@ -1,4 +1,4 @@
-#include "../dxlib_ext/dxlib_ext.h"
+#include "../../dxlib_ext/dxlib_ext.h"
 #include "MenuWindow.h"
 #include "../Object/Inventory.h"
 #include "../Singletons/ResourceManager.h"

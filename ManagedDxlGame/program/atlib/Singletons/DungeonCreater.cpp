@@ -1,7 +1,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
-#include "../dxlib_ext/dxlib_ext.h"
+#include "../../dxlib_ext/dxlib_ext.h"
 #include "../Utilities/AtlRandom.h"
 #include "DungeonCreater.h"
 
@@ -268,8 +268,8 @@ namespace atl {
 	// 
 	//------------------------------
 
-	const tnl::Vector2i& DungeonCreater::randomChoiceCanSpawnFieldCellPos() {
-		std::vector<tnl::Vector2i> canSpawnCellsPos;
+	tnl::Vector2i DungeonCreater::randomChoiceCanSpawnFieldCellPos() {
+		std::vector<tnl::Vector2i> canSpawnCellsPos{};
 
 		for (int x = 0; x < FIELD_WIDTH; ++x) {
 			for (int y = 0; y < FIELD_HEIGHT; ++y) {
@@ -279,7 +279,7 @@ namespace atl {
 			}
 		}
 
-		const tnl::Vector2i returnPos = canSpawnCellsPos[mtRandomRangeInt(0, canSpawnCellsPos.size() - 1)];
+		const tnl::Vector2i returnPos = canSpawnCellsPos[static_cast<int>(mtRandomRangeInt(0, canSpawnCellsPos.size() - 1))];
 		fieldCells_[returnPos.x][returnPos.y].isAlreadySpawnSomething = true;
 		return returnPos;
 	}

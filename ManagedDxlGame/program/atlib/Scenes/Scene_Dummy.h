@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../dxlib_ext/dxlib_ext.h"
+#include "../../dxlib_ext/dxlib_ext.h"
 #include "Base_Scene.h"
 #include "../Singletons/ResourceManager.h"
 
