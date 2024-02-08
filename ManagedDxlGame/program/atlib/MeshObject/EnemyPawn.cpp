@@ -16,43 +16,63 @@ namespace atl {
 	EnemyPawn::EnemyPawn(const tnl::Vector2i& enemyPos) {
 		set2Dpos(enemyPos);
 		auto cellLength = DungeonScene::getCellLength();
-		tnl::Vector3 enemy3Dpos = { static_cast<float>(enemyPos.x * cellLength), 400 ,static_cast<float>(enemyPos.y * cellLength) };
+		tnl::Vector3 enemy3Dpos = { static_cast<float>(enemyPos.x * cellLength), ENEMY_POS_Y ,static_cast<float>(enemyPos.y * cellLength) };
 
 		auto texture = enemyData_->getEnemyTexture();
 
-		auto rootMesh = dxe::Mesh::CreateBoxMV(
-			ENEMY_SIZE,
-			texture,
-			texture,
-			texture,
-			texture,
-			texture,
-			texture);
+		auto rootMesh = dxe::Mesh::CreateSphereMV(ENEMY_SIZE_RADIUS,30,30);
+		rootMesh->setTexture(texture);
 		rootMesh->pos_ = enemy3Dpos;
+		rootMesh->setAlpha(0.5f);
+		rootMesh->setBlendMode(DX_BLENDMODE_ALPHA);
 		setRootMesh(rootMesh);
 
-		auto dirArrow = dxe::Mesh::CreateBoxMV(
-			ENEMY_SIZE / 2,
-			dxe::Texture::CreateFromFile("graphics/box/box_left.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_right.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_up.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_down.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_forward.bmp"),
-			dxe::Texture::CreateFromFile("graphics/box/box_back.bmp")
-		);
-		dirArrow->pos_ = rootMesh->pos_ + tnl::Vector3{ 0, 0, ENEMY_SIZE.z / 2 };
-		addChildMesh(dirArrow);
+		auto rightHone = dxe::Mesh::CreateConeMV(ENEMY_SIZE_RADIUS / 3.0,ENEMY_SIZE_RADIUS/2.0f);
+		rightHone->setTexture(texture);
+		addChildMesh(rightHone);
+
+		auto leftHone = dxe::Mesh::CreateConeMV(ENEMY_SIZE_RADIUS / 3.0, ENEMY_SIZE_RADIUS / 2.0f);
+		leftHone->setTexture(texture);
+		addChildMesh(leftHone);
+
+		auto core = dxe::Mesh::CreateCubeMV(ENEMY_SIZE_RADIUS / 3);
+		core->rot_ *= tnl::Quaternion::RotationAxis({ 1,1,1 }, tnl::ToRadian(90));
+		addChildMesh(core);
 		
 		// 使う音源のボリューム調整
 		ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/SE/DungeonSceneEnemyDead.ogg", 180);
 	}
 
-	void EnemyPawn::adjustChildsMeshes() {
-		auto rootMesh = getRootMesh();
-		auto& childs = getChildMeshes();
+	void EnemyPawn::adjustChildsMeshes(float deltaTime) {
+		// 正弦波でふわふわ動かす計算
+		hoverSinTimer_ += deltaTime;
+		float hoverMoveY = sin(hoverSinTimer_) * hoverSinAmplitude_; // sin で 0~1が周期的に返ってくるので、それに振れ幅をかける
 
-		childs[0]->rot_ = rootMesh->rot_;
-		childs[0]->pos_ = rootMesh->pos_ + tnl::Vector3::TransformCoord(tnl::Vector3{ 0,0,ENEMY_SIZE.z / 2 }, childs[0]->rot_);
+		auto rootMesh = getRootMesh();
+		rootMesh->pos_.y = ENEMY_POS_Y + hoverMoveY;
+		auto& childs = getChildMeshes();
+		// rightHone
+		childs[0]->rot_ = tnl::Quaternion::RotationAxis({ 0,0,1 }, tnl::ToRadian(-45)) * rootMesh->rot_;
+		childs[0]->pos_ = rootMesh->pos_ + tnl::Vector3::TransformCoord({ ENEMY_SIZE_RADIUS / 1.2f,ENEMY_SIZE_RADIUS / 1.2f,0 }, { rootMesh->rot_ });
+		// leftHone
+		childs[1]->rot_ = tnl::Quaternion::RotationAxis({ 0,0,1 }, tnl::ToRadian(45)) * rootMesh->rot_;
+		childs[1]->pos_ = rootMesh->pos_ + tnl::Vector3::TransformCoord({ -ENEMY_SIZE_RADIUS / 1.2f,ENEMY_SIZE_RADIUS / 1.2f,0 }, { rootMesh->rot_ });
+		// core
+		childs[2]->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(-1.5f));
+		childs[2]->pos_ = rootMesh->pos_;
+
+	}
+
+	void EnemyPawn::renderObjects(const Shared<Atl3DCamera> camera, float deltaTime) {
+		adjustChildsMeshes(deltaTime);
+		auto& childs = getChildMeshes();
+		for (const auto& child : childs) {
+			child->render(camera);
+		}
+	}
+
+	void EnemyPawn::renderTransparentObject(const Shared<Atl3DCamera> camera, float deltaTime) {
+		getRootMesh()->render(camera);
 	}
 
 	void EnemyPawn::assignWeakDungeonScene(std::weak_ptr<DungeonScene> dungeonScene) {
@@ -104,7 +124,7 @@ namespace atl {
 	// プレイヤーと同じエリアにいるか
 	bool EnemyPawn::isSameAreaPlayer() {
 		auto dungeonCreater = DungeonCreater::getDungeonCreater();
-		auto player2Dpos = weakDungeonScene_.lock()->getPlayerPawn()->getPlayer2Dpos();
+		auto& player2Dpos = weakDungeonScene_.lock()->getPlayerPawn()->getPlayer2Dpos();
 
 		auto enemyAreaID = dungeonCreater->getFieldCellID(get2Dpos());
 		auto playerAreaID = dungeonCreater->getFieldCellID(player2Dpos);

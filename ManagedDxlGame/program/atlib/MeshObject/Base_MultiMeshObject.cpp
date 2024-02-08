@@ -13,8 +13,8 @@ namespace atl {
 		rootMesh_->pos_ = { static_cast<float>(mesh2Dpos_.x * cellLength),static_cast<float>(rootMesh_->pos_.y),static_cast<float>(mesh2Dpos_.y * cellLength) };
 	}
 
-	void Base_MultiMeshObject::renderObjects(const Shared<Atl3DCamera> camera){
-		adjustChildsMeshes();
+	void Base_MultiMeshObject::renderObjects(const Shared<Atl3DCamera> camera,float deltaTime){
+		adjustChildsMeshes(deltaTime);
 
 		for (const auto& mesh : childMeshes_) {
 			mesh->render(camera);
@@ -22,5 +22,4 @@ namespace atl {
 		rootMesh_->render(camera);
 
 	}
-
 }

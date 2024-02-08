@@ -127,6 +127,7 @@ namespace atl {
 
 		if (length <= MOVE_END_BORDER) {
 			moveLerpTimeCount_ = 0;
+			playerCamera_->pos_ = moveTarget_;
 			isAlreadyTurn_ = true;
 			seq_.change(&PlayerPawn::seqWaitKeyInput);
 		}
@@ -206,8 +207,8 @@ namespace atl {
 	}
 
 	void PlayerPawn::render(float deltaTime) {
-		//forwardArrow_->renderObject(playerCamera_);
-		playerHaveMagicWand_->renderObjects(playerCamera_);
+		forwardArrow_->renderObject(playerCamera_);
+		playerHaveMagicWand_->renderObjects(playerCamera_,deltaTime);
 		playerHaveMenuBook_->renderObject(playerCamera_, deltaTime);
 
 		dxe::DirectXRenderBegin();
@@ -223,6 +224,14 @@ namespace atl {
 		forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
 		player3Dpos_ = playerCamera_->pos_;
 		weakDungeonScene_ = dungeonScene;
+	}
+
+	// à¯êîñ≥Çµ
+	void PlayerPawn::initialize() {
+		playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+		playerHaveMenuBook_ = std::make_shared<MenuBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+		forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+		player3Dpos_ = playerCamera_->pos_;
 	}
 
 }

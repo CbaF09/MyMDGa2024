@@ -57,7 +57,7 @@ namespace atl {
 		addChildMesh(innerRing);
 	}
 
-	void MagicWand::adjustChildsMeshes() {
+	void MagicWand::adjustChildsMeshes(float deltaTime) {
 		// ƒvƒŒƒCƒ„[‚ª•Û‚µ‚Ä‚¢‚È‚¢‚Ì“®‚«
 		if (isHeldByPlayer == false) {
 			auto stick = getRootMesh();

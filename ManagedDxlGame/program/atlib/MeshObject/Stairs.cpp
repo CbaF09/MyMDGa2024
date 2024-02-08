@@ -46,7 +46,7 @@ namespace atl {
 
 	}
 
-	void Stairs::adjustChildsMeshes() {
+	void Stairs::adjustChildsMeshes(float deltaTime) {
 		auto rootMesh = getRootMesh();
 		auto& childs = getChildMeshes();
 

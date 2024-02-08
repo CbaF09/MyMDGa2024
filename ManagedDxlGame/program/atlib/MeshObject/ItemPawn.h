@@ -17,8 +17,8 @@ namespace atl {
 		inline const Shared<ItemData> getItemData() { return itemData_; }
 
 		//　オーバーライド
-		void adjustChildsMeshes() override;
-		void renderObjects(const Shared<Atl3DCamera> camera) override;
+		void adjustChildsMeshes(float deltaTime) override;
+		void renderObjects(const Shared<Atl3DCamera> camera,float deltaTime) override;
 
 		// ダンジョンシーンへの弱参照を設定
 		void assignWeakDungeonScene(std::weak_ptr<DungeonScene> dungeonScene);

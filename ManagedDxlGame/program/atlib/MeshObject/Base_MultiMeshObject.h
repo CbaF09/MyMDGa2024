@@ -26,9 +26,11 @@ namespace atl {
 		void addChildMesh(const Shared<dxe::Mesh> childMesh);
 
 		// 子メッシュ群の座標と回転を設定。renderObjects内で、render前に実行される
-		virtual void adjustChildsMeshes() = 0;
+		virtual void adjustChildsMeshes(float deltaTime) = 0;
 		// メッシュ群を描画する
-		virtual void renderObjects(const Shared<Atl3DCamera> camera);
+		virtual void renderObjects(const Shared<Atl3DCamera> camera,float deltaTime);
+		// 透明な物体がある場合、renderObject と合わせてオーバーロードして使う。ない場合は使わなくてもいい
+		virtual void renderTransparentObject(const Shared<Atl3DCamera> camera, float deltaTime) {};
 
 		// 2Dpos操作メソッド
 		inline void add2Dpos(tnl::Vector2i addVec) { mesh2Dpos_ += addVec; };

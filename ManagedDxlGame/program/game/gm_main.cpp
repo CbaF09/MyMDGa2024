@@ -28,7 +28,10 @@ void gameStart() {
 
 	ChangeLightTypeDir(VGet(0.0f, -1.0f, 0.0f));
 	SetBackgroundColor(32, 32, 32);
+
+    // マウスカーソルを非表示に
 	SetMouseDispFlag(false);
+    // マウスカーソルをウィンドウに固定
     LockCursorToWindow();
 
     //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
@@ -54,7 +57,7 @@ void gameEnd() {
     InitSoundMem();
 }
 
-// カーソルをウィンドウに固定させる関数
+// マウスカーソルをウィンドウに固定させる関数
 void LockCursorToWindow() {
     HWND hwnd = GetMainWindowHandle(); // ウィンドウハンドルを取得
     RECT rect;
@@ -80,16 +83,16 @@ void LockCursorToWindow() {
     ClipCursor(&clipRect); // カーソルを制限
 }
 
-
-//-----------------------------------------------------------------------------------------------------------
+//#pragma once
 //
-// スカイボックス利用サンプル
+////---------------------------------------------------------------------------------------------------------------
+////
+////
+//// 3D スタートアップサンプル
+////
+////
+////---------------------------------------------------------------------------------------------------------------
 //
-// ※ フォグを利用する場合はスカイボックスを描画した後に設定しましょう
-// ※ スカイボックスは大きく作るのでカメラの far 設定次第では描画されなくなるので注意
-//
-//-----------------------------------------------------------------------------------------------------------
-
 //#include <time.h>
 //#include <string>
 //#include <numbers>
@@ -98,31 +101,30 @@ void LockCursorToWindow() {
 //#include "gm_main.h"
 //
 //Shared<dxe::Camera> camera = nullptr;
-//Shared<dxe::Mesh> skybox = nullptr;
+//Shared<dxe::Mesh> mesh = nullptr;
+//Shared<dxe::Texture> texture = nullptr;
+//
 //
 ////------------------------------------------------------------------------------------------------------------
 //// ゲーム起動時に１度だけ実行されます
 //void gameStart() {
-//	srand(time(0));
+//    srand(time(0));
 //
-//	ChangeLightTypeDir(VGet(0.0f, -1.0f, 0.0f));
-//	SetBackgroundColor(32, 32, 32);
-//	SetDefaultLightParameter("directional_light_parameter.bin");
+//    SetFogEnable(true);
+//    SetFogColor(32, 32, 32);
+//    SetFogStartEnd(500.0f, 1500.0f);
+//    ChangeLightTypeDir(VGet(0.0f, -1.0f, 0.0f));
+//    SetBackgroundColor(32, 32, 32);
 //
-//	camera = std::make_shared<dxe::Camera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);
 //
-//	skybox = dxe::Mesh::CreateBoxMV({ 30000, 30000,30000 },
-//		dxe::Texture::CreateFromFile("graphics/skybox/SkyboxLeft.jpg"),
-//		dxe::Texture::CreateFromFile("graphics/skybox/SkyboxLeft.jpg"),
-//		dxe::Texture::CreateFromFile("graphics/skybox/SkyboxLeft.jpg"),
-//		dxe::Texture::CreateFromFile("graphics/skybox/SkyboxLeft.jpg"),
-//		dxe::Texture::CreateFromFile("graphics/skybox/SkyboxLeft.jpg"),
-//		dxe::Texture::CreateFromFile("graphics/skybox/SkyboxLeft.jpg"),
-//		30,
-//		30
-//		);
-//	//skybox->loadMaterial("material.bin");
+//    camera = std::make_shared<dxe::Camera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);
 //
+//    texture = dxe::Texture::CreateFromFile("graphics/test.jpg");
+//
+//    mesh = dxe::Mesh::CreateSphereMV(100, 20, 20);
+//    mesh->setTexture(texture);
+//    mesh->setBlendMode(DX_BLENDMODE_ALPHA);
+//    mesh->setAlpha(0.5);
 //}
 //
 //
@@ -130,31 +132,17 @@ void LockCursorToWindow() {
 //// 毎フレーム実行されます
 //void gameMain(float delta_time) {
 //
-//	//-------------------------------------------------------------------------------
-//	//
-//	// update
-//	//
-//	//-------------------------------------------------------------------------------
+//    mesh->rot_ *= tnl::Quaternion::RotationAxis({ 0, 1, 0 }, tnl::ToRadian(1));
 //
-//	skybox->rot_ *= tnl::Quaternion::RotationAxis({ 0, 1, 0 }, tnl::ToRadian(0.01f));
-//
-//	camera->update();
+//    camera->update();
 //
 //
-//	//-------------------------------------------------------------------------------
-//	//
-//	// draw
-//	//
-//	//-------------------------------------------------------------------------------
+//    DrawGridGround(camera, 50, 20);
 //
-//	skybox->render(camera);
+//    mesh->render(camera);
+//    mesh->drawGuiMaterialControlloer();
 //
-//	DrawGridGround(camera, 50, 20);
-//	DrawDefaultLightGuiController();
-//
-//	skybox->drawGuiMaterialControlloer();
-//
-//	DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, delta_time);
+//    DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, delta_time);
 //
 //}
 //
@@ -163,3 +151,5 @@ void LockCursorToWindow() {
 //void gameEnd() {
 //
 //}
+//
+//

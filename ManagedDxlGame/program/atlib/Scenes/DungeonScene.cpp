@@ -1,4 +1,5 @@
 #include <string>
+#include <algorithm>
 #include "DungeonScene.h"
 #include "TitleScene.h"
 #include "GameOverScene.h"
@@ -52,14 +53,21 @@ namespace atl {
 	}
 
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
-		//MeshObject 群をレンダリング
-		for (const auto& wall : walls_) { wall->renderObject(camera); }
+		// 不透明なもの描画
+		SetWriteZBuffer3D(TRUE);
 		for (const auto& groundTile : groundTiles_) { groundTile->renderObject(camera); }
-
-		if (originStairs_) originStairs_->renderObjects(camera);
-		for (const auto& enemy : enemies_) { enemy->renderObjects(camera); }
-		for (const auto& item : items_) { item->renderObjects(camera); }
+		for (const auto& wall : walls_) { wall->renderObject(camera); }
+		for (const auto& enemy : enemies_) { enemy->renderObjects(camera, deltaTime); }
+		if (originStairs_) originStairs_->renderObjects(camera,deltaTime);
+		for (const auto& item : items_) { item->renderObjects(camera,deltaTime); }
 		if (player_)player_->render(deltaTime);
+
+
+		// 透明なもの描画
+		SetWriteZBuffer3D(FALSE);
+		for (const auto& enemy : enemies_) { enemy->renderTransparentObject(camera, deltaTime); }
+
+		SetWriteZBuffer3D(TRUE);
 	}
 
 	void DungeonScene::draw2D(float deltaTime) {
@@ -135,6 +143,7 @@ namespace atl {
 
 		// カメラのアップデート
 		player_->getPlayerCamera()->update();
+		// スカイボックスのアップデート
 		skybox_.update(player_->getPlayerCamera());
 		// レンダー ( カメラアップデートの後 )
 		render(deltaTime, player_->getPlayerCamera());

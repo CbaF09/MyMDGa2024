@@ -19,6 +19,9 @@ namespace atl {
 
 		// 遅延コンストラクタ。生成後に一回だけ呼ぶ事
 		void initialize(std::weak_ptr<DungeonScene> dungeonScene);
+
+		// デバッグ用。dungeonSceneへの弱参照を持たない
+		void initialize();
 		
 		// ゲッター
 		inline const Shared<Atl3DCamera> getPlayerCamera() const { return playerCamera_; }
@@ -68,7 +71,7 @@ namespace atl {
 		const float PLAYER_HEAD_LINE = 500;		// プレイヤーのY高さ（カメラ・目線の高さ）
 
 		// moveLerp用
-		const float MOVE_TIME = 1.5f;		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
+		const float MOVE_TIME = 0.5f;		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
 		const float MOVE_END_BORDER = 0.1f; // 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
 		float moveLerpTimeCount_ = 0;
 		tnl::Vector3 moveTarget_{ 0,0,0 };
