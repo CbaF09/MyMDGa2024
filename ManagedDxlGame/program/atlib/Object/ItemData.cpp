@@ -7,18 +7,19 @@ namespace atl {
 
 	}
 
+	// itemID を入れると、そのアイテムが生成される
 	ItemData::ItemData(int32_t itemID) {
 		auto csv = tnl::LoadCsv("csv/ItemCSV.csv");
 
 		if (!csv.empty()) {
+			// ID を enum に変換してからセット
 			itemID_ = static_cast<e_itemList>(csv[itemID][0].getInt());
-			// デバッグ用 末尾にランダムな数字を入れている
-			int random = rand() % 30;
-			itemName_ = csv[itemID][1].getString() + std::to_string(random);
-
+			// Item名をセット
+			itemName_ = csv[itemID][1].getString();
+			// Item に対応するテクスチャをセット
 			auto& filepath = csv[itemID][2].getString();
 			itemIllust_ = dxe::Texture::CreateFromFile(filepath);
-			
+			// アイテムの説明文をセット
 			descString_ = csv[itemID][3].getString();
 		}
 	}

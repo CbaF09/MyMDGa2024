@@ -1,6 +1,7 @@
 #include "PlayerPawn.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
+#include "../Singletons/ResourceManager.h"
 #include "../Scenes/DungeonScene.h"
 #include "../MeshObject/MagicWand.h"
 #include "../MeshObject/MenuBook.h"
@@ -9,6 +10,17 @@
 #include "EnemyPawn.h"
 
 namespace atl {
+
+	PlayerPawn::PlayerPawn() {
+		// ボリューム調整
+		ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/SE/DungeonScenePlayerAttack.ogg", 200);
+	}
+
+	PlayerPawn::~PlayerPawn() {
+		explosion_.reset();
+		ResourceManager::getResourceManager()->deleteResource("sound/SE/PlayerFootStep.ogg");
+		ResourceManager::getResourceManager()->deleteResource("sound/SE/DungeonScenePlayerAttack.ogg");
+	}
 
 	void PlayerPawn::setPlayerAndCamera3Dpos(const tnl::Vector3& newPos) {
 		player3Dpos_ = newPos;
@@ -104,11 +116,9 @@ namespace atl {
 	
 	bool PlayerPawn::actionMoveLerp(float deltaTime) {
 		if (seq_.isStart()) {
-			// moveTarget が設定されていない場合、例外処理
-			if (moveTarget_.x == 0 && moveTarget_.y == 0 && moveTarget_.z == 0) {
-//				setMoveTarget(getPlayerPos());
-			}
+			ResourceManager::getResourceManager()->playSoundRes("sound/SE/PlayerFootStep.ogg", DX_PLAYTYPE_BACK);
 		}
+
 		playerCamera_->pos_ = tnl::Vector3::DecelLerp(playerCamera_->pos_, moveTarget_, MOVE_TIME, moveLerpTimeCount_);
 		moveLerpTimeCount_ += deltaTime;
 
@@ -169,6 +179,7 @@ namespace atl {
 		}
 
 		{// サウンド
+			ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonScenePlayerAttack.ogg", DX_PLAYTYPE_BACK);
 		}
 
 		{// ログ
@@ -203,6 +214,8 @@ namespace atl {
 		explosion_->render(playerCamera_);
 		dxe::DirectXRenderEnd();
 	}
+
+
 
 	void PlayerPawn::initialize(std::weak_ptr<DungeonScene> dungeonScene) {
 		playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));

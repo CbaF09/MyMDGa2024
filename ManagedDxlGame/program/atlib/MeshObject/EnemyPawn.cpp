@@ -8,6 +8,11 @@
 
 namespace atl {
 
+	EnemyPawn::~EnemyPawn() {
+		ResourceManager::getResourceManager()->deleteResource("sound/SE/DungeonSceneEnemyDead.ogg");
+		ResourceManager::getResourceManager()->deleteResource("sound/SE/DungeonSceneEnemyAttack.ogg");
+	}
+
 	EnemyPawn::EnemyPawn(const tnl::Vector2i& enemyPos) {
 		set2Dpos(enemyPos);
 		auto cellLength = DungeonScene::getCellLength();
@@ -37,7 +42,9 @@ namespace atl {
 		);
 		dirArrow->pos_ = rootMesh->pos_ + tnl::Vector3{ 0, 0, ENEMY_SIZE.z / 2 };
 		addChildMesh(dirArrow);
-
+		
+		// 使う音源のボリューム調整
+		ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/SE/DungeonSceneEnemyDead.ogg", 180);
 	}
 
 	void EnemyPawn::adjustChildsMeshes() {
@@ -136,11 +143,17 @@ namespace atl {
 	}
 
 	bool EnemyPawn::seqDeading(float deltaTime) {
-		// 2.5秒間、くるくる回転してから死亡する
-		SEQ_CO_YIELD_RETURN_TIME(2.5f, deltaTime, [&] {
+		// 0.3秒間、くるくる回転
+		SEQ_CO_YIELD_RETURN_TIME(0.3f, deltaTime, [&] {
 			getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(10));
 		})
-		
+
+		// 一回音を鳴らし、もう 2.2 秒間回転
+		SEQ_CO_YIELD_RETURN_TIME(2.2f, deltaTime, [&] {
+			if (SEQ_CO_YIELD_TIME_IS_START) { ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneEnemyDead.ogg", DX_PLAYTYPE_BACK); }
+			getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(10));
+			});
+
 		isAlreadyAction_ = true;
 		isAlreadyMove_ = true;
 		currentState_ = e_EnemyState::Dead;
@@ -234,6 +247,7 @@ namespace atl {
 	bool EnemyPawn::seqActionAttack(float deltaTime) {
 		auto player = weakDungeonScene_.lock()->getPlayerPawn();
 		if (player->getIsAlreadyTurn()) {
+			ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneEnemyAttack.ogg",DX_PLAYTYPE_BACK);
 			auto damage = player->getPlayerData()->damaged(enemyData_->getAttackPower());
 
 			TextLogManager::getTextLogManager()->addTextLog("プレイヤーは " + convertFullWidthNumber(damage) + " のダメージを受けた");

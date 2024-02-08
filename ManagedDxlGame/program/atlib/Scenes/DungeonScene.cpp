@@ -28,7 +28,10 @@ namespace atl {
 			std::vector<std::string> tempDeleteRes = {
 				"graphics/UI/HPbarBackGround.png",
 				"graphics/UI/HPbarRed.bmp",
-				"graphics/UI/HPbarGreen.bmp"
+				"graphics/UI/HPbarGreen.bmp",
+				"sound/BGM/DungeonSceneBGM.ogg",
+				"sound/SE/DungeonSceneCloseMenu.ogg",
+				"sound/SE/DungeonSceneOpenMenu.ogg",
 			};
 
 			// リソース解放
@@ -124,11 +127,13 @@ namespace atl {
 	}
 
 	void DungeonScene::sceneUpdate(float deltaTime) {
+
+
 		seq_.update(deltaTime);
 
 		// カメラのアップデート
 		player_->getPlayerCamera()->update();
-
+		skybox_.update(player_->getPlayerCamera());
 		// レンダー ( カメラアップデートの後 )
 		render(deltaTime, player_->getPlayerCamera());
 
@@ -139,6 +144,29 @@ namespace atl {
 			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) 	generateDungeon();;
 			if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
 		}
+	}
+
+	void DungeonScene::openMenu() {
+		if (menuWindow_) return;
+		// メニューを開く
+		menuWindow_ = std::make_shared<MenuWindow>(player_->getPlayerData()->getInventory());
+		player_->openMenuBook();
+		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneOpenMenu.ogg", DX_PLAYTYPE_BACK);
+	}
+
+	void DungeonScene::closeMenu() {
+		if (!menuWindow_) return;
+		// メニューウィンドウを閉じる
+		menuWindow_.reset();
+		player_->closeMenuBook();
+		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneCloseMenu.ogg", DX_PLAYTYPE_BACK);
+	}
+
+	void DungeonScene::soundVolumeFix() {
+		auto rManager = ResourceManager::getResourceManager();
+		rManager->changeVolumeSoundRes("sound/BGM/DungeonSceneBGM.ogg", 80);
+		rManager->changeVolumeSoundRes("sound/SE/DungeonSceneCloseMenu.ogg", 200);
+		rManager->changeVolumeSoundRes("sound/SE/DungeonSceneOpenMenu.ogg", 180);
 	}
 
 	//---------------------
@@ -157,10 +185,16 @@ namespace atl {
 		// 現在の階層を 初期化
 		currentFloor_ = 0;
 
+		soundVolumeFix();
+
+		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg",DX_PLAYTYPE_LOOP);
+
 		// 本シーケンスに遷移
 		seq_.change(&DungeonScene::seqToNextFloor);
 		return true;
 	}
+	
+
 
 	// 行動フラグオフ用シーケンス
 	bool DungeonScene::seqAllTurnFlagOff(float deltaTime) {
@@ -253,13 +287,11 @@ namespace atl {
 		// 右クリックでメニューウィンドウの生成を行う
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
 			if(!menuWindow_) { 
-				menuWindow_ = std::make_shared<MenuWindow>(player_->getPlayerData()->getInventory()); 
-				player_->openMenuBook();
+				openMenu();
 				seq_.change(&DungeonScene::seqMenuWindow);
 			}
 		}
 	}
-
 
 	// プレイヤーの移動入力
 	void DungeonScene::processPlayerMoveTurn(float deltaTime) {
@@ -352,8 +384,7 @@ namespace atl {
 		// 右クリックで menuWindowを閉じる
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
 			if (menuWindow_) {
-				menuWindow_.reset();
-				player_->closeMenuBook();
+				closeMenu();
 				seq_.change(&DungeonScene::seqAllTurnFlagOff);
 			}
 		}
@@ -374,8 +405,7 @@ namespace atl {
 		case MenuWindow::e_SelectedMenuWindow::Setting: break; // 現状何も無し
 		case MenuWindow::e_SelectedMenuWindow::CloseMenu:
 		{
-			menuWindow_.reset();
-			player_->closeMenuBook();
+			closeMenu();
 			seq_.change(&DungeonScene::seqAllTurnFlagOff);
 			break;
 		}
@@ -389,6 +419,7 @@ namespace atl {
 		return true;
 	}
 
+
 	// 本当にアイテムを使うか確認
 	bool DungeonScene::seqReallyUseItem(float deltaTime) {
 		auto& item = player_->getPlayerData()->getInventory()->getItemData(static_cast<int>(selectedMenu));
@@ -400,8 +431,7 @@ namespace atl {
 				// アイテム使用してメニューウィンドウを閉じる。エネミーが行動する
 				player_->getPlayerData()->getInventory()->useItem(static_cast<int32_t>(selectedMenu));
 				selectWindow_.reset();
-				menuWindow_.reset();
-				player_->closeMenuBook();
+				closeMenu();
 				player_->onFlagIsAlreadyTurn();
 				currentTurn_ = e_turnState::PLAYER_MOVE;
 				seq_.change(&DungeonScene::seqTurnStateProcess);

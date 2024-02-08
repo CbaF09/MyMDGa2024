@@ -2,6 +2,7 @@
 #include "../dxlib_ext/dxlib_ext.h"
 #include "../Object/MenuWindow.h"
 #include "Base_Scene.h"
+#include "../MeshObject/Skybox.h"
 
 namespace atl {
 
@@ -91,6 +92,9 @@ namespace atl {
         Shared<MenuWindow> menuWindow_ = nullptr;
         MenuWindow::e_SelectedMenuWindow selectedMenu = MenuWindow::e_SelectedMenuWindow::Item1;
 
+        // スカイボックス用 ----------------------------
+        Skybox skybox_;
+
         //----------------------------------------------
         // メソッド
 
@@ -121,9 +125,17 @@ namespace atl {
         // arg ... 2D座標位置
         void generateGround(int generatePosX, int generatePosZ);
 
+        // メニューを開く
+        void openMenu();
+        // メニューを閉じる
+        void closeMenu();
+        // シーンで使う音源データのヴォリュームをまとめて調整
+        void soundVolumeFix();
+
         // シーケンス
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);
         bool seqInit(float deltaTime);
+
         // 現在のターンに応じた処理を実行
         bool seqTurnStateProcess(float deltaTime);
         // メニューウィンドウ開いている間の処理

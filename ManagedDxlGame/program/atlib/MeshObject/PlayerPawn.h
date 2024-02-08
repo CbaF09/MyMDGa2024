@@ -14,7 +14,8 @@ namespace atl {
 
 	class PlayerPawn final : public std::enable_shared_from_this<PlayerPawn> {
 	public:
-		~PlayerPawn() { explosion_.reset(); }
+		PlayerPawn();
+		~PlayerPawn();
 
 		// 遅延コンストラクタ。生成後に一回だけ呼ぶ事
 		void initialize(std::weak_ptr<DungeonScene> dungeonScene);

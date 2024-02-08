@@ -158,6 +158,7 @@
     <ClCompile Include="program\atlib\MeshObject\MenuBook.cpp" />
     <ClCompile Include="program\atlib\MeshObject\MagicWand.cpp" />
     <ClCompile Include="program\atlib\MeshObject\PlayerPawn.cpp" />
+    <ClCompile Include="program\atlib\MeshObject\Skybox.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Stairs.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Wall.cpp" />
     <ClCompile Include="program\atlib\Object\Base_ActorData.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="program\atlib\MeshObject\MenuBook.h" />
     <ClInclude Include="program\atlib\MeshObject\MagicWand.h" />
     <ClInclude Include="program\atlib\MeshObject\PlayerPawn.h" />
+    <ClInclude Include="program\atlib\MeshObject\Skybox.h" />
     <ClInclude Include="program\atlib\MeshObject\Stairs.h" />
     <ClInclude Include="program\atlib\MeshObject\Wall.h" />
     <ClInclude Include="program\atlib\Object\Base_ActorData.h" />

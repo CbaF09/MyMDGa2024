@@ -11,6 +11,7 @@ namespace atl {
 	public:
 		// arg1 ... エネミーを生成する位置
 		EnemyPawn(const tnl::Vector2i& enemyPos);
+		~EnemyPawn();
 
 		void adjustChildsMeshes() override;
 

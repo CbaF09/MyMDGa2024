@@ -4,7 +4,8 @@
 namespace atl {
 
 	SelectWindow::SelectWindow(std::string questionText) : questionText_(questionText) {
-
+		ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/SE/DungeonSceneOpenSelectMenu.ogg", 160);
+		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneOpenSelectMenu.ogg", DX_PLAYTYPE_BACK);
 	}
 
 	SelectWindow::~SelectWindow(){
@@ -13,7 +14,8 @@ namespace atl {
 		// ÉäÉ\Å[ÉXâï˙
 		std::vector<std::string> tempDeleteRes = {
 		"graphics/UI/SelectWindowQuestionText.png",
-		"graphics/UI/SelectWindowYesNo.png"
+		"graphics/UI/SelectWindowYesNo.png",
+		"sound/SE/DungeonSceneOpenSelectMenu.ogg",
 		};
 
 		for (const auto& res : tempDeleteRes) {
