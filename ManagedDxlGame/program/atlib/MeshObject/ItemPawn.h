@@ -5,6 +5,7 @@ namespace atl {
 
 	class PlayerPawn;
 	class ItemData;
+	class DungeonScene;
 
 	class ItemPawn final : public Base_MultiMeshObject {
 	public:
@@ -19,14 +20,14 @@ namespace atl {
 		void adjustChildsMeshes() override;
 		void renderObjects(const Shared<Atl3DCamera> camera) override;
 
-		// プレイヤーへの弱参照を設定
-		void assignWeakPlayer(std::weak_ptr<PlayerPawn> player);
+		// ダンジョンシーンへの弱参照を設定
+		void assignWeakDungeonScene(std::weak_ptr<DungeonScene> dungeonScene);
 
 	private:
-		// プレイヤーへの弱参照
-		std::weak_ptr<PlayerPawn> weakPlayer_;
+		// ダンジョンシーンへの弱参照
+		std::weak_ptr<DungeonScene> weakDungeonScene_;
 		// アイテムポーンは、アイテムデータを持つ
-		Shared<ItemData> itemData_ = std::make_shared<ItemData>(1);
+		Shared<ItemData> itemData_;
 		// アイテムの周りに浮かぶパーティクル用
 		Shared<dxe::Particle> itemParticle_ = std::make_shared<dxe::Particle>("graphics/particle/ItemEffect.bin");
 	};

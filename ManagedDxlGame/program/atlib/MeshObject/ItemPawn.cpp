@@ -14,11 +14,6 @@ namespace atl {
 		rootMesh->pos_ = item3Dpos;
 		setRootMesh(rootMesh);
 
-		auto plane = dxe::Mesh::CreatePlaneMV({ 200,200,0 });
-		plane->setTexture(itemData_->getItemIllust());
-		plane->pos_ = rootMesh->pos_ + tnl::Vector3{ 0,200,0 };
-		addChildMesh(plane);
-
 		itemParticle_->setPosition(getRootMesh()->pos_);
 	}
 
@@ -27,7 +22,13 @@ namespace atl {
 
 		auto& childs = getChildMeshes();
 
-		childs[0]->rot_ = tnl::Quaternion::RotationAxis({ 1,0,0 },tnl::ToRadian(-30)) * tnl::Quaternion::LookAt(childs[0]->pos_, weakPlayer_.lock()->getPlayerPos(), { 0,1,0 });
+		tnl::Vector3 playerPos{ 0,0,0 };
+		auto lock = weakDungeonScene_.lock();
+		if (lock) {
+			playerPos = lock->getPlayerPawn()->getPlayerPos();
+		}
+
+		childs[0]->rot_ = tnl::Quaternion::RotationAxis({ 1,0,0 },tnl::ToRadian(-30)) * tnl::Quaternion::LookAt(childs[0]->pos_, playerPos, { 0,1,0 });
 	}
 
 	void ItemPawn::renderObjects(const Shared<Atl3DCamera> camera) {
@@ -44,8 +45,15 @@ namespace atl {
 		dxe::DirectXRenderEnd();
 	}
 
-	void ItemPawn::assignWeakPlayer(std::weak_ptr<PlayerPawn> player) {
-		weakPlayer_ = player;
+	void ItemPawn::assignWeakDungeonScene(std::weak_ptr<DungeonScene> dungeonScene) {
+		weakDungeonScene_ = dungeonScene;
+		itemData_ = std::make_shared<ItemData>(weakDungeonScene_);
+
+		// itemData ‚ªo—ˆ‚Ä‚©‚çAPlane ¶¬‚·‚é
+		auto plane = dxe::Mesh::CreatePlaneMV({ 200,200,0 });
+		plane->setTexture(itemData_->getItemIllust());
+		plane->pos_ = getRootMesh()->pos_ + tnl::Vector3{0,200,0};
+		addChildMesh(plane);
 	}
 
 	

@@ -1,2 +1,5 @@
 ItemID,アイテム名,画像ファイルパス,descString
-1,回復薬,graphics/ItemIllust/GreenPotion.png,体力を小回復できるポーション
+1,回復の草,graphics/ItemIllust/GreenHerb.png,体力を少し回復する
+2,回復薬,graphics/ItemIllust/GreenPotion.png,体力を大きく回復する
+3,雷神の石,graphics/ItemIllust/ThunderStone.png,同じ部屋の敵全てにダメージを与える
+4,雷神の巻物,graphics/ItemIllust/ThunderScroll.png,フロアの敵全てにダメージを与える

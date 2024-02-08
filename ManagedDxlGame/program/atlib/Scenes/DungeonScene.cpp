@@ -215,11 +215,11 @@ namespace atl {
 		// ターンの特別遷移がある場合、記述
 		if (seq_.isStart()) {
 
-			auto player2Dpos = player_->getPlayer2Dpos();
+			auto& player2Dpos = player_->getPlayer2Dpos();
 			{// 階段に乗った場合
 				// 階段に乗るフラグが立っていない場合、階段に乗ったフラグを立てる
 				if (!isPlayerOnStairs_) {
-					auto stairs2Dpos = originStairs_->get2Dpos();
+					auto& stairs2Dpos = originStairs_->get2Dpos();
 					if (stairs2Dpos.x == player2Dpos.x && stairs2Dpos.y == player2Dpos.y) {
 						isPlayerOnStairs_ = true;
 						currentTurn_ = e_turnState::PLAYER_ON_STAIRS;
@@ -334,7 +334,7 @@ namespace atl {
 			// インベントリにアイテムデータを格納した時
 			if (player_->getPlayerData()->getInventory()->pushbackItemToInventory(itemData)) {
 				// テキストログに拾ったアイテム名を出力
-				auto itemName = itemData->getItemName();
+				auto& itemName = itemData->getItemName();
 				std::string textLog = "　" + itemName + "を拾った";
 				TextLogManager::getTextLogManager()->addTextLog(textLog);
 
@@ -596,7 +596,7 @@ namespace atl {
 			auto& itemSpawnPos = dungeonCreater->getItemSpawnPos();
 			for (int i = 0; i < dungeonCreater->getItemSpawnNum(); ++i) {
 				auto item = std::make_shared<ItemPawn>(itemSpawnPos[i]);
-				item->assignWeakPlayer(player_);
+				item->assignWeakDungeonScene(shared_from_this());
 				items_.emplace_back(item);
 			}
 		}

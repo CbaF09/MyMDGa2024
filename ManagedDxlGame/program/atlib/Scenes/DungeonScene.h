@@ -65,7 +65,7 @@ namespace atl {
         // 階層管理用 ----------------------------------
         int32_t currentFloor_ = 1;      // 現在階層
         const int32_t MAX_FLOOR = 3;    // 最上階 ( 到達したらクリア階 )
-        const float nextFloorTransitionTime = 2.0f;  // 次階層に進む時、黒画面のままの待機する時間
+        const float nextFloorTransitionTime = 0.2f;  // 次階層に進む時、黒画面のままの待機する時間
         bool isNextFloorTransition = false;
 
         // ターン制御用 --------------------------------
