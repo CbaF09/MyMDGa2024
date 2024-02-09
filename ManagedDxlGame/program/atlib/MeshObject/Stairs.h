@@ -6,7 +6,7 @@ namespace atl {
 	// 階段用メッシュオブジェクト
 	class Stairs final : public Base_MultiMeshObject {
 	public:
-		Stairs(const tnl::Vector2i& spawnPos, const tnl::Vector3& initSize);
+		explicit Stairs(const tnl::Vector2i& spawnPos, const tnl::Vector3& initSize);
 		void adjustChildsMeshes(float deltaTime) override;
 
 	private:

@@ -10,46 +10,45 @@ namespace atl {
 
 		auto bottom = dxe::Mesh::CreateBoxMV(
 			{ stairsSize_.x,stairsSize_.y / 3,stairsSize_.z },
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg")
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png")
 		);
 		bottom->pos_ = spawn3DPos + tnl::Vector3{ 0, stairsSize_.y / 6, 0 };
 		setRootMesh(bottom);
 
 		auto middle = dxe::Mesh::CreateBoxMV(
 			{ stairsSize_.x,stairsSize_.y / 3,(stairsSize_.z/3)*2 },
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_Black.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_Black.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_Black.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_Black.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_Black.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_Black.jpg")
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png")
 		);
-		middle->pos_ = bottom->pos_ + tnl::Vector3{ 0, stairsSize_.y / 3, stairsSize_.z/6 };
 		addChildMesh(middle);
 
 		auto top = dxe::Mesh::CreateBoxMV(
 			{ stairsSize_.x,stairsSize_.y / 3,stairsSize_.z/3 },
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Mable_White.jpg")
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png"),
+			dxe::Texture::CreateFromFile("graphics/Texture/Stairs.png")
 		);
-		top->pos_ = bottom->pos_ + tnl::Vector3{ 0,(stairsSize_.y / 3)*2,stairsSize_.z/3 };
 		addChildMesh(top);
 
 	}
 
 	void Stairs::adjustChildsMeshes(float deltaTime) {
 		auto rootMesh = getRootMesh();
-		auto& childs = getChildMeshes();
+		rootMesh->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(0.2f));
 
+		auto& childs = getChildMeshes();
 		childs[0]->rot_ = rootMesh->rot_;
 		childs[1]->rot_ = rootMesh->rot_;
 

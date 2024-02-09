@@ -28,13 +28,13 @@ void gameStart() {
 
 	ChangeLightTypeDir(VGet(0.0f, -1.0f, 0.0f));
 	SetBackgroundColor(32, 32, 32);
-
+    
     // マウスカーソルを非表示に
 	SetMouseDispFlag(false);
     // マウスカーソルをウィンドウに固定
     LockCursorToWindow();
 
-    //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
+    // atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
 
 	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
 }

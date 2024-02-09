@@ -36,8 +36,11 @@ namespace atl {
 		inline void add2Dpos(tnl::Vector2i addVec) { mesh2Dpos_ += addVec; };
 	
 	private:
+		// 親メッシュ
 		Shared<dxe::Mesh> rootMesh_;
+		// 子メッシュ
 		std::vector<Shared<dxe::Mesh>> childMeshes_;
+		// メッシュ群の2Dpos
 		tnl::Vector2i mesh2Dpos_{ 0,0 };
 	};
 

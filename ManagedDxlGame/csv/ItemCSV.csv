@@ -3,3 +3,4 @@ ItemID,アイテム名,画像ファイルパス,descString
 2,回復薬,graphics/ItemIllust/GreenPotion.png,体力を大きく回復する
 3,雷神の石,graphics/ItemIllust/ThunderStone.png,同じ部屋の敵全てにダメージを与える
 4,雷神の巻物,graphics/ItemIllust/ThunderScroll.png,フロアの敵全てにダメージを与える
+5,魔法のインク,graphics/ItemIllust/MagicInc.png,招待状 ( 満腹度 ) を回復する

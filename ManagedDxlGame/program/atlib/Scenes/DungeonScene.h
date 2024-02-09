@@ -3,6 +3,7 @@
 #include "../Object/MenuWindow.h"
 #include "Base_Scene.h"
 #include "../MeshObject/Skybox.h"
+#include "../MeshObject/GroundTile.h"
 
 namespace atl {
 
@@ -11,7 +12,6 @@ namespace atl {
     class PlayerPawn;
     class ItemPawn;
     class Wall;
-    class GroundTile;
     class DungeonCreater;
     class Atl3DCamera;
     class SelectWindow;
@@ -52,8 +52,10 @@ namespace atl {
         std::vector<Shared<Wall>> walls_;   // 壁メッシュ群のリスト
 
         // 地面 用 -------------------------------------
-        Shared<GroundTile> originGroundTile_ = nullptr; // クローン元になる地面メッシュへのポインタ
-        std::vector<Shared<GroundTile>> groundTiles_;   // 地面メッシュ群のリスト
+        Shared<GroundTile> originGroundTile_ = std::make_shared<GroundTile>(tnl::Vector3{ CELL_FULL_LENGTH,CELL_FULL_LENGTH,0 }); // クローン元になる地面メッシュ PlaneMVモデルの関係で、Yの所にZの値を入れてます 
+        std::vector<tnl::Matrix> groundTilesMats_;
+        Shared<dxe::Mesh> groundTilesGroupMesh_ = nullptr;
+//        std::vector<Shared<GroundTile>> groundTiles_;   // 地面メッシュ群のリスト
 
         // 階段関連 -------------------------------------
         Shared<Stairs> originStairs_ = nullptr; // 階段へのポインタ
@@ -62,6 +64,7 @@ namespace atl {
         // プレイヤー関連 ------------------------------
         Shared<PlayerPawn> player_ = nullptr; // プレイヤーポーンへのポインタ
         bool isOpenMenu_ = false;    // メニューを開いているか
+        const int32_t EVERY_TURN_HEAL = 1; // ターンごとのHP回復量
 
         // エネミー関連 --------------------------------
         std::list<Shared<EnemyPawn>> enemies_;  // フィールドに存在するエネミーリスト
@@ -71,9 +74,9 @@ namespace atl {
 
         // 階層管理用 ----------------------------------
         int32_t currentFloor_ = 1;      // 現在階層
-        const int32_t MAX_FLOOR = 3;    // 最上階 ( 到達したらクリア階 )
+        const int32_t MAX_FLOOR = 4;    // 最上階 ( 到達したらクリア階 )
         const float nextFloorTransitionTime = 0.2f;  // 次階層に進む時、黒画面のままの待機する時間
-        bool isNextFloorTransition = false;
+        bool isNextFloorTransition = false; // 次階層に遷移中か ( 黒画面か )
 
         // ターン制御用 --------------------------------
         enum class e_turnState {
@@ -86,6 +89,7 @@ namespace atl {
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
+        const tnl::Vector2i HP_STRING_POSITION{ 50,15 }; // HP数値表示の位置
         const tnl::Vector2i LEVEL_STRING_POSITION{ 60,390 }; // レベルの文字列を描画する位置
 
         const int LEVEL_STRING_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
@@ -145,7 +149,7 @@ namespace atl {
         void generateWall(int generatePosX, int generatePosZ);
         // 地面を生成
         // arg ... 2D座標位置
-        void generateGround(int generatePosX, int generatePosZ);
+        void emplaceBackGroundPos(int generatePosX, int generatePosZ);
 
         // メニューを開く
         void openMenu();

@@ -10,7 +10,6 @@
 #include "../Singletons/FadeInOutManager.h"
 #include "../Singletons/SceneManager.h"
 #include "../MeshObject/Wall.h"
-#include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/EnemyPawn.h"
 #include "../MeshObject/PlayerPawn.h"
@@ -56,7 +55,7 @@ namespace atl {
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
 		// 不透明なもの描画
 		SetWriteZBuffer3D(TRUE);
-		for (const auto& groundTile : groundTiles_) { groundTile->renderObject(camera); }
+		if(groundTilesGroupMesh_) groundTilesGroupMesh_->render(camera);
 		for (const auto& wall : walls_) { wall->renderObject(camera); }
 		for (const auto& enemy : enemies_) { enemy->renderObjects(camera, deltaTime); }
 		if (originStairs_) originStairs_->renderObjects(camera,deltaTime);
@@ -105,7 +104,7 @@ namespace atl {
 		// HP バー 表示
 		drawHPbar();
 
-		// メニューを開いている時はログ表示無し,レベル表示無し
+		// メニューを開いている時はログ表示無し,レベル表示無し,満腹度表示無し
 		if (!menuWindow_) { 
 			TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); 
 			drawLevel();
@@ -157,6 +156,11 @@ namespace atl {
 				static_cast<int>((HP_BAR_RIGHT_DOWN_POINT.x * hpPersent)) - HP_BAR_ADJUST_VALUE.x,
 				HP_BAR_RIGHT_DOWN_POINT.y - HP_BAR_ADJUST_VALUE.y, HPbarGreen, true);
 		}
+
+		// HP の数値表示 ( フォントはレベルを表示しているフォントを流用 )
+		auto maxHP = player_->getPlayerData()->getMaxHP();
+		auto currentHP = player_->getPlayerData()->getCurrentHP();
+		DrawStringToHandleEx(static_cast<float>(HP_STRING_POSITION.x), static_cast<float>(HP_STRING_POSITION.y), -1, LEVEL_STRING_FONT, "HP :  %d / %d ", currentHP, maxHP);
 	}
 
 	void DungeonScene::sceneUpdate(float deltaTime) {
@@ -242,6 +246,9 @@ namespace atl {
 			seq_.change(&DungeonScene::seqGameOver);
 			return true;
 		}
+		
+		// HP 自動回復
+		player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
 
 		currentTurn_ = e_turnState::KEY_INPUT;
 		seq_.change(&DungeonScene::seqTurnStateProcess);
@@ -588,8 +595,12 @@ namespace atl {
 	//---------------------
 
 	void DungeonScene::initDungeon() {
+		// 地形
 		walls_.clear();
-		groundTiles_.clear();
+		groundTilesMats_.clear();
+		groundTilesGroupMesh_.reset();
+
+		// エネミー、アイテム
 		enemies_.clear();
 		items_.clear();
 	}
@@ -609,10 +620,12 @@ namespace atl {
 					generateWall(x, y);
 				}
 				else {
-					generateGround(x, y);
+					emplaceBackGroundPos(x, y);
 				}
 			}
 		}
+
+		groundTilesGroupMesh_ = dxe::Mesh::CreateStaticMeshGroupMV(originGroundTile_->getMesh(), groundTilesMats_);
 
 		{// 各種スポーン ( DungeonCreaterが作ったスポーン位置を取得し、生成 )
 			// プレイヤー
@@ -622,7 +635,7 @@ namespace atl {
 			// 階段
 			auto& stairsSpawnPos = dungeonCreater->getStairsSpawnPos();
 			// セル全長の半分の大きさで生成
-			originStairs_ = std::make_shared<Stairs>(stairsSpawnPos, tnl::Vector3{ CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2,CELL_FULL_LENGTH / 2 });
+			originStairs_ = std::make_shared<Stairs>(stairsSpawnPos, tnl::Vector3{ CELL_FULL_LENGTH / 3,CELL_FULL_LENGTH / 3,CELL_FULL_LENGTH / 3 });
 
 			// エネミー
 			auto& enemySpawnPos = dungeonCreater->getEnemySpawnPos();
@@ -656,13 +669,14 @@ namespace atl {
 		walls_.emplace_back(newWall);
 	}
 
-	void DungeonScene::generateGround(int generatePosX, int generatePosZ) {
-		// 複製元となるオリジンを生成
-		if (!originGroundTile_) originGroundTile_ = std::make_shared<GroundTile>(tnl::Vector3{ CELL_FULL_LENGTH,CELL_FULL_LENGTH,0 }); // Plane モデルの生成における関係で、Yの所にZの値を入れてます
-		Shared<GroundTile> newGroundTile = std::make_shared<GroundTile>(originGroundTile_->getMesh());
-		newGroundTile->getMesh()->pos_.x = static_cast<float>(generatePosX * CELL_FULL_LENGTH);
-		newGroundTile->getMesh()->pos_.z = static_cast<float>(generatePosZ * CELL_FULL_LENGTH);
-		groundTiles_.emplace_back(newGroundTile);
+	void DungeonScene::emplaceBackGroundPos(int generatePosX, int generatePosZ) {
+		tnl::Vector3 generatePos{ static_cast<float>(generatePosX * CELL_FULL_LENGTH),0,static_cast<float>(generatePosZ * CELL_FULL_LENGTH) };
+		groundTilesMats_.emplace_back(
+			tnl::Matrix::AffineTransformation(
+				generatePos,
+				{1,1,1},
+				tnl::Quaternion::RotationAxis({ 1, 0, 0 }, tnl::ToRadian(90)
+				)));
 	}
 
 	//------------------------

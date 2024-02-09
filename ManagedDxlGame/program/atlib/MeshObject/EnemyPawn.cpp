@@ -178,7 +178,7 @@ namespace atl {
 		isAlreadyMove_ = true;
 		currentState_ = e_EnemyState::Dead;
 
-		auto& enemyName = getEnemyData()->getEnemyName_();
+		auto& enemyName = getEnemyData()->getEnemyName();
 		TextLogManager::getTextLogManager()->addTextLog(enemyName + "‚ð“|‚µ‚½I");
 
 		SEQ_CO_END
@@ -273,7 +273,7 @@ namespace atl {
 			auto player = weakDungeonScene_.lock()->getPlayerPawn();
 			if (player->getIsAlreadyTurn()) {
 				if (SEQ_CO_YIELD_TIME_IS_START) {
-					auto& enemyName = getEnemyData()->getEnemyName_();
+					auto& enemyName = getEnemyData()->getEnemyName();
 					TextLogManager::getTextLogManager()->addTextLog(enemyName + "‚Ì‚±‚¤‚°‚«I");
 					ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneEnemyAttack.ogg", DX_PLAYTYPE_BACK);
 				}

@@ -23,6 +23,7 @@ namespace atl {
 			HealPotion,
 			ThunderStone,
 			ThunderScroll,
+			MagicInc,
 			ITEM_MAX,
 		};
 		e_itemList itemID_ = e_itemList::NONE;
@@ -53,6 +54,10 @@ namespace atl {
 		// フィールドの敵全員にダメージを与える
 		const int32_t THUNDER_SCROLL_DAMAGE_VALUE = 10;
 		void thunderScrollAction();
+
+		// 招待状の状態を回復する ( 満腹度を回復する )
+		const int32_t MAGIC_INC_HEAL_VALUE = 1000;
+		void magicIncAction();
 	};
 
 }

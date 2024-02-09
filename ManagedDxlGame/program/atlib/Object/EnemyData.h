@@ -10,7 +10,7 @@ namespace atl {
 
 		// ƒQƒbƒ^[
 		inline Shared<dxe::Texture> getEnemyTexture() { return enemyTexture_; }
-		inline const std::string& getEnemyName_() { return enemyName_; }
+		inline const std::string& getEnemyName() { return enemyName_; }
 		inline const int32_t getEnemyExp() { return exp_; }
 
 	private:

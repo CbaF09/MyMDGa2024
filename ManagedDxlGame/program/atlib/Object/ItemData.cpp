@@ -40,6 +40,7 @@ namespace atl {
 		case e_itemList::HealPotion: healPotionAction(); break;
 		case e_itemList::ThunderStone: thunderStoneAction(); break;
 		case e_itemList::ThunderScroll: thunderScrollAction(); break;
+		case e_itemList::MagicInc: magicIncAction(); break;
 		}
 	}
 
@@ -71,10 +72,11 @@ namespace atl {
 			auto playerArea = DungeonCreater::getDungeonCreater()->getFieldCellID(player->getPlayer2Dpos());
 			for (auto& enemy : enemies) {
 				auto enemyArea = DungeonCreater::getDungeonCreater()->getFieldCellID(enemy->get2Dpos());
+				auto enemyName = enemy->getEnemyData()->getEnemyName();
 				// プレイヤーと同じエリアなら
 				if (playerArea == enemyArea) {
 					auto realyDamaged = enemy->getEnemyData()->damaged(THUNDER_STONE_DAMAGE_VALUE);
-					addTextItemUse("敵に" + convertFullWidthNumber(realyDamaged) + "のダメージ！");
+					addTextItemUse(enemyName + "に" + convertFullWidthNumber(realyDamaged) + "のダメージ！");
 				}
 			}
 		}
@@ -87,8 +89,18 @@ namespace atl {
 			auto& enemies = lock->getEnemyArray();
 			for (auto& enemy : enemies) {
 				auto realyDamaged = enemy->getEnemyData()->damaged(THUNDER_SCROLL_DAMAGE_VALUE);
-				addTextItemUse("敵に" + convertFullWidthNumber(realyDamaged) + "のダメージ！");
+				auto enemyName = enemy->getEnemyData()->getEnemyName();
+				addTextItemUse(enemyName + "に" + convertFullWidthNumber(realyDamaged) + "のダメージ！");
 			}
 		}
+	}
+
+	void ItemData::magicIncAction() {
+		auto lock = weakDungeonScene_.lock();
+		if (lock) {
+			lock->changeSatiety(MAGIC_INC_HEAL_VALUE);
+			addTextItemUse("招待状の期限が伸びた");
+		}
+
 	}
 }

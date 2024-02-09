@@ -4,7 +4,7 @@
 #include "Base_Scene.h"
 #include "../Singletons/ResourceManager.h"
 #include "../MeshObject/GroundTile.h"
-#include "../MeshObject/EnemyPawn.h"
+#include "../MeshObject/Stairs.h"
 #include "../MeshObject/PlayerPawn.h"
 
 namespace atl {
@@ -18,7 +18,7 @@ namespace atl {
 
     private:
         Shared<PlayerPawn> player_ = nullptr;
-        Shared<EnemyPawn> enemy_ = nullptr;
+        Shared<Stairs> stairs_ = nullptr;
 
         Shared<GroundTile> groundOrigin = std::make_shared<GroundTile>(tnl::Vector3{ 1000, 1000, 1000 });
         Shared<GroundTile> ground1_ = std::make_shared<GroundTile>(groundOrigin->getMesh());
@@ -37,8 +37,7 @@ namespace atl {
 
             ground1_->renderObject(camera, deltaTime);
             ground2_->renderObject(camera, deltaTime);
-            enemy_->renderObjects(camera, deltaTime);
-            enemy_->renderTransparentObject(camera, deltaTime);
+            stairs_->renderObjects(camera, deltaTime);
 
             player_->render(deltaTime);
 
@@ -56,7 +55,7 @@ namespace atl {
             player_->initialize();
             player_->playerSpawn2Dpos({ 0,-1 });
 
-            enemy_ = std::make_shared<EnemyPawn>(tnl::Vector2i{ 0,0 });
+            stairs_ = std::make_shared<Stairs>(tnl::Vector2i{ 0,0 }, tnl::Vector3{ 333,333,333 });
 
             ground1_->setMeshPos({ 0,0,0 });
             ground2_->setMeshPos({ 0,0,-1000 });
