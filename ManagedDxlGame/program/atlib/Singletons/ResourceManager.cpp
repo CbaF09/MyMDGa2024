@@ -68,7 +68,6 @@ namespace atl {
 		StopSoundMem(handle);
 	}
 
-
 	// 解放に成功した時 => true , 解放しなかった時 => false
 	bool ResourceManager::deleteResource(const std::string& filepath) {
 		// graphResourceMap_ を走査
@@ -87,7 +86,7 @@ namespace atl {
 		}
 		
 		// 発見できなかった場合
-		tnl::DebugTrace("\n----------------------------------\n ResourceManager のデータ解放が正常に成功していません \n----------------------------------\n");
+		tnl::DebugTrace("\n----------------------------------\n %s のデータ解放が正常に成功していません \n----------------------------------\n",filepath.c_str());
 		return false;
 	}
 

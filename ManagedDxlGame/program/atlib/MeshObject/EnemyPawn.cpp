@@ -27,11 +27,11 @@ namespace atl {
 		rootMesh->setBlendMode(DX_BLENDMODE_ALPHA);
 		setRootMesh(rootMesh);
 
-		auto rightHone = dxe::Mesh::CreateConeMV(ENEMY_SIZE_RADIUS / 3.0,ENEMY_SIZE_RADIUS/2.0f);
+		auto rightHone = dxe::Mesh::CreateConeMV(ENEMY_SIZE_RADIUS / 3.0f,ENEMY_SIZE_RADIUS/2.0f);
 		rightHone->setTexture(texture);
 		addChildMesh(rightHone);
 
-		auto leftHone = dxe::Mesh::CreateConeMV(ENEMY_SIZE_RADIUS / 3.0, ENEMY_SIZE_RADIUS / 2.0f);
+		auto leftHone = dxe::Mesh::CreateConeMV(ENEMY_SIZE_RADIUS / 3.0f, ENEMY_SIZE_RADIUS / 2.0f);
 		leftHone->setTexture(texture);
 		addChildMesh(leftHone);
 
@@ -177,7 +177,10 @@ namespace atl {
 		isAlreadyAction_ = true;
 		isAlreadyMove_ = true;
 		currentState_ = e_EnemyState::Dead;
-		
+
+		auto& enemyName = getEnemyData()->getEnemyName_();
+		TextLogManager::getTextLogManager()->addTextLog(enemyName + "を倒した！");
+
 		SEQ_CO_END
 	}
 	
@@ -265,16 +268,28 @@ namespace atl {
 	}
 
 	bool EnemyPawn::seqActionAttack(float deltaTime) {
+		// 0.5秒間、誰からの攻撃なのかを表示
+		SEQ_CO_YIELD_RETURN_TIME(0.5f, deltaTime, [&] {
+			auto player = weakDungeonScene_.lock()->getPlayerPawn();
+			if (player->getIsAlreadyTurn()) {
+				if (SEQ_CO_YIELD_TIME_IS_START) {
+					auto& enemyName = getEnemyData()->getEnemyName_();
+					TextLogManager::getTextLogManager()->addTextLog(enemyName + "のこうげき！");
+					ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneEnemyAttack.ogg", DX_PLAYTYPE_BACK);
+				}
+			}
+		});
+
+		// 攻撃処理
 		auto player = weakDungeonScene_.lock()->getPlayerPawn();
 		if (player->getIsAlreadyTurn()) {
-			ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneEnemyAttack.ogg",DX_PLAYTYPE_BACK);
 			auto damage = player->getPlayerData()->damaged(enemyData_->getAttackPower());
-
-			TextLogManager::getTextLogManager()->addTextLog("プレイヤーは " + convertFullWidthNumber(damage) + " のダメージを受けた");
+			TextLogManager::getTextLogManager()->addTextLog("プレイヤーは" + convertFullWidthNumber(damage) + "のダメージを受けた");
 			isAlreadyAction_ = true;
 			seq_.change(&EnemyPawn::seqStateTransition);
 		}
-		return true;
+
+		SEQ_CO_END;
 	}
 
 

@@ -24,7 +24,7 @@ void gameStart() {
 
     // フォグのオンオフは、Skyboxクラスで行われています
 	SetFogColor(32, 32, 32);
-	SetFogStartEnd(6000.0f, 12000.0f);
+	SetFogStartEnd(5000.0f, 12000.0f);
 
 	ChangeLightTypeDir(VGet(0.0f, -1.0f, 0.0f));
 	SetBackgroundColor(32, 32, 32);

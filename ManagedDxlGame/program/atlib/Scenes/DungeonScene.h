@@ -79,7 +79,9 @@ namespace atl {
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
+        const tnl::Vector2i LEVEL_STRING_POSITION{ 60,390 };
 
+        const int LEVEL_STRING_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
         const int NEXT_FLOOR_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
 
         // テキストログ関連 ----------------------------
@@ -107,6 +109,8 @@ namespace atl {
 
         // 2D UI の描画
         void drawUI(float deltaTime);
+        // 2D 現在レベルの文字列描画
+        void drawLevel();
         // 2D HPbar の描画
         void drawHPbar();
         // 次の階層に遷移中に、現在の階層を表示する

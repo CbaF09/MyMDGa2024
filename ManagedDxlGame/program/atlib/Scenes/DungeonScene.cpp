@@ -41,6 +41,7 @@ namespace atl {
 
 			// フォントデータの解放
 			DeleteFontToHandle(NEXT_FLOOR_FONT);
+			DeleteFontToHandle(LEVEL_STRING_FONT);
 
 			{// ダンジョンクリエイターのシングルトンを解放
 				DungeonCreater::getDungeonCreater()->deleteDungeonCreater();
@@ -61,7 +62,6 @@ namespace atl {
 		if (originStairs_) originStairs_->renderObjects(camera,deltaTime);
 		for (const auto& item : items_) { item->renderObjects(camera,deltaTime); }
 		if (player_)player_->render(deltaTime);
-
 
 		// 透明なもの描画
 		SetWriteZBuffer3D(FALSE);
@@ -87,6 +87,7 @@ namespace atl {
 			debug_displayMap(deltaTime);
 			debug_displayDungeonParam(deltaTime);
 		}
+		player_->getPlayerData()->debug_playerDataParam(0, 500);
 	}
 
 	// 次の階層を描画する
@@ -104,11 +105,19 @@ namespace atl {
 		// HP バー 表示
 		drawHPbar();
 
-		// メニューを開いている時はログ表示無し
-		if (!menuWindow_) { TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); }
+		// メニューを開いている時はログ表示無し,レベル表示無し
+		if (!menuWindow_) { 
+			TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); 
+			drawLevel();
+		}
 
 		// メニューを開いている間の描画
 		if (menuWindow_) { menuWindow_->draw(deltaTime); }
+	}
+
+	void DungeonScene::drawLevel() {
+		auto playerData = player_->getPlayerData();
+		DrawStringToHandleEx(static_cast<float>(LEVEL_STRING_POSITION.x), static_cast<float>(LEVEL_STRING_POSITION.y), -1, LEVEL_STRING_FONT,"レベル ... [ %d ]", playerData->getCurrentLevel());
 	}
 
 	void DungeonScene::drawHPbar() {
@@ -206,8 +215,6 @@ namespace atl {
 		seq_.change(&DungeonScene::seqToNextFloor);
 		return true;
 	}
-	
-
 
 	// 行動フラグオフ用シーケンス
 	bool DungeonScene::seqAllTurnFlagOff(float deltaTime) {
@@ -262,8 +269,6 @@ namespace atl {
 		}
 		return true;
 	}
-
-
 
 	bool DungeonScene::seqGameOver(float deltaTime) {
 		// 最初のフレームでフェードアウトを行い、フェードアウトが完了したらゲームオーバーシーンに遷移
@@ -383,6 +388,10 @@ namespace atl {
 			if ((*it)->getEnemyData()->isZeroHP()) {
 				// 死亡演出が終わっているかどうか ( Deading なら死亡演出中 )
 				if ((*it)->getCurrentState() == EnemyPawn::e_EnemyState::Dead) {
+					// エネミーが死亡する時、プレイヤーはエネミーの持っていた経験値を得る
+					auto getEXP = (*it)->getEnemyData()->getEnemyExp();
+					player_->getPlayerData()->changeCurrentEXP(getEXP);
+					// 敵へのポインターを配列から削除
 					it = enemies_.erase(it);
 					continue;
 				}
@@ -641,18 +650,17 @@ namespace atl {
 	void DungeonScene::debug_displayDungeonParam(float deltaTime) {
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
-		player_->debug_displayPlayerParam(600, 0);
-
-
-		DrawStringEx(0, 75, -1, "curentTurn ... [ %d ]", currentTurn_);
+		DrawStringEx(600, 0, -1, "curentTurn ... [ %d ]", currentTurn_);
 
 		// 階段の位置
 		if (originStairs_) {
 			auto& stairsPos = originStairs_->get2Dpos();
-			DrawStringEx(0, 100, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
+			DrawStringEx(600, 25, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
 		}
 
-		DrawStringEx(0, 125, -1, "currentFloor ... [ %d ]", currentFloor_);
+		DrawStringEx(600, 50, -1, "currentFloor ... [ %d ]", currentFloor_);
+		player_->debug_displayPlayerParam(600, 100);
+
 	}
 
 	void DungeonScene::debug_displayMap(float deltaTime) {
@@ -665,32 +673,32 @@ namespace atl {
 		for (int x = 0; x < field.size(); ++x) {
 			for (int y = 0; y < field[x].size(); ++y) {
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM) {
-					DrawStringEx((x * 15), (y * 15), -1, " ");
+					DrawStringEx((y * 15), (x * 15), -1, " ");
 				}
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_PATH) {
-					DrawStringEx((x * 15), (y * 15), -1, "-");
+					DrawStringEx((y * 15), (x * 15), -1, "-");
 				}
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
-					DrawStringEx((x * 15), (y * 15), -1, "*");
+					DrawStringEx((y * 15), (x * 15), -1, "*");
 				}
 			}
 		}
 
 		for (const auto& enemy : enemies_) {
 			auto& enemyPos = enemy->get2Dpos();
-			DrawStringEx(enemyPos.x * 15, enemyPos.y * 15, GetColor(255, 0, 0), "e");
+			DrawStringEx(enemyPos.y * 15, enemyPos.x * 15, GetColor(255, 0, 0), "e");
 		}
 
 		for (const auto& item : items_) {
 			auto& itemPos = item->get2Dpos();
-			DrawStringEx(itemPos.x * 15, itemPos.y * 15, GetColor(0, 255, 0), "I");
+			DrawStringEx(itemPos.y * 15, itemPos.x * 15, GetColor(0, 255, 0), "I");
 		}
 
 		auto& player2Dpos = player_->getPlayer2Dpos();
-		DrawStringEx(player2Dpos.x * 15, player2Dpos.y * 15, GetColor(0, 0, 255), "P");
+		DrawStringEx(player2Dpos.y * 15, player2Dpos.x * 15, GetColor(0, 0, 255), "P");
 
 		auto& stairs2Dpos = originStairs_->get2Dpos();
-		DrawStringEx(stairs2Dpos.x * 15, stairs2Dpos.y * 15, GetColor(200, 200, 200), "S");
+		DrawStringEx(stairs2Dpos.y * 15, stairs2Dpos.x * 15, GetColor(200, 200, 200), "S");
 	}
 
 }

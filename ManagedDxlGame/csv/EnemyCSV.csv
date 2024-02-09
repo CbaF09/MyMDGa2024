@@ -1,4 +1,4 @@
-EnemyID,HP,æ”»æ’ƒåŠ›,ãƒ†ã‚¯ã‚¹ãƒãƒ£ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
-0,12,5,graphics/blue1.bmp
-1,15,7,graphics/green1.bmp
-2,17,9,graphics/red1.bmp
+EnemyID,“G–¼‘O,HP,UŒ‚—Í,ŒoŒ±’l,ƒtƒ@ƒCƒ‹ƒpƒX
+1,ÂƒXƒ‰ƒCƒ€,12,5,5,graphics/blue1.bmp
+2,—ÎƒXƒ‰ƒCƒ€,15,7,8,graphics/green1.bmp
+3,ÔƒXƒ‰ƒCƒ€,17,9,10,graphics/red1.bmp

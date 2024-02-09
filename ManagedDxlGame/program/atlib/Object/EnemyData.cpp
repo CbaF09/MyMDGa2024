@@ -10,11 +10,13 @@ namespace atl {
 		auto rand = mtRandomRangeInt(1, csv.size() - 1);
 
 		enemyID_ = csv[rand][0].getInt();
-		setMaxHP(csv[rand][1].getInt());
+		enemyName_ = csv[rand][1].getString();
+		setMaxHP(csv[rand][2].getInt());
 		setCurrentHP(getMaxHP());
-		setAttackPower(csv[rand][2].getInt());
+		setAttackPower(csv[rand][3].getInt());
+		exp_ = csv[rand][4].getInt();
 
-		auto& filePath = csv[rand][3].getString();
+		auto& filePath = csv[rand][5].getString();
 		enemyTexture_ = dxe::Texture::CreateFromFile(filePath);
 	}
 
