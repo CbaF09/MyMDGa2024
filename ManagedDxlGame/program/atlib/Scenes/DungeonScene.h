@@ -31,6 +31,13 @@ namespace atl {
         // プレイヤーポーンを取得
         inline const Shared<PlayerPawn> getPlayerPawn() const { return player_; }
 
+        // セッター
+        inline void changeSatiety(int32_t changeValue) {
+            currentSatiety_ += changeValue;
+            if (currentSatiety_ <= 0) { currentSatiety_ = 0; }
+            if (currentSatiety_ > SATIETY_FULL) { currentSatiety_ = SATIETY_FULL; }
+        }
+
     private: 
         //----------------------------------------------
         // 変数
@@ -79,7 +86,7 @@ namespace atl {
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 }; // HPバーの枠の位置
         const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
-        const tnl::Vector2i LEVEL_STRING_POSITION{ 60,390 };
+        const tnl::Vector2i LEVEL_STRING_POSITION{ 60,390 }; // レベルの文字列を描画する位置
 
         const int LEVEL_STRING_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
         const int NEXT_FLOOR_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
@@ -97,6 +104,15 @@ namespace atl {
         // スカイボックス用 ----------------------------
         Skybox skybox_;
 
+        // 満腹度 ( 招待状 ) 関連 ----------------------
+        const tnl::Vector2i INVATATION_STRING_POSITION{ 60,480 }; // 「招待状」と描画する位置 ( 中心座標 )
+        const tnl::Vector2i INVATATION_POSITION{ 250,500 }; // UI を描画する位置 ( 中心座標 )
+        const float INVATATION_SIZE = 0.15f; // ( 1 で画像元サイズ
+        const float INVATATION_ANGLE = 90; // ( 回転量,画像元が縦向きなので横向きにする
+        const int32_t SATIETY_FULL = 2550;      // 最大空腹度
+        int32_t currentSatiety_ = 2550;         // 現在空腹度
+        const int32_t SATIETY_SUB_VALUE = 10;   // ターンごとに減る空腹度
+
         //----------------------------------------------
         // メソッド
 
@@ -111,6 +127,8 @@ namespace atl {
         void drawUI(float deltaTime);
         // 2D 現在レベルの文字列描画
         void drawLevel();
+        // 2D 満腹度の概念を描画 ( 招待状 のイラスト ）
+        void drawInvatation();
         // 2D HPbar の描画
         void drawHPbar();
         // 次の階層に遷移中に、現在の階層を表示する

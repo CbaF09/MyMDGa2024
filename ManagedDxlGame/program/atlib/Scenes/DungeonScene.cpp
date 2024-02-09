@@ -86,8 +86,8 @@ namespace atl {
 		if (isDebug) {
 			debug_displayMap(deltaTime);
 			debug_displayDungeonParam(deltaTime);
+			player_->getPlayerData()->debug_playerDataParam(600, 500);
 		}
-		player_->getPlayerData()->debug_playerDataParam(0, 500);
 	}
 
 	// 次の階層を描画する
@@ -109,6 +109,7 @@ namespace atl {
 		if (!menuWindow_) { 
 			TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); 
 			drawLevel();
+			drawInvatation();
 		}
 
 		// メニューを開いている間の描画
@@ -118,6 +119,19 @@ namespace atl {
 	void DungeonScene::drawLevel() {
 		auto playerData = player_->getPlayerData();
 		DrawStringToHandleEx(static_cast<float>(LEVEL_STRING_POSITION.x), static_cast<float>(LEVEL_STRING_POSITION.y), -1, LEVEL_STRING_FONT,"レベル ... [ %d ]", playerData->getCurrentLevel());
+	}
+
+	void DungeonScene::drawInvatation() {
+		// 招待状 UI を描画
+		auto invatation = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Invatation.png");
+		// 空腹度は、最大2550なので、現在空腹度の10分の1を輝度に
+		SetDrawBright(currentSatiety_/10, currentSatiety_/10, currentSatiety_/10);
+		DrawRotaGraph(INVATATION_POSITION.x, INVATATION_POSITION.y, INVATATION_SIZE, tnl::ToRadian(INVATATION_ANGLE), invatation, true);
+		// 描画輝度を元に戻す
+		SetDrawBright(255,255,255);
+
+		// 文字列「招待状」を描画。レベルを表示しているフォントを流用。
+		DrawStringToHandleEx(static_cast<float>(INVATATION_STRING_POSITION.x), static_cast<float>(INVATATION_STRING_POSITION.y), -1, LEVEL_STRING_FONT, "招待状");
 	}
 
 	void DungeonScene::drawHPbar() {
@@ -220,6 +234,14 @@ namespace atl {
 	bool DungeonScene::seqAllTurnFlagOff(float deltaTime) {
 		player_->offFlagIsAlreadyTurn();
 		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
+
+		// 空腹度が0になったら、ゲームオーバーに遷移
+		currentSatiety_ -= SATIETY_SUB_VALUE;
+		if (currentSatiety_ <= 0) {
+			currentSatiety_ = 0;
+			seq_.change(&DungeonScene::seqGameOver);
+			return true;
+		}
 
 		currentTurn_ = e_turnState::KEY_INPUT;
 		seq_.change(&DungeonScene::seqTurnStateProcess);
