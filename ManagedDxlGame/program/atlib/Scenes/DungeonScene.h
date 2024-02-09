@@ -111,7 +111,7 @@ namespace atl {
         const float INVATATION_ANGLE = 90; // ( 回転量,画像元が縦向きなので横向きにする
         const int32_t SATIETY_FULL = 2550;      // 最大空腹度
         int32_t currentSatiety_ = 2550;         // 現在空腹度
-        const int32_t SATIETY_SUB_VALUE = 10;   // ターンごとに減る空腹度
+        const int32_t SATIETY_SUB_VALUE = 3;   // ターンごとに減る空腹度
 
         //----------------------------------------------
         // メソッド

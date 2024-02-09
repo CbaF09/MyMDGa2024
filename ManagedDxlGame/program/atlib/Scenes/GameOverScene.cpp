@@ -33,7 +33,7 @@ namespace atl {
 
 		// 文字列を描画
 		DrawStringToHandleEx(STRING_POSITION.x, STRING_POSITION.y, -1, GAMEOVER_FONT,
-			"力尽きてしまった……\n( エンターキーかスペースキーを押すとタイトルに戻る )");
+			"塔から追い出されてしまった……\n( エンターキーかスペースキーを押すとタイトルに戻る )");
 
 		// エンターかスペースが押されたら、タイトルシーンに遷移
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)) {
