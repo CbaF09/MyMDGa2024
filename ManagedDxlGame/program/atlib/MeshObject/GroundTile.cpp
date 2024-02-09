@@ -7,6 +7,7 @@ namespace atl {
 		setMesh(mesh);
 		auto texture = dxe::Texture::CreateFromFile("graphics/Texture/GroundRock.png");
 		setTexture(texture);
+		getMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 1, 0, 0 }, tnl::ToRadian(90));
 	}
 
 	GroundTile::GroundTile(const Shared<dxe::Mesh> originMesh) : Base_MeshObject(originMesh) {

@@ -55,7 +55,7 @@ namespace atl {
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
 		// 不透明なもの描画
 		SetWriteZBuffer3D(TRUE);
-		if(groundTilesGroupMesh_) groundTilesGroupMesh_->render(camera);
+		for (const auto& ground : groundTiles_) { ground->renderObject(camera); }
 		for (const auto& wall : walls_) { wall->renderObject(camera); }
 		for (const auto& enemy : enemies_) { enemy->renderObjects(camera, deltaTime); }
 		if (originStairs_) originStairs_->renderObjects(camera,deltaTime);
@@ -597,9 +597,8 @@ namespace atl {
 	void DungeonScene::initDungeon() {
 		// 地形
 		walls_.clear();
-		groundTilesMats_.clear();
-		groundTilesGroupMesh_.reset();
-
+		groundTiles_.clear();
+		
 		// エネミー、アイテム
 		enemies_.clear();
 		items_.clear();
@@ -620,12 +619,10 @@ namespace atl {
 					generateWall(x, y);
 				}
 				else {
-					emplaceBackGroundPos(x, y);
+					generateGround(x, y);
 				}
 			}
 		}
-
-		groundTilesGroupMesh_ = dxe::Mesh::CreateStaticMeshGroupMV(originGroundTile_->getMesh(), groundTilesMats_);
 
 		{// 各種スポーン ( DungeonCreaterが作ったスポーン位置を取得し、生成 )
 			// プレイヤー
@@ -659,8 +656,6 @@ namespace atl {
 	}
 
 	void DungeonScene::generateWall(int generatePosX, int generatePosZ) {
-		// 複製元となるオリジンを生成
-		if (!originWall_) originWall_ = std::make_shared<Wall>(tnl::Vector3{ CELL_FULL_LENGTH, CELL_FULL_LENGTH * 2 ,CELL_FULL_LENGTH });
 		Shared<Wall> newWall = std::make_shared<Wall>(originWall_->getMesh());
 		newWall->getMesh()->pos_.x = static_cast<float>(generatePosX * CELL_FULL_LENGTH);
 		newWall->getMesh()->pos_.y = static_cast<float>(CELL_FULL_LENGTH);
@@ -669,14 +664,12 @@ namespace atl {
 		walls_.emplace_back(newWall);
 	}
 
-	void DungeonScene::emplaceBackGroundPos(int generatePosX, int generatePosZ) {
-		tnl::Vector3 generatePos{ static_cast<float>(generatePosX * CELL_FULL_LENGTH),0,static_cast<float>(generatePosZ * CELL_FULL_LENGTH) };
-		groundTilesMats_.emplace_back(
-			tnl::Matrix::AffineTransformation(
-				generatePos,
-				{1,1,1},
-				tnl::Quaternion::RotationAxis({ 1, 0, 0 }, tnl::ToRadian(90)
-				)));
+	void DungeonScene::generateGround(int generatePosX, int generatePosZ) {
+		Shared<GroundTile> newGround = std::make_shared<GroundTile>(originGroundTile_->getMesh());
+		Shared<GroundTile> newGroundTile = std::make_shared<GroundTile>(originGroundTile_->getMesh());
+		newGroundTile->getMesh()->pos_.x = static_cast<float>(generatePosX * CELL_FULL_LENGTH);
+		newGroundTile->getMesh()->pos_.z = static_cast<float>(generatePosZ * CELL_FULL_LENGTH);
+		groundTiles_.emplace_back(newGroundTile);
 	}
 
 	//------------------------

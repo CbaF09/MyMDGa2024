@@ -9,6 +9,10 @@ namespace atl {
 	
 	class GameClearScene final : public Base_Scene{
 	public:
+		GameClearScene() {
+			// テクスチャによるメモリリーク対策
+			dxe::Texture::DestroyUnReferenceTextures();
+		}
 		~GameClearScene();
 
 	private:

@@ -4,6 +4,7 @@
 #include "Base_Scene.h"
 #include "../MeshObject/Skybox.h"
 #include "../MeshObject/GroundTile.h"
+#include "../MeshObject/Wall.h"
 
 namespace atl {
 
@@ -11,7 +12,6 @@ namespace atl {
     class EnemyPawn;
     class PlayerPawn;
     class ItemPawn;
-    class Wall;
     class DungeonCreater;
     class Atl3DCamera;
     class SelectWindow;
@@ -48,14 +48,12 @@ namespace atl {
         // 現在のターン
 
         // 壁 用 ---------------------------------------
-        Shared<Wall> originWall_ = nullptr; // クローン元になる壁メッシュへのポインタ
+        Shared<Wall> originWall_ = std::make_shared<Wall>(tnl::Vector3{ CELL_FULL_LENGTH, CELL_FULL_LENGTH * 2 ,CELL_FULL_LENGTH }); // クローン元になる壁メッシュ
         std::vector<Shared<Wall>> walls_;   // 壁メッシュ群のリスト
 
         // 地面 用 -------------------------------------
         Shared<GroundTile> originGroundTile_ = std::make_shared<GroundTile>(tnl::Vector3{ CELL_FULL_LENGTH,CELL_FULL_LENGTH,0 }); // クローン元になる地面メッシュ PlaneMVモデルの関係で、Yの所にZの値を入れてます 
-        std::vector<tnl::Matrix> groundTilesMats_;
-        Shared<dxe::Mesh> groundTilesGroupMesh_ = nullptr;
-//        std::vector<Shared<GroundTile>> groundTiles_;   // 地面メッシュ群のリスト
+        std::vector<Shared<GroundTile>> groundTiles_;   // 地面メッシュ群のリスト
 
         // 階段関連 -------------------------------------
         Shared<Stairs> originStairs_ = nullptr; // 階段へのポインタ
@@ -149,7 +147,7 @@ namespace atl {
         void generateWall(int generatePosX, int generatePosZ);
         // 地面を生成
         // arg ... 2D座標位置
-        void emplaceBackGroundPos(int generatePosX, int generatePosZ);
+        void generateGround(int generatePosX, int generatePosZ);
 
         // メニューを開く
         void openMenu();

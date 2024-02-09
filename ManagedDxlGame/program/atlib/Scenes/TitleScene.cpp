@@ -105,6 +105,10 @@ namespace atl {
 		volumeSetting();
 		
 		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/TitleSceneBGM.ogg",DX_PLAYTYPE_LOOP);
+		
+		// テクスチャによるメモリリーク対策
+		dxe::Texture::DestroyUnReferenceTextures();
+
 		seq_.change(&TitleScene::seqKeyInputWait);
 		isDisplayButton = true;
 

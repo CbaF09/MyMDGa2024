@@ -23,6 +23,9 @@ namespace atl {
 		ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/SE/GameOver.ogg", 160);
 		ResourceManager::getResourceManager()->playSoundRes("sound/SE/GameOver.ogg",DX_PLAYTYPE_BACK);
 
+		// テクスチャによるメモリリーク対策
+		dxe::Texture::DestroyUnReferenceTextures();
+
 		seq_.change(&GameOverScene::seqUpdata);
 		return false;
 	}

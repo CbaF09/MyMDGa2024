@@ -29,7 +29,6 @@ namespace atl {
 	void GameClearScene::sceneUpdate(float deltaTime) {
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) seq_.change(&GameClearScene::seqToTitleScene);
 
-
 		draw(deltaTime);
 		seq_.update(deltaTime);
 	}
