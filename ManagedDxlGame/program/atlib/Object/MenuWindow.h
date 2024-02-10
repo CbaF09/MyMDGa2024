@@ -1,5 +1,7 @@
 #pragma once
 #include <array>
+#include <string>
+#include <utility>
 #include "../../dxlib_ext/dxlib_ext.h"
 
 namespace atl {
@@ -41,14 +43,14 @@ namespace atl {
 
 
 		const tnl::Vector2i DESC_UI_POSITION{ 70,380 }; // 説明文を記述する UI の位置 ( 左上座標 )
-		const tnl::Vector2i DESC_UI_SIZE{ 400,60 }; // 説明文を記述する UI のサイズ
+		const tnl::Vector2i DESC_UI_SIZE{ 420,60 }; // 説明文を記述する UI のサイズ
 		const int32_t DESC_UI_ALPHA = 128; // 説明文を記述する UI の透明度
 		const tnl::Vector2i DESC_STRING_POSITION{ 80,400 }; // 説明文を記述する位置
 
 		// インベントリへの弱参照
 		std::weak_ptr<Inventory> weakInventory_;
 
-		// アイテムの選択肢数
+		// アイテムの選択肢
 		std::array<std::string,6> itemStrings_ = {
 			"( 空きスロット )",
 			"( 空きスロット )",
@@ -58,6 +60,7 @@ namespace atl {
 			"( 空きスロット )"
 		};
 
+		// アイテムの説明文
 		std::array<std::string, 6> itemDesc_ = {
 			"アイテムが無い",
 			"アイテムが無い",
@@ -67,15 +70,17 @@ namespace atl {
 			"アイテムが無い",
 		};
 
-		// システム系の選択肢
-		std::array<std::string,3> systemStrings_ = {
-			"設定",
-			"メニューを閉じる",
-			"タイトルに戻る",
+		// 試しで pair でまとめられないかやってみた。成功。
+		// TODO : アイテムの方も　pair でまとめてみる。( インベントリから情報を引き出す処理があるので注意 )
+		// システム系の選択肢と説明文。pair でまとまっている。 first->選択肢名。second->説明文
+		std::array<std::pair<std::string, std::string>, 3> systemOptions_{
+			std::pair{("設定"),("各種設定")},
+			std::pair{("メニューを閉じる"),("メニューを閉じる。右クリックでも閉じられる")},
+			std::pair{("タイトル画面"),("タイトル画面に戻る。進捗保存はありません")},
 		};
 
 		// 総選択肢数
-		int32_t totalStrings = static_cast<int32_t>(itemStrings_.size() + systemStrings_.size());
+		int32_t totalStrings = static_cast<int32_t>(itemStrings_.size() + systemOptions_.size());
 
 		// 現在選択中のもの
 		int32_t currentSelectIndex_ = 0;
@@ -86,16 +91,3 @@ namespace atl {
 
 }
 
-/*
-
-itemDesc.size();
-
-int hoge = currentSelectIndex-ItemDesc.size();
-
-if(hoge == 0{
-	return SYSTEM_DESC[currentSelectIndex]
-}else{
-	return itemDesc[currentSelectIndex],
-}
-
-*/

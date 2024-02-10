@@ -26,8 +26,7 @@ namespace atl {
 		DeleteFontToHandle(QUESTION_FONT);
 		DeleteFontToHandle(YES_NO_FONT);
 	}
-
-
+	
 	void SelectWindow::draw(float deltaTime) {
 		auto resourceManager = ResourceManager::getResourceManager();
 		
@@ -46,12 +45,19 @@ namespace atl {
 		}
 
 		{// はい、いいえを描画
+			
 			// UI を描画
 			auto yesNoTextUI = resourceManager->getGraphRes("graphics/UI/SelectWindowYesNo.png");
 			DrawRotaGraph(YES_UI_POSITION.x, YES_UI_POSITION.y, YES_NO_UI_SIZE, 0, yesNoTextUI,true);
 			DrawRotaGraph(NO_UI_POSITION.x, NO_UI_POSITION.y, YES_NO_UI_SIZE, 0, yesNoTextUI,true);
+			// A,DキーのUI描画
+			auto keyboardA = resourceManager->getGraphRes("graphics/UI/KeyboardA.png");
+			DrawRotaGraph(KEYBOARD_A_UI_POSITION.x, KEYBOARD_A_UI_POSITION.y - 100, KEYBOARD_UI_SIZE, 0, keyboardA, true);
+			auto keyboardD = resourceManager->getGraphRes("graphics/UI/KeyboardD.png");
+			DrawRotaGraph(KEYBOARD_D_UI_POSITION.x, KEYBOARD_D_UI_POSITION.y - 100, KEYBOARD_UI_SIZE, 0, keyboardD, true);
 
-			// YES・NOを描画
+
+			// はい・いいえの文字を描画
 			switch (currentSelectedChoice_) {
 			case e_SelectChoice::YES:
 				DrawStringToHandleEx(static_cast<float>(YES_STRING_POSITION.x), static_cast<float>(YES_STRING_POSITION.y), GetColor(255, 0, 0),YES_NO_FONT, "はい");
@@ -74,11 +80,18 @@ namespace atl {
 	}
 
 	// エンター or スペース or 左クリックを押した時、currentSelectedChoice == YES なら true を返す。NO なら false を返す。
+	// 右クリックを押した時、いいえを選んだ判定
 	const SelectWindow::e_SelectChoice& SelectWindow::windowChoice() {
+		// エンター or スペース or 左クリックを押した時
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)||
 			tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 			return currentSelectedChoice_;
 		}
+		// 右クリックを押した時、いいえを選んだ判定
+		else if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
+			return e_SelectChoice::NO;
+		}
+
 		return e_SelectChoice::NONE;
 	}
 }

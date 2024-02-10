@@ -17,7 +17,10 @@ namespace atl {
     };
 
     void SceneManager::nowSceneUpdate(float deltaTime) {
-        if (p_nextScene_) { p_nowScene_ = std::move(p_nextScene_); }
+        if (p_nextScene_) { 
+            p_nowScene_ = p_nextScene_; 
+            p_nextScene_.reset();
+        }
 
         if (p_nowScene_) {
             p_nowScene_->sceneUpdate(deltaTime);

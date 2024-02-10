@@ -22,15 +22,16 @@ namespace atl {
 	}
 
 	MenuWindow::e_SelectedMenuWindow MenuWindow::process(float deltaTime) {
+		// モジュラー演算で、選択肢最上部と最下部がループするようにしている
+		// W キーを押した時
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_W)) {
-			// 最上部を選択中の場合は、上に行けない
-			if (currentSelectIndex_ == 0) return e_SelectedMenuWindow::NONE;
 			--currentSelectIndex_;
+			currentSelectIndex_ = (currentSelectIndex_ + totalStrings) % totalStrings;
 		}
+		// Sキーを押した時
 		else if (tnl::Input::IsKeyDownTrigger(eKeys::KB_S)) {
-			// 最下部を選択中は、下に行けない
-			if (currentSelectIndex_ == totalStrings - 1) return e_SelectedMenuWindow::NONE;
 			++currentSelectIndex_;
+			currentSelectIndex_ = (currentSelectIndex_ + totalStrings) % totalStrings;
 		}
 
 		// スペース or エンター or 左クリックで、currentSelectIndex を返す
@@ -62,13 +63,13 @@ namespace atl {
 			actualyPos.y += ITEM_SYSTEM_OFFSET; // システム文字列の位置に描画位置を移動
 
 			// システム文字列の描画
-			for (int i = 0; i < systemStrings_.size(); ++i) {
+			for (int i = 0; i < systemOptions_.size(); ++i) {
 				// インデックス位置調整
 				if (currentSelectIndex_ == i + itemStrings_.size()) {
-					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), SELECTED_COLOR, MENU_FONT, systemStrings_.at(i).c_str());
+					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), SELECTED_COLOR, MENU_FONT, systemOptions_.at(i).first.c_str());
 				}
 				else {
-					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), UN_SELECTED_COLOR, MENU_FONT, systemStrings_.at(i).c_str());
+					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), UN_SELECTED_COLOR, MENU_FONT, systemOptions_.at(i).first.c_str());
 				}
 				actualyPos.y += STRINGS_OFFSET;
 			}
@@ -89,19 +90,13 @@ namespace atl {
 	std::string MenuWindow::getDescription(int currentSelectIndex) const {
 		// アイテム一覧を指している場合
 		if (0 <= currentSelectIndex_ && currentSelectIndex_ < itemStrings_.size()) {
+			// アイテム一覧の説明文を返す
 			return itemDesc_[currentSelectIndex];
 		}
-
-		// システム一覧を指している場合
-		switch (currentSelectIndex_) {
-		case static_cast<int>(e_SelectedMenuWindow::Setting):
-			return "各種設定";
-		case static_cast<int>(e_SelectedMenuWindow::ReturnToTitle):
-			return "タイトル画面に戻る。進捗保存はありません";
-		case static_cast<int>(e_SelectedMenuWindow::CloseMenu):
-			return "メニューを閉じる。右クリックでも閉じる";
-		default:
-			return "";
+		else {// システム一覧を指している場合
+			// システム一覧の説明文を返す
+			// アイテムの下にシステムのボタンがある
+			return systemOptions_[currentSelectIndex_ - itemStrings_.size()].second;
 		}
 	}
 }
