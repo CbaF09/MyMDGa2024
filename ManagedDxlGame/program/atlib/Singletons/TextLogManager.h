@@ -12,6 +12,8 @@ namespace atl {
 		static void deleteTextLogManager();
 	private:
 		static TextLogManager* p_instance_;
+		TextLogManager() {};
+		~TextLogManager() {};
 	//------------------------------------------
 
 	public:

@@ -9,7 +9,7 @@ namespace atl {
 	}
 
 	// 範囲外アクセスチェック有。引っかかったらnullptrを返す
-	const Shared<ItemData>& Inventory::getItemData(int index) const {
+	const Shared<ItemData> Inventory::getItemData(int index) const {
 		// 範囲外アクセスチェック。引っかかったらnullptrを返す
 		if (index < 0 || index >= static_cast<int>(itemList_.size())) {
 			 return nullptr;

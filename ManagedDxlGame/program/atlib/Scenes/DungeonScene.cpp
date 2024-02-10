@@ -127,7 +127,7 @@ namespace atl {
 
 	void DungeonScene::drawInstruction() {
 		SetDrawBlendMode(DX_BLENDGRAPHTYPE_ALPHA, 125);
-		DrawBoxEx({static_cast<float>(INSTRUCTION_POSITION.x),static_cast<float>(INSTRUCTION_POSITION.y),0}, INSTRUCTION_BACK_BOX_SIZE.x, INSTRUCTION_BACK_BOX_SIZE.y,true,GetColor(0,0,255));
+		DrawBoxEx({static_cast<float>(INSTRUCTION_POSITION.x),static_cast<float>(INSTRUCTION_POSITION.y),0}, static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.x), static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.y),true,GetColor(0,0,255));
 		SetDrawBlendMode(DX_BLENDGRAPHTYPE_NORMAL, 0);
 		DrawRotaGraph(INSTRUCTION_POSITION.x, INSTRUCTION_POSITION.y, INSTRUCTION_SIZE, 0, ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Instruction.png"), true);
 	}

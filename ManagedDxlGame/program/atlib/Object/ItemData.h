@@ -17,6 +17,8 @@ namespace atl {
 		void executeItemPerformAction();
 
 	private:
+
+		// アイテム名とIDを一致させるためのenum
 		enum class e_itemList {
 			NONE = 0,
 			HealHerb,
@@ -27,9 +29,13 @@ namespace atl {
 			ITEM_MAX,
 		};
 
+		// アイテムID
 		e_itemList itemID_ = e_itemList::NONE;
+		// ゲームに表示されるアイテム名
 		std::string itemName_ = "";
+		// アイテムの説明文
 		std::string descString_ = "";
+		// アイテムの見た目用テクスチャ
 		Shared<dxe::Texture> itemIllust_ = nullptr;
 
 		// ダンジョンシーンへの弱参照

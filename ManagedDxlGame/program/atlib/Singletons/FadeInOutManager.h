@@ -11,6 +11,8 @@ namespace atl {
 		static void deleteFadeInOutManager();
 	private:
 		static FadeInOutManager* p_instance_;
+		FadeInOutManager() {};
+		~FadeInOutManager() {};
 	//------------------------------------------
 	public:
 		// 現在、フェード中か否か

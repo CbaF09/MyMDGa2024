@@ -14,21 +14,25 @@ namespace atl {
 		static void deleteDungeonCreater();
 	private:
 		static DungeonCreater* p_instance_;
+		DungeonCreater() {};
+		~DungeonCreater() {};
 	//------------------------------------------
 	public:
 		// セルの状態用 enum
 		enum class e_FieldCellType {
-			CELL_TYPE_NONE = 0,
-			CELL_TYPE_ROOM,
-			CELL_TYPE_PATH,
-			CELL_TYPE_WALL,
+			CELL_TYPE_NONE = 0, // 外れ値、初期化用
+			CELL_TYPE_ROOM,	// 部屋
+			CELL_TYPE_PATH,	// 通路
+			CELL_TYPE_WALL,	// 壁
 		};
 
+		// 部屋
 		class Room {
 		public:
 			int32_t posX_ = 0, posY_ = 0, width_ = 0, height_ = 0;
 		};
 
+		// 区域分割用のエリアクラス
 		class Area {
 		public:
 			int32_t posX_ = 0, posY_ = 0, width_ = 0, height_ = 0;
@@ -38,10 +42,14 @@ namespace atl {
 			Room room_;
 		};
 
+		// 1マスを表現するクラス
 		class FieldCell {
 		public:
+			// セルのタイプ
 			e_FieldCellType cellType_ = e_FieldCellType::CELL_TYPE_NONE;
+			// 既に何かがスポーンしているマスか
 			bool isAlreadySpawnSomething = false;
+			// どのエリアのマスなのか
 			int32_t regionAreaID_ = 0;
 		};
 
@@ -92,13 +100,14 @@ namespace atl {
 
 	private:
 
-		// 定数 ,Enum , インナークラス
+		// 定数 ,Enum
 		static const int32_t FIELD_WIDTH = 32;		// フィールド全体の横幅
 		static const int32_t FIELD_HEIGHT = 32;		// フィールド全体の縦幅
 		const int32_t AREA_MAX = 8;			// 区域の最大数 , 部屋の最大数と等しくなる
 		const int32_t AREA_SIZE_MIN = 8;		// 区域の縦横最小サイズ
 		const int32_t ROOM_SIZE_MIN = 4;		// 部屋の縦横最小サイズ
 
+		// 通路がどっち向きに伸びるかを表現するenum
 		enum class e_PathDirection {
 			PATH_DIR_TOP = 0,
 			PATH_DIR_BOTTOM,
@@ -112,16 +121,15 @@ namespace atl {
 		const int32_t ENEMY_SPAWN_NUM = 3; // 敵の数
 		const int32_t ITEM_SPAWN_NUM = 5; // アイテムの数
 
-		tnl::Vector2i playerSpawnPos_{ 0,0 };
-		tnl::Vector2i stairsSpawnPos_{ 0,0 };
-		std::vector<tnl::Vector2i> enemySpawnPosArray_;
-		std::vector<tnl::Vector2i> itemSpawnPosArray_;
+		tnl::Vector2i playerSpawnPos_{ 0,0 };	// プレイヤーがスポーンする位置
+		tnl::Vector2i stairsSpawnPos_{ 0,0 };	// 階段がスポーンする位置
+		std::vector<tnl::Vector2i> enemySpawnPosArray_;	// 敵がスポーンする位置配列
+		std::vector<tnl::Vector2i> itemSpawnPosArray_;	// アイテムがスポーンする位置配列
 
-		std::vector<Area> areas_;
+		std::vector<Area> areas_;	// 区域分割用エリア配列
 
-		// 二次元フィールドデータ
 		std::vector<std::vector<FieldCell>> fieldCells_ =
-			std::vector<std::vector<FieldCell>>(FIELD_HEIGHT, std::vector<FieldCell>(FIELD_WIDTH));
+			std::vector<std::vector<FieldCell>>(FIELD_HEIGHT, std::vector<FieldCell>(FIELD_WIDTH)); // 二次元フィールドデータ
 
 		//----------------------- 
 		// メソッド
@@ -130,7 +138,7 @@ namespace atl {
 		void fieldCellsInit();
 		void areaInit();
 
-		// 区域分割 ( 再帰処理の為に引数があるが、直に呼び出す時は引数 0 で呼び出される前提なのでデフォルト引数 )
+		// 区域分割 ( 再帰処理の為に引数があるが、最初に呼び出す時は引数 0 で呼び出される前提なのでデフォルト引数 )
 		void areaSprit(int32_t areaID = 0);
 		// 部屋生成
 		void roomCreate();
@@ -140,12 +148,14 @@ namespace atl {
 		void pathwayCreate();
 
 		// 通路を生成する為の関数群
+		// TODO : 時間があったら一個にまとめてみるのに挑戦
 		void createPathwayToTop(const Area& area);
 		void createPathwayToBottom(const Area& area);
 		void createPathwayToLeft(const Area& area);
 		void createPathwayToRight(const Area& area);
 
 		// スポーン候補地点を設定する関数群
+		// TODO : 時間があったら一個にまとめてみるのに挑戦
 		void choicePlayerSpawnPos();
 		void choiceStairsSpawnPos();
 		void choiceEnemySpawnPos();

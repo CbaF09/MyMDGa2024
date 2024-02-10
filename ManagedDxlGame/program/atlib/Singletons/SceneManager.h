@@ -1,5 +1,4 @@
 #pragma once
-
 #include <memory>
 #include "../Scenes/Base_Scene.h"
 

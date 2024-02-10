@@ -15,6 +15,8 @@ namespace atl {
 		static void deleteResourceManager();
 	private:
 		static ResourceManager* p_instance_;
+		ResourceManager() {};
+		~ResourceManager() {};
 	//------------------------------------------
 	public:
 

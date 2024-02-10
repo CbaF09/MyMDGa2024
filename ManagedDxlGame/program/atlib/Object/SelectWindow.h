@@ -19,7 +19,7 @@ namespace atl {
 		void draw(float deltaTime);
 		
 		// エンター or スペースを押した時、currentSelectedChoice == YES なら true を返す。NO なら false を返す。
-		const e_SelectChoice& windowChoice();
+		const e_SelectChoice windowChoice();
 
 	private:
 		e_SelectChoice currentSelectedChoice_ = e_SelectChoice::YES;

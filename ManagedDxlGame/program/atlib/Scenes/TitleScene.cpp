@@ -65,7 +65,7 @@ namespace atl {
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		// ボタン用のフォントを流用
-		DrawStringToHandleEx(SPACE_IS_ENTER_POSITION.x, SPACE_IS_ENTER_POSITION.y, -1, BUTTON_FONT, "スペースキー で 決定");
+		DrawStringToHandleEx(static_cast<float>(SPACE_IS_ENTER_POSITION.x), static_cast<float>(SPACE_IS_ENTER_POSITION.y), -1, BUTTON_FONT, "スペースキー で 決定");
 	}
 
 	void TitleScene::drawButton(float deltaTime) {

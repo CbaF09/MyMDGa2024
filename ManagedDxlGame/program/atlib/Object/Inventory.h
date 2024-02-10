@@ -13,7 +13,7 @@ namespace atl {
 
 		// ゲッター
 		const std::vector<Shared<ItemData>>& getItemList() const { return itemList_; }
-		const Shared<ItemData>& getItemData(int index) const;
+		const Shared<ItemData> getItemData(int index) const;
 		
 		// アイテムをリストに追加する。最大数が決まっており、追加できた場合は true ,できなかった場合は false を返す
 		bool pushbackItemToInventory(const Shared<ItemData> newItemData);

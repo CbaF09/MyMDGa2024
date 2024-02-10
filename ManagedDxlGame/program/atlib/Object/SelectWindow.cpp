@@ -81,7 +81,7 @@ namespace atl {
 
 	// エンター or スペース or 左クリックを押した時、currentSelectedChoice == YES なら true を返す。NO なら false を返す。
 	// 右クリックを押した時、いいえを選んだ判定
-	const SelectWindow::e_SelectChoice& SelectWindow::windowChoice() {
+	const SelectWindow::e_SelectChoice SelectWindow::windowChoice() {
 		// エンター or スペース or 左クリックを押した時
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)||
 			tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
