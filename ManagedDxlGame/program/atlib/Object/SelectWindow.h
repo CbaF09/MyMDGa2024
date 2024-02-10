@@ -23,7 +23,7 @@ namespace atl {
 
 	private:
 		e_SelectChoice currentSelectedChoice_ = e_SelectChoice::YES;
-		std::string questionText_;
+		std::string questionText_ = "";
 
 		const tnl::Vector2i QUESTION_UI_POSITION{ DXE_WINDOW_WIDTH/2,200 };	// 質問のUI位置
 		const float QUESTION_UI_SIZE = 0.6f;									// 質問のUIサイズ ( 1 で画像元サイズ )

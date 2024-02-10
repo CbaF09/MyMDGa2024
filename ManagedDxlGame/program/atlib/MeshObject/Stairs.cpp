@@ -46,7 +46,6 @@ namespace atl {
 
 	void Stairs::adjustChildsMeshes(float deltaTime) {
 		auto rootMesh = getRootMesh();
-		rootMesh->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(0.2f));
 
 		auto& childs = getChildMeshes();
 		childs[0]->rot_ = rootMesh->rot_;

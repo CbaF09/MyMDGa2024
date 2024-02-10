@@ -30,12 +30,12 @@ namespace atl {
 
 	void Base_ActorData::calcAndSetCurrentHPpersent() {
 		if (maxHP_ > 0) { // ƒ[ƒœZ‰ñ”ğ
-			currentHPpersent =
+			currentHPpersent_ =
 				static_cast<float>(currentHP_) / static_cast<float>(maxHP_);
 		}
 
-		if (currentHPpersent < 0) {
-			currentHPpersent = 0.0f;
+		if (currentHPpersent_ < 0) {
+			currentHPpersent_ = 0.0f;
 		}
 	}
 

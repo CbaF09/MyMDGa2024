@@ -101,7 +101,6 @@ namespace dxe {
 		return tex;
 	}
 
-
 	void Texture::DestroyUnReferenceTextures() {
 		auto it = managed_map_.begin();
 		while (it != managed_map_.end()) {
@@ -112,6 +111,5 @@ namespace dxe {
 			it++;
 		}
 	}
-
 }
 

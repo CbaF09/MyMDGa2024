@@ -1,4 +1,4 @@
 EnemyID,敵名前,HP,攻撃力,経験値,ファイルパス
-1,青スライム,12,5,5,graphics/blue1.bmp
-2,緑スライム,15,7,8,graphics/green1.bmp
-3,赤スライム,17,9,10,graphics/red1.bmp
+1,青スライム,8,4,5,graphics/Texture/EnemyBlue.bmp
+2,緑スライム,10,8,8,graphics/Texture/EnemyGreen.bmp
+3,赤スライム,16,12,10,graphics/Texture/EnemyRed.bmp

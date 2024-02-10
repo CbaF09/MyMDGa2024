@@ -20,21 +20,35 @@ namespace atl {
 		
 		// UI関連
 		
+		// ボタン上に表示する文字用フォント
 		const int BUTTON_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
 
+		// 現在選択中のボタンを表現する enum
 		enum class e_SelectTitleButton {
 			START,
 			PROROGUE,
 			EXIT,
 			BUTTON_MAX
-		} // 現在選択中のボタンを表現する enum
+		}
 		currentSelectButton_ = e_SelectTitleButton::START;
+
 		const tnl::Vector2i BUTTON_POSITION{ 1000,400 };	// 一番上のボタンの中心位置
 		const tnl::Vector2i BUTTON_OFFSET{ 0,100 };			// 一番上のボタンからオフセットされる量
 		const tnl::Vector2i BUTTON_SELECTED_OFFSET{ -50,0 };// 選択中のボタンを追加でオフセットする量
 		const tnl::Vector2i BUTTON_STRING_OFFSET{ -60,-15 };	// ボタンに描画される
 		const int32_t BUTTON_STRING_FONTSIZE = 30;			// ボタンのフォントサイズ
+		const tnl::Vector2i BUTTON_CURSOR_OFFSET{ -300,0 };	// カーソルとボタンの距離
+		const tnl::Vector2i CURSOR_KEYBOARD_WS_OFFSET{ 0,80 };	// カーソルとキーボードアイコンの距離
+		const tnl::Vector2i CURSOR_KEYBOARD_SPACE_OFFSET{ -100,0 };	// カーソルとキーボードアイコンの距離
+		const float BUTTON_CURSOR_SIZE = 0.15f;						// カーソルのサイズ ( 1 で画像元サイズ )
+		const float KEYBOARD_WS_SIZE = 0.5;						// キーボードアイコンのサイズ ( 1 で画像元サイズ )
+		const float KEYBOARD_SPACE_SIZE = 0.5;						// キーボードアイコンのサイズ ( 1 で画像元サイズ )
 		const float BUTTON_SIZE = 0.5f;						// ボタンのサイズ ( 1 で画像元サイズ )
+		const tnl::Vector2i SPACE_IS_ENTER_POSITION{ 800,200 };	// 文字列の背景になるボックスの位置
+		const tnl::Vector2i SPACE_IS_ENTER_BACK_LEFTUP_POINT{ 780,180 };	// 文字列の背景になるボックスの位置
+		const tnl::Vector2i SPACE_IS_ENTER_BACK_RIGHTDOWN_POINT{ 1125,250 };	// 文字列の背景になるボックスの大きさ
+
+
 		bool isDisplayButton = false;		// ボタンを表示するか否かのフラグ
 
 		// プロローグ関連
@@ -63,11 +77,15 @@ namespace atl {
 		// ----------------------------------
 		// メソッド
 
+		// 毎フレーム呼び出し
 		void sceneUpdate(float deltaTime) override;
 
 		// 描画をまとめて
 		void draw(float deltaTime);
+		// 背景描画
 		void drawBackground(float deltaTime);
+		// 「SPACE で 決定」の文字列を描画
+		void drawSpaceIsEnter();
 		// ボタン群を描画
 		void drawButton(float deltaTime);
 		

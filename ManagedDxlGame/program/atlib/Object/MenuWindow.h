@@ -85,3 +85,17 @@ namespace atl {
 	};
 
 }
+
+/*
+
+itemDesc.size();
+
+int hoge = currentSelectIndex-ItemDesc.size();
+
+if(hoge == 0{
+	return SYSTEM_DESC[currentSelectIndex]
+}else{
+	return itemDesc[currentSelectIndex],
+}
+
+*/

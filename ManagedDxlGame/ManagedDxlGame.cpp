@@ -3,6 +3,7 @@
 
 #include <Windows.h >
 #include <chrono>
+
 #pragma comment(lib,"winmm.lib")
 
 #include "framework.h"
@@ -40,6 +41,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+
 
     // ウィンドウモードで起動
     ChangeWindowMode(true);

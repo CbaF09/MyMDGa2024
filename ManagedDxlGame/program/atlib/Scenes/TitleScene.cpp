@@ -17,8 +17,9 @@ namespace atl {
 				"sound/SE/TitleSceneCursorChange.ogg",
 				"sound/SE/TitleSceneStart.ogg",
 				"sound/SE/NextPaper.ogg",
+				"graphics/UI/KeyboardW.png",
+				"graphics/UI/TitleSceneCursor.png",
 			};
-			
 
 			// リソース解放
 			for (const auto& res : tempDeleteRes) {
@@ -29,9 +30,8 @@ namespace atl {
 			DeleteFontToHandle(PROROGUE_FONT);
 			DeleteFontToHandle(BUTTON_FONT);
 		}
-
-
 	}
+
 	void TitleScene::sceneUpdate(float deltaTime) {
 		draw(deltaTime);
 		seq_.update(deltaTime);
@@ -44,6 +44,7 @@ namespace atl {
 		
 		if (isDisplayButton) {
 			drawButton(deltaTime);
+			drawSpaceIsEnter();
 		}
 		// フェードインアウト用描画
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
@@ -58,43 +59,62 @@ namespace atl {
 		DrawRotaGraph(LOGO_POSITION.x, LOGO_POSITION.y, LOGO_SIZE, tnl::ToRadian(LOGO_DEFAULT_ANGLE), resourceManager->getGraphRes("graphics/BackGroundIllust/TitleLogo.png"), true);
 	}
 
+	void TitleScene::drawSpaceIsEnter() {
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 155);
+		DrawBox(SPACE_IS_ENTER_BACK_LEFTUP_POINT.x, SPACE_IS_ENTER_BACK_LEFTUP_POINT.y, SPACE_IS_ENTER_BACK_RIGHTDOWN_POINT.x, SPACE_IS_ENTER_BACK_RIGHTDOWN_POINT.y, GetColor(100, 100, 100), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		// ボタン用のフォントを流用
+		DrawStringToHandleEx(SPACE_IS_ENTER_POSITION.x, SPACE_IS_ENTER_POSITION.y, -1, BUTTON_FONT, "スペースキー で 決定");
+	}
+
 	void TitleScene::drawButton(float deltaTime) {
 		auto resourceManager = ResourceManager::getResourceManager();
+
+		// 実際のボタンの位置
+		tnl::Vector2i actualButtonPos{};
 
 		// ボタン enum の数だけ、ボタンを描画する
 		for (int i = 0; i < static_cast<int>(e_SelectTitleButton::BUTTON_MAX); ++i) {
 			
-			// 実際のボタンの位置
-			tnl::Vector2i actualButtonPos = { BUTTON_POSITION.x + (i * BUTTON_OFFSET.x), BUTTON_POSITION.y + (i * BUTTON_OFFSET.y) };
+			actualButtonPos = { BUTTON_POSITION.x + (i * BUTTON_OFFSET.x), BUTTON_POSITION.y + (i * BUTTON_OFFSET.y) };
 
 			// 現在選択中のボタンの場合は、特別な処理を加える
 			if (static_cast<e_SelectTitleButton>(i) == currentSelectButton_) {
+				// カーソルを表示する
+				DrawRotaGraph(actualButtonPos.x + BUTTON_CURSOR_OFFSET.x, actualButtonPos.y + BUTTON_CURSOR_OFFSET.y, BUTTON_CURSOR_SIZE, tnl::ToRadian(-90), ResourceManager::getResourceManager()->getGraphRes("graphics/UI/TitleSceneCursor.png"), true);
+				DrawRotaGraph(actualButtonPos.x + BUTTON_CURSOR_OFFSET.x, actualButtonPos.y + BUTTON_CURSOR_OFFSET.y + CURSOR_KEYBOARD_WS_OFFSET.y, KEYBOARD_WS_SIZE, 0, ResourceManager::getResourceManager()->getGraphRes("graphics/UI/KeyboardS.png"), true);
+				DrawRotaGraph(actualButtonPos.x + BUTTON_CURSOR_OFFSET.x, actualButtonPos.y + BUTTON_CURSOR_OFFSET.y - CURSOR_KEYBOARD_WS_OFFSET.y, KEYBOARD_WS_SIZE, 0, ResourceManager::getResourceManager()->getGraphRes("graphics/UI/KeyboardW.png"), true);
 				// 色を変える
 				SetDrawBright(200, 200, 255);
 				// 位置を補正
 				actualButtonPos += BUTTON_SELECTED_OFFSET;
 			}
 
+			// ボタンUIを描画
 			DrawRotaGraph(actualButtonPos.x, actualButtonPos.y, BUTTON_SIZE, 0, resourceManager->getGraphRes("graphics/UI/TitleSceneButtonUI.png"), true);
 
 			std::string buttonName;
 
 			switch (static_cast<e_SelectTitleButton>(i)) {
-			case e_SelectTitleButton::START: buttonName = "ゲーム開始";
+			case e_SelectTitleButton::START:
+				buttonName = "ゲーム開始";
 				break;
-			case e_SelectTitleButton::PROROGUE: buttonName = "プロローグ";
+			case e_SelectTitleButton::PROROGUE: 
+				buttonName = "プロローグ";
 				break;
-			case e_SelectTitleButton::EXIT: buttonName = "　終了"; // 空白で描画位置調整
+			case e_SelectTitleButton::EXIT: 
+				buttonName = "　終了"; // 空白で描画位置調整
 				break;
 			}
 
 			DrawStringToHandleEx(static_cast<float>(actualButtonPos.x + BUTTON_STRING_OFFSET.x), static_cast<float>(actualButtonPos.y + BUTTON_STRING_OFFSET.y), -1, BUTTON_FONT, buttonName.c_str());
 
-			if (static_cast<e_SelectTitleButton>(i) == currentSelectButton_) {
-				// 元に戻す
-				SetDrawBright(255, 255, 255);
-			}
+			// 色を元に戻す
+			SetDrawBright(255, 255, 255);
 		}
+
+
 	}
 
 	bool TitleScene::seqInit(float deltaTime) {
@@ -118,12 +138,12 @@ namespace atl {
 	void TitleScene::volumeSetting() {
 		auto rManager = ResourceManager::getResourceManager();
 		// BGM
-		rManager->changeVolumeSoundRes("sound/BGM/TitleSceneBGM.ogg", 180);
+		rManager->changeVolumeSoundRes("sound/BGM/TitleSceneBGM.ogg", 130);
 
 		// SE
-		rManager->changeVolumeSoundRes("sound/SE/TitleSceneCursorChange.ogg", 170);
-		rManager->changeVolumeSoundRes("sound/SE/TitleSceneStart.ogg", 200);
-		rManager->changeVolumeSoundRes("sound/SE/NextPaper.ogg", 200);
+		rManager->changeVolumeSoundRes("sound/SE/TitleSceneCursorChange.ogg", 120);
+		rManager->changeVolumeSoundRes("sound/SE/TitleSceneStart.ogg", 150);
+		rManager->changeVolumeSoundRes("sound/SE/NextPaper.ogg", 150);
 	}
 
 	bool TitleScene::seqKeyInputWait(float deltaTime) {
@@ -131,23 +151,18 @@ namespace atl {
 		if (FadeInOutManager::getFadeInOutManager()->isFading()) return true;
 
 		// スペース,エンターキー,左クリックを押した時、現在選択中のボタンに応じてシーケンスを遷移
-		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE) ||
-			tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
-
+		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)) {
 			// 選択中のボタン
 			switch (currentSelectButton_) {
 				// スタートボタン
 			case e_SelectTitleButton::START:	seq_.change(&TitleScene::seqStart);
 				break;
-
 				// プロローグボタン
 			case e_SelectTitleButton::PROROGUE:	seq_.change(&TitleScene::seqProrogue);
 				break;
-
 				// ゲーム終了ボタン
 			case e_SelectTitleButton::EXIT:		seq_.change(&TitleScene::seqExit);
 				break;
-
 				// デフォルトなら何もしない
 			default: break;
 			}

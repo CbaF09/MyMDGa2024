@@ -23,6 +23,7 @@ namespace atl {
 		const int EPILOGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
 
 		const int32_t EPILOGUE_BACKGROUND_BRIGHT = 126;	// 背景の明るさ ( 0 で元と同じ、255 で真っ黒 )
+		const tnl::Vector2i CAN_BACK_TEXT_POSITION{ 10,10 }; // 「スペースキーでタイトルに戻れます」を表示する位置
 		const tnl::Vector2i TEXT_POSITION{ 25,150 };	// 一番上の行の表示位置
 		const tnl::Vector2i TEXT_OFFSET{ 0,45 };		// 一行ごとにオフセットされる量
 		const float LOG_LINE_INTERVAL = 5.0f;			// 表示行を増やす間隔 ( 秒 )
@@ -31,6 +32,8 @@ namespace atl {
 		int32_t textAlpha_ = 255;		// テキストの透明度用変数
 		const int32_t ALPHA_MINUS_SPEED = 2; // テキストが透明になっていく速度
 		const float FULL_ALPHA_TIME = 4.5;	// 全テキストが描画された後、最大透明度のままの待機時間
+
+		// エピローグのページを表現する enum
 		enum class e_EpiloguePage {
 			ZERO = 0,
 			ONE,

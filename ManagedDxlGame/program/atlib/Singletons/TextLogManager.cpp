@@ -24,6 +24,7 @@ namespace atl {
             textLogList_.pop_back();
         }
     }
+
     void TextLogManager::displayTextLog(int x, int y, float deltaTime) {
 
         totalDeltaTime_ += deltaTime;
@@ -32,6 +33,7 @@ namespace atl {
             totalDeltaTime_ = 0.0f;
         }
 
+        // 
         drawLogLine_ = 0;
         for (const auto& log : textLogList_) {
             if (drawLogLine_ == 0) {

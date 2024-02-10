@@ -27,15 +27,17 @@ namespace atl {
 	}
 
 	void GameClearScene::sceneUpdate(float deltaTime) {
-		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) seq_.change(&GameClearScene::seqToTitleScene);
+		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) seq_.change(&GameClearScene::seqToTitleScene);
 
 		draw(deltaTime);
 		seq_.update(deltaTime);
 	}
 
 	void GameClearScene::draw(float deltaTime) {
+
 		DrawExtendGraph(0,0,DXE_WINDOW_WIDTH,DXE_WINDOW_HEIGHT,ResourceManager::getResourceManager()->getGraphRes("graphics/BackgroundIllust/ClearSceneBack.jpg"),true);
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
+
 	}
 
 	bool GameClearScene::seqInit(float deltaTime) {
@@ -59,6 +61,10 @@ namespace atl {
 	}
 
 	bool GameClearScene::seqEpilogue1(float deltaTime) {
+		// 常に表示する文字
+		DrawStringToHandleEx(CAN_BACK_TEXT_POSITION.x, CAN_BACK_TEXT_POSITION.y, GetColor(255, 255, 255), EPILOGUE_FONT, "スペースキー で タイトル画面に戻ります");
+
+		
 		// 最初の 1 フレーム
 		if (seq_.isStart()) {
 			drawLogLine_ = 0;

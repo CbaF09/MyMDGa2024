@@ -42,7 +42,7 @@ namespace atl {
 		public:
 			e_FieldCellType cellType_ = e_FieldCellType::CELL_TYPE_NONE;
 			bool isAlreadySpawnSomething = false;
-			int32_t regionAreaID_;
+			int32_t regionAreaID_ = 0;
 		};
 
 		// ダンジョンを生成。fieldCells_ に保存される
@@ -58,12 +58,17 @@ namespace atl {
 		inline const int32_t getItemSpawnNum() { return ITEM_SPAWN_NUM; }
 		inline const std::vector<tnl::Vector2i>& getEnemySpawnPos() const { return enemySpawnPosArray_; }
 		inline const std::vector<tnl::Vector2i>& getItemSpawnPos() const { return itemSpawnPosArray_; }
+
 		// 引数に渡した座標のフィールドセルのIDを取得
 		inline const int32_t getFieldCellID(tnl::Vector2i pos) const { return fieldCells_[pos.x][pos.y].regionAreaID_; }
 
 		// fieldCells_ から、スポーン可能状態の空セルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 選ばれた XY地点の fieldCell は、スポーン不可状態に切り替わる
 		tnl::Vector2i randomChoiceCanSpawnFieldCellPos();
+		// fieldCells_ から、スポーン可能状態のセルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
+		// 敵のリスポーン用
+		// arg ... スポーンから除外するフィールドセルのID
+		tnl::Vector2i randomChoiceCanSpawnFieldCellPos(const tnl::Vector2i& playerPos);
 
 		// 移動先が、移動可能かどうかチェックする
 		bool isCanMoveFieldCellPos(const tnl::Vector2i& toMovePos);

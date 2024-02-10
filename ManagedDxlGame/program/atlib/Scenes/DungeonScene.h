@@ -21,6 +21,7 @@ namespace atl {
     class DungeonScene final : public Base_Scene, public std::enable_shared_from_this<DungeonScene> {
 
     public:
+        DungeonScene();
         ~DungeonScene();
 
         // ゲッター
@@ -32,6 +33,7 @@ namespace atl {
         inline const Shared<PlayerPawn> getPlayerPawn() const { return player_; }
 
         // セッター
+        // 満腹度のセッター ( 0 ~ SATIETY_FULL の間にクランプ )
         inline void changeSatiety(int32_t changeValue) {
             currentSatiety_ += changeValue;
             if (currentSatiety_ <= 0) { currentSatiety_ = 0; }
@@ -66,6 +68,8 @@ namespace atl {
 
         // エネミー関連 --------------------------------
         std::list<Shared<EnemyPawn>> enemies_;  // フィールドに存在するエネミーリスト
+        const int32_t RESPORN_TURN_COUNT = 30;   // 何ターンごとにリスポーンするか
+        int32_t respornTurnTimer_ = 0;           // リスポーンターンカウンター
 
         // アイテム関連 --------------------------------
         std::list<Shared<ItemPawn>> items_; // フィールドにあるアイテムリスト
@@ -73,7 +77,7 @@ namespace atl {
         // 階層管理用 ----------------------------------
         int32_t currentFloor_ = 1;      // 現在階層
         const int32_t MAX_FLOOR = 4;    // 最上階 ( 到達したらクリア階 )
-        const float nextFloorTransitionTime = 0.2f;  // 次階層に進む時、黒画面のままの待機する時間
+        const float nextFloorTransitionTime = 2.5f;  // 次階層に進む時、黒画面のままの待機する時間
         bool isNextFloorTransition = false; // 次階層に遷移中か ( 黒画面か )
 
         // ターン制御用 --------------------------------
@@ -89,6 +93,9 @@ namespace atl {
         const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; // HPバーの枠とバー自体の間の隙間
         const tnl::Vector2i HP_STRING_POSITION{ 50,15 }; // HP数値表示の位置
         const tnl::Vector2i LEVEL_STRING_POSITION{ 60,390 }; // レベルの文字列を描画する位置
+        const tnl::Vector2i INSTRUCTION_POSITION{ DXE_WINDOW_WIDTH/2 + 100,600 }; // 操作説明の画像を描画する位置
+        const tnl::Vector2i INSTRUCTION_BACK_BOX_SIZE{ 575,160 }; // 操作説明の画像を描画する位置
+        const float INSTRUCTION_SIZE = 0.45f; // 操作説明の画像を描画する位置
 
         const int LEVEL_STRING_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
         const int NEXT_FLOOR_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
@@ -118,6 +125,7 @@ namespace atl {
         //----------------------------------------------
         // メソッド
 
+        // 毎フレーム呼び出される
         void sceneUpdate(float deltaTime) override;
 
         // 3Dのレンダー
@@ -127,6 +135,8 @@ namespace atl {
 
         // 2D UI の描画
         void drawUI(float deltaTime);
+        // 2D 操作説明の描画
+        void drawInstruction();
         // 2D 現在レベルの文字列描画
         void drawLevel();
         // 2D 満腹度の概念を描画 ( 招待状 のイラスト ）
@@ -156,8 +166,10 @@ namespace atl {
         // シーンで使う音源データのヴォリュームをまとめて調整
         void soundVolumeFix();
 
-        // シーケンス
+        // シーケンス関連
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);
+        
+        // 最初に一回だけ呼ばれる
         bool seqInit(float deltaTime);
 
         // 現在のターンに応じた処理を実行
@@ -170,6 +182,8 @@ namespace atl {
         bool seqGameOver(float deltaTime);
         // 敵とプレイヤーの行動完了フラグをオフにする
         bool seqAllTurnFlagOff(float deltaTime);
+        // 探索中の敵のリスポーン処理
+        void enemyResporn();
         // 次の階層に移動している間
         bool seqToNextFloor(float deltaTime);
         // メニューからタイトルに戻るを選択した時 ( 確認画面 )
@@ -185,7 +199,6 @@ namespace atl {
         void processPlayerMoveTurn(float deltaTime);
         // プレイヤーが階段に乗った時
         void processPlayerOnStairs(float deltaTime);
-
 
         // エネミーの移動処理
         void enemyMove(float deltaTime, bool& allEnemyTurned);

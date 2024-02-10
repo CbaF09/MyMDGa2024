@@ -23,7 +23,7 @@ namespace atl {
 
         // 次フレームにて、指定したシーンに遷移（現在のシーンは消去されます）
         // arg ... std::make_shared< 次のシーンクラス >()
-        void changeScene(std::shared_ptr<Base_Scene> nextScene) { p_nextScene_ = std::move(nextScene); };
+        inline void changeScene(std::shared_ptr<Base_Scene> nextScene) { p_nextScene_ = std::move(nextScene); };
 
         // gameMain で毎フレーム実行。シーンクラスの sceneUpdate を呼び出すメソッド
         // arg ... 経過時間。gameMain の引数をそのまま入れればOK

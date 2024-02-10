@@ -152,24 +152,28 @@ namespace atl {
 
 	void DungeonCreater::createPathwayToRight(const Area& area) {
 		int32_t randomY = mtRandomRangeInt(area.room_.posY_ + 1, area.room_.posY_ + area.room_.height_ - 2);
-		for (int x = area.room_.posX_ + area.room_.width_; x < area.posX_ + area.width_; ++x)
+		for (int x = area.room_.posX_ + area.room_.width_; x < area.posX_ + area.width_; ++x) {
 			fieldCells_[x][randomY].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
+		}
 	}
 
 	void DungeonCreater::createPathwayToLeft(const Area& area) {
 		int32_t randomY = mtRandomRangeInt(area.room_.posY_ + 1, area.room_.posY_ + area.room_.height_ - 2);
-		for (int x = area.posX_; x < area.room_.posX_; ++x)
+		for (int x = area.posX_; x < area.room_.posX_; ++x) {
 			fieldCells_[x][randomY].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
+		}
 	}
 	void DungeonCreater::createPathwayToTop(const Area& area) {
 		int32_t randomX = mtRandomRangeInt(area.room_.posX_ + 1, area.room_.posX_ + area.room_.width_ - 2);
-		for (int y = area.posY_; y < area.room_.posY_; ++y)
+		for (int y = area.posY_; y < area.room_.posY_; ++y) {
 			fieldCells_[randomX][y].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
+		}
 	}
 	void DungeonCreater::createPathwayToBottom(const Area& area) {
 		int32_t randomX = mtRandomRangeInt(area.room_.posX_ + 1, area.room_.posX_ + area.room_.width_ - 2);
-		for (int y = area.room_.posY_ + area.room_.height_; y < area.posY_ + area.height_; ++y)
+		for (int y = area.room_.posY_ + area.room_.height_; y < area.posY_ + area.height_; ++y) {
 			fieldCells_[randomX][y].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
+		}
 	}
 
 	void DungeonCreater::pathwayCreate() {
@@ -187,6 +191,7 @@ namespace atl {
 		for (const Area& area : areas_) {
 			std::vector<std::function<void()>> possiblePathwayFuncs;
 
+			// 
 			int32_t needPathwayCount = 4;
 
 			if (area.posX_ == 0) --needPathwayCount;
@@ -281,6 +286,22 @@ namespace atl {
 
 		const tnl::Vector2i returnPos = canSpawnCellsPos[static_cast<int>(mtRandomRangeInt(0, canSpawnCellsPos.size() - 1))];
 		fieldCells_[returnPos.x][returnPos.y].isAlreadySpawnSomething = true;
+		return returnPos;
+	}
+
+	tnl::Vector2i DungeonCreater::randomChoiceCanSpawnFieldCellPos(const tnl::Vector2i& playerPos) {
+		std::vector <tnl::Vector2i> canSpawnCellsPos{};
+
+		auto playerPosID = getFieldCellID(playerPos);
+
+		for (int x = 0; x < FIELD_WIDTH; ++x) {
+			for(int y = 0; y < FIELD_HEIGHT; ++y)
+				if (fieldCells_[x][y].cellType_ == e_FieldCellType::CELL_TYPE_ROOM && fieldCells_[x][y].regionAreaID_ != playerPosID) {
+					canSpawnCellsPos.emplace_back(tnl::Vector2i{ x,y });
+				}
+		}
+
+		tnl::Vector2i returnPos = canSpawnCellsPos[static_cast<int>(mtRandomRangeInt(0, canSpawnCellsPos.size() - 1))];
 		return returnPos;
 	}
 

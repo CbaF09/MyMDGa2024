@@ -19,6 +19,12 @@
 #include "../Utilities/Atl3DCamera.h"
 
 namespace atl {
+	DungeonScene::DungeonScene() {
+		walls_.clear();
+		groundTiles_.clear();
+		enemies_.clear();
+		items_.clear();
+	}
 
 	DungeonScene::~DungeonScene() {
 		{// ダンジョンシーンで使っているリソースを解放
@@ -28,6 +34,7 @@ namespace atl {
 				"graphics/UI/HPbarBackGround.png",
 				"graphics/UI/HPbarRed.bmp",
 				"graphics/UI/HPbarGreen.bmp",
+				"graphics/UI/Instruction.png"
 				"sound/BGM/DungeonSceneBGM.ogg",
 				"sound/SE/DungeonSceneCloseMenu.ogg",
 				"sound/SE/DungeonSceneOpenMenu.ogg",
@@ -103,6 +110,9 @@ namespace atl {
 	void DungeonScene::drawUI(float deltaTime) {
 		// HP バー 表示
 		drawHPbar();
+		
+		//
+		drawInstruction();
 
 		// メニューを開いている時はログ表示無し,レベル表示無し,満腹度表示無し
 		if (!menuWindow_) { 
@@ -113,6 +123,13 @@ namespace atl {
 
 		// メニューを開いている間の描画
 		if (menuWindow_) { menuWindow_->draw(deltaTime); }
+	}
+
+	void DungeonScene::drawInstruction() {
+		SetDrawBlendMode(DX_BLENDGRAPHTYPE_ALPHA, 125);
+		DrawBoxEx({static_cast<float>(INSTRUCTION_POSITION.x),static_cast<float>(INSTRUCTION_POSITION.y),0}, INSTRUCTION_BACK_BOX_SIZE.x, INSTRUCTION_BACK_BOX_SIZE.y,true,GetColor(0,0,255));
+		SetDrawBlendMode(DX_BLENDGRAPHTYPE_NORMAL, 0);
+		DrawRotaGraph(INSTRUCTION_POSITION.x, INSTRUCTION_POSITION.y, INSTRUCTION_SIZE, 0, ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Instruction.png"), true);
 	}
 
 	void DungeonScene::drawLevel() {
@@ -239,20 +256,32 @@ namespace atl {
 		player_->offFlagIsAlreadyTurn();
 		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
 
-		// 空腹度が0になったら、ゲームオーバーに遷移
-		currentSatiety_ -= SATIETY_SUB_VALUE;
-		if (currentSatiety_ <= 0) {
-			currentSatiety_ = 0;
-			seq_.change(&DungeonScene::seqGameOver);
-			return true;
+		// リスポーン判定
+		++respornTurnTimer_;
+		if (respornTurnTimer_ > RESPORN_TURN_COUNT) {
+			// タイマーがリスポーンカウントを超えたら、敵が一体スポーンする
+			// スポーン先に既にエネミーがいた場合、次のターンにスポーンする
+			enemyResporn();
 		}
-		
-		// HP 自動回復
-		player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
 
 		currentTurn_ = e_turnState::KEY_INPUT;
 		seq_.change(&DungeonScene::seqTurnStateProcess);
 		return true;
+	}
+
+	void DungeonScene::enemyResporn() {
+		auto spawnPos = DungeonCreater::getDungeonCreater()->randomChoiceCanSpawnFieldCellPos(player_->getPlayer2Dpos());
+		for (const auto& enemy : enemies_) {
+			// スポーン先に既に敵がいるかチェック。いたらリターン
+			if (enemy->get2Dpos().x == spawnPos.x && enemy->get2Dpos().y == spawnPos.y) {
+				return;
+			}
+		}
+
+		respornTurnTimer_ = 0;
+		auto enemy = std::make_shared<EnemyPawn>(spawnPos);
+		enemy->assignWeakDungeonScene(shared_from_this());
+		enemies_.emplace_back(enemy);
 	}
 
 	// 現在ターンに応じて処理実行
@@ -272,17 +301,15 @@ namespace atl {
 				}
 			}
 
-			{// プレイヤーのHPがゼロになっている場合、直接ゲームオーバーシーケンスに遷移
-				if (player_->getPlayerData()->isZeroHP()) {
-					seq_.change(&DungeonScene::seqGameOver);
-				}
-			}
+
 
 			{// メニューウィンドウを開いている場合の処理
 				if (menuWindow_) {
 					seq_.change(&DungeonScene::seqMenuWindow);
 				}
 			}
+
+
 		}
 
 		switch (currentTurn_) {
@@ -358,9 +385,29 @@ namespace atl {
 
 		// HP がゼロになり、死亡演出が終わった敵を削除
 		deadEnemyErase();
-
+		
 		// プレイヤー・エネミーが行動完了したら、シーケンス遷移
-		if (player_->getIsAlreadyTurn() && allEnemyTurned) seq_.immediatelyChange(&DungeonScene::seqOnItemPosition);
+		if (player_->getIsAlreadyTurn() && allEnemyTurned) { 
+			{// プレイヤーのHPがゼロになっている場合、直接ゲームオーバーシーケンスに遷移
+				if (player_->getPlayerData()->isZeroHP()) {
+					seq_.change(&DungeonScene::seqGameOver);
+					return;
+				}
+			}
+
+			// 空腹度が0になったら、ゲームオーバーに遷移
+			currentSatiety_ -= SATIETY_SUB_VALUE;
+			if (currentSatiety_ <= 0) {
+				currentSatiety_ = 0;
+				seq_.change(&DungeonScene::seqGameOver);
+				return;
+			}
+
+			// HP 自動回復
+			player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
+
+			seq_.immediatelyChange(&DungeonScene::seqOnItemPosition); 
+		}
 	}
 
 	bool DungeonScene::seqOnItemPosition(float deltaTime) {
@@ -454,13 +501,13 @@ namespace atl {
 			// 範囲外アクセスチェックをしてから、本当に使うかの確認シーケンスに遷移
 			if (player_->getPlayerData()->getInventory()->getItemData(static_cast<int>(selectedMenu)) != nullptr) { seq_.change(&DungeonScene::seqReallyUseItem); } break;
 		case MenuWindow::e_SelectedMenuWindow::Setting: break; // 現状何も無し
-		case MenuWindow::e_SelectedMenuWindow::CloseMenu:
+		case MenuWindow::e_SelectedMenuWindow::CloseMenu: // メニューを閉じる
 		{
 			closeMenu();
 			seq_.change(&DungeonScene::seqAllTurnFlagOff);
 			break;
 		}
-		case MenuWindow::e_SelectedMenuWindow::ReturnToTitle:
+		case MenuWindow::e_SelectedMenuWindow::ReturnToTitle: // タイトルに戻る
 		{
 			seq_.change(&DungeonScene::seqReallyReturnToTitle);
 			break;
@@ -607,10 +654,8 @@ namespace atl {
 	void DungeonScene::generateDungeon() {
 		initDungeon();
 
-		auto dungeonCreater = DungeonCreater::getDungeonCreater();
-
-		dungeonCreater->createDungeon();
-		auto& fieldData = dungeonCreater->getFieldCells();
+		DungeonCreater::getDungeonCreater()->createDungeon();
+		auto& fieldData = DungeonCreater::getDungeonCreater()->getFieldCells();
 
 		for (int x = 0; x < fieldData.size(); ++x) {
 			for (int y = 0; y < fieldData[x].size(); ++y) {
@@ -626,25 +671,25 @@ namespace atl {
 
 		{// 各種スポーン ( DungeonCreaterが作ったスポーン位置を取得し、生成 )
 			// プレイヤー
-			auto& playerSpawnPos = dungeonCreater->getPlayerSpawnPos();
+			auto& playerSpawnPos = DungeonCreater::getDungeonCreater()->getPlayerSpawnPos();
 			player_->playerSpawn2Dpos(playerSpawnPos);
 
 			// 階段
-			auto& stairsSpawnPos = dungeonCreater->getStairsSpawnPos();
+			auto& stairsSpawnPos = DungeonCreater::getDungeonCreater()->getStairsSpawnPos();
 			// セル全長の半分の大きさで生成
 			originStairs_ = std::make_shared<Stairs>(stairsSpawnPos, tnl::Vector3{ CELL_FULL_LENGTH / 3,CELL_FULL_LENGTH / 3,CELL_FULL_LENGTH / 3 });
 
 			// エネミー
-			auto& enemySpawnPos = dungeonCreater->getEnemySpawnPos();
-			for (int i = 0; i < dungeonCreater->getEnemySpawnNum(); ++i) {
+			auto& enemySpawnPos = DungeonCreater::getDungeonCreater()->getEnemySpawnPos();
+			for (int i = 0; i < DungeonCreater::getDungeonCreater()->getEnemySpawnNum(); ++i) {
 				auto enemy = std::make_shared<EnemyPawn>(enemySpawnPos[i]);
 				enemy->assignWeakDungeonScene(shared_from_this());
 				enemies_.emplace_back(enemy);
 			}
 
 			// アイテム
-			auto& itemSpawnPos = dungeonCreater->getItemSpawnPos();
-			for (int i = 0; i < dungeonCreater->getItemSpawnNum(); ++i) {
+			auto& itemSpawnPos = DungeonCreater::getDungeonCreater()->getItemSpawnPos();
+			for (int i = 0; i < DungeonCreater::getDungeonCreater()->getItemSpawnNum(); ++i) {
 				auto item = std::make_shared<ItemPawn>(itemSpawnPos[i]);
 				item->assignWeakDungeonScene(shared_from_this());
 				items_.emplace_back(item);

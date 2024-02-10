@@ -4,6 +4,7 @@
 #include <string>
 #include <numbers>
 #include <functional>
+
 #include "../dxlib_ext/dxlib_ext.h"
 #include "../atlib/Utilities/Atl3DCamera.h"
 #include "../atlib/Utilities/AtlRandom.h"
@@ -24,7 +25,7 @@ void gameStart() {
 
     // フォグのオンオフは、Skyboxクラスで行われています
 	SetFogColor(32, 32, 32);
-	SetFogStartEnd(5000.0f, 12000.0f);
+	SetFogStartEnd(5000.0f, 6000.0f);
 
 	ChangeLightTypeDir(VGet(0.0f, -1.0f, 0.0f));
 	SetBackgroundColor(32, 32, 32);
@@ -36,7 +37,7 @@ void gameStart() {
 
     // atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
 
-	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
+	atl::SceneManager::getSceneManager(std::make_shared<atl::GameClearScene>());
 }
 
 void gameMain(float delta_time) {

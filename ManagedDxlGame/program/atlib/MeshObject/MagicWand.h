@@ -8,15 +8,12 @@ namespace atl {
 	class MagicWand final : public Base_MultiMeshObject {
 	public:
 		explicit MagicWand(std::weak_ptr<const PlayerPawn> player);
-		MagicWand(const tnl::Vector2i spawnPos, float initSize);
 
 		void adjustChildsMeshes(float deltaTime) override;
 
 	private:
-		float wandSize_ = 0.0f;
 		tnl::Quaternion initRot_;
 		std::weak_ptr<const PlayerPawn> weakPlayerPawn;
-		bool isHeldByPlayer = false;
 	};
 
 }

@@ -12,7 +12,7 @@ namespace atl {
 		// ゲッター
 		inline const int32_t getMaxHP() const { return maxHP_; }
 		inline const int32_t getCurrentHP() const { return currentHP_; }
-		inline const float getCurrentHPpersent() const { return currentHPpersent; }
+		inline const float getCurrentHPpersent() const { return currentHPpersent_; }
 		inline const int32_t getAttackPower() const { return attackPower_; }
 
 		// セッター
@@ -38,7 +38,7 @@ namespace atl {
 	private:
 		int32_t maxHP_ = 0;
 		int32_t currentHP_ = 0;
-		float currentHPpersent = 0.0f;
+		float currentHPpersent_ = 0.0f;
 		int32_t attackPower_ = 0;
 	};
 

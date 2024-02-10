@@ -26,6 +26,7 @@ namespace atl {
 			MagicInc,
 			ITEM_MAX,
 		};
+
 		e_itemList itemID_ = e_itemList::NONE;
 		std::string itemName_ = "";
 		std::string descString_ = "";
