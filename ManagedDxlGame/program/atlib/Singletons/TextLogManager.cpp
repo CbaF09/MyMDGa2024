@@ -41,7 +41,7 @@ namespace atl {
                 DrawStringEx(x, y, GetColor(255,0,0), "%s", drawLog.c_str());
             }
             else {
-                DrawStringEx(x, y + drawLogLine_ * 20, GetColor(200,200,200), "%s", log.c_str());
+                DrawStringEx(x, y + drawLogLine_ * 20, GetColor(200,50,50), "%s", log.c_str());
             }
             ++drawLogLine_;
         }
