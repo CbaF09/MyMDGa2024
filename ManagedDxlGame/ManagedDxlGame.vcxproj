@@ -80,11 +80,13 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\DirectXTK\Inc;..\ManagedDxlGame\program\library;C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(IncludePath)</IncludePath>
     <LibraryPath>..\DirectXTK\lib_debug;C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(LibraryPath)</LibraryPath>
+    <TargetName>ワイズマンの修練塔</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\DirectXTK\Inc;C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;$(IncludePath)</IncludePath>
     <LibraryPath>C:\DxLib_VC\プロジェクトに追加すべきファイル_VC用;..\DirectXTK\lib_release;$(LibraryPath)</LibraryPath>
+    <TargetName>ワイズマンの修練塔</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -49,6 +49,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // ウィンドウサイズ設定
     SetGraphMode(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT, 32);
 
+    SetMainWindowText("ワイズマンの修練塔");
+
     SetWaitVSyncFlag(TRUE);
 
     // ＤＸライブラリ初期化処理
