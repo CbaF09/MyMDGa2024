@@ -7,18 +7,12 @@
 
 namespace atl {
 
-	DungeonCreater* DungeonCreater::p_instance_ = nullptr;
 
 	DungeonCreater* DungeonCreater::getDungeonCreater() {
+		static DungeonCreater* p_instance_ = nullptr;
+
 		if (!p_instance_) p_instance_ = new DungeonCreater();
 		return p_instance_;
-	};
-
-	void DungeonCreater::deleteDungeonCreater() {
-		if (p_instance_) {
-			delete p_instance_;
-			p_instance_ = nullptr;
-		};
 	};
 
 	void DungeonCreater::createDungeon() {

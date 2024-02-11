@@ -11,9 +11,8 @@ namespace atl {
 	// シングルトン設計
 	public:
 		static DungeonCreater* getDungeonCreater();
-		static void deleteDungeonCreater();
+		static void deleteDungeonCreater() { delete getDungeonCreater(); };
 	private:
-		static DungeonCreater* p_instance_;
 		DungeonCreater() {};
 		~DungeonCreater() {};
 	//------------------------------------------

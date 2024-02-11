@@ -12,9 +12,8 @@ namespace atl {
 	// シングルトン設計
 	public:
 		static ResourceManager* getResourceManager();
-		static void deleteResourceManager();
+		static void deleteResourceManager() { delete getResourceManager(); };
 	private:
-		static ResourceManager* p_instance_;
 		ResourceManager() {};
 		~ResourceManager() {};
 	//------------------------------------------

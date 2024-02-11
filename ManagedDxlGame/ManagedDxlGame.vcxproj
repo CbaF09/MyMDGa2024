@@ -150,7 +150,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ManagedDxlGame.cpp" />
-    <ClCompile Include="program\atlib\Collision\Collision.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Base_MeshObject.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Base_MultiMeshObject.cpp" />
     <ClCompile Include="program\atlib\MeshObject\EnemyPawn.cpp" />
@@ -184,43 +183,154 @@
     <ClCompile Include="program\atlib\Utilities\AtlAstar.cpp" />
     <ClCompile Include="program\atlib\Utilities\AtlRandom.cpp" />
     <ClCompile Include="program\atlib\Utilities\AtlString.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_barrel.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_box.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_cone.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_cone_cylinder.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_cube.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_cylinder.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_disk.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_disk_ring.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_dome.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_from_height_map.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_half_barrel.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_hollow_out_disk_plane.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_obj.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_plane.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_sphere.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_static_group.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_torus.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_triangle_equilateral.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_triangle_isosceles.cpp" />
-    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_triangle_right.cpp" />
-    <ClCompile Include="program\dxlib_ext\dxlib_ext.cpp" />
-    <ClCompile Include="program\dxlib_ext\dxlib_ext_camera.cpp" />
-    <ClCompile Include="program\dxlib_ext\dxlib_ext_data.cpp" />
-    <ClCompile Include="program\dxlib_ext\dxlib_ext_texture.cpp" />
-    <ClCompile Include="program\dxlib_ext\effects\dxlib_ext_particle.cpp" />
-    <ClCompile Include="program\dxlib_ext\effects\dxlib_ext_particle_sub.cpp" />
-    <ClCompile Include="program\dxlib_ext\effects\dxlib_ext_screen_effect.cpp" />
-    <ClCompile Include="program\dxlib_ext\effects\dxlib_ext_shadow_map.cpp" />
-    <ClCompile Include="program\dxlib_ext\gui\dxlib_ext_gui_check_box.cpp" />
-    <ClCompile Include="program\dxlib_ext\gui\dxlib_ext_gui_drag_box.cpp" />
-    <ClCompile Include="program\dxlib_ext\gui\dxlib_ext_gui_input_box.cpp" />
-    <ClCompile Include="program\dxlib_ext\gui\dxlib_ext_gui_menu_selector.cpp" />
-    <ClCompile Include="program\dxlib_ext\mesh\dxlib_ext_inst_mesh.cpp" />
-    <ClCompile Include="program\dxlib_ext\mesh\dxlib_ext_mesh.cpp" />
-    <ClCompile Include="program\dxlib_ext\mesh\dxlib_ext_mesh_base.cpp" />
-    <ClCompile Include="program\dxlib_ext\mesh\dxlib_ext_mesh_mtrl_gui_controller.cpp" />
-    <ClCompile Include="program\dxlib_ext\OBJLoader.cpp" />
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_barrel.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_box.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_cone.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_cone_cylinder.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_cube.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_cylinder.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_disk.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_disk_ring.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_dome.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_from_height_map.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_half_barrel.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_hollow_out_disk_plane.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_obj.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_plane.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_sphere.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_static_group.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_torus.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_triangle_equilateral.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_triangle_isosceles.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_triangle_right.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\dxlib_ext.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\dxlib_ext_camera.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\dxlib_ext_data.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\dxlib_ext_texture.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\effects\dxlib_ext_particle.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\effects\dxlib_ext_particle_sub.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\effects\dxlib_ext_screen_effect.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\effects\dxlib_ext_shadow_map.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\gui\dxlib_ext_gui_check_box.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\gui\dxlib_ext_gui_drag_box.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\gui\dxlib_ext_gui_input_box.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\gui\dxlib_ext_gui_menu_selector.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\mesh\dxlib_ext_inst_mesh.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\mesh\dxlib_ext_mesh.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\mesh\dxlib_ext_mesh_base.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\mesh\dxlib_ext_mesh_mtrl_gui_controller.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
+    <ClCompile Include="program\dxlib_ext\OBJLoader.cpp">
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TurnOffAllWarnings</WarningLevel>
+      <WarningLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TurnOffAllWarnings</WarningLevel>
+    </ClCompile>
     <ClCompile Include="program\game\gm_main.cpp" />
     <ClCompile Include="program\library\json11.cpp" />
     <ClCompile Include="program\library\tnl_font_texture.cpp" />
@@ -244,7 +354,6 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="program\atlib\Collision\Collision.h" />
     <ClInclude Include="program\atlib\MeshObject\Base_MeshObject.h" />
     <ClInclude Include="program\atlib\MeshObject\Base_MultiMeshObject.h" />
     <ClInclude Include="program\atlib\MeshObject\EnemyPawn.h" />

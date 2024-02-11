@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "../../dxlib_ext/dxlib_ext.h"
 #include "../Scenes/Base_Scene.h"
 
 namespace atl {
@@ -11,26 +12,24 @@ namespace atl {
     // シングルトン設計
     public:
         // 一番最初に呼び出す際は、起動時の初期シーンを引数に渡してください。std::make_shared< 初期シーンクラス名 >
-        static SceneManager* getSceneManager(std::shared_ptr<Base_Scene> startScene = nullptr);
-        static void deleteSceneManager();
+        static SceneManager* getSceneManager(Shared<Base_Scene> startScene = nullptr);
+        static void deleteSceneManager() { delete getSceneManager(); };
     private:
-        static SceneManager* p_instance_;
+        explicit SceneManager(Shared<Base_Scene> startScene) { p_nowScene_ = startScene; };
+        ~SceneManager() {};
     // --------------------------
-
     public:
-        explicit SceneManager(std::shared_ptr<Base_Scene> startScene) { p_nowScene_ = startScene; };
-
         // 次フレームにて、指定したシーンに遷移（現在のシーンは消去されます）
         // arg ... std::make_shared< 次のシーンクラス >()
-        inline void changeScene(std::shared_ptr<Base_Scene> nextScene) { p_nextScene_ = nextScene; };
+        inline void changeScene(Shared<Base_Scene> nextScene) { p_nextScene_ = nextScene; };
 
         // gameMain で毎フレーム実行。シーンクラスの sceneUpdate を呼び出すメソッド
         // arg ... 経過時間。gameMain の引数をそのまま入れればOK
         void nowSceneUpdate(float deltaTime);
 
     private:
-        std::shared_ptr<Base_Scene> p_nowScene_ = nullptr;
-        std::shared_ptr<Base_Scene> p_nextScene_ = nullptr;
+        Shared<Base_Scene> p_nowScene_ = nullptr;
+        Shared<Base_Scene> p_nextScene_ = nullptr;
     };
 
 };

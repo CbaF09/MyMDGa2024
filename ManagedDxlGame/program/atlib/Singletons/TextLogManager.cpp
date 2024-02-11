@@ -2,18 +2,12 @@
 
 namespace atl {
 
-    TextLogManager* TextLogManager::p_instance_ = nullptr;
 
     TextLogManager* atl::TextLogManager::getTextLogManager() {
+        static TextLogManager* p_instance_ = nullptr;
+
         if (!p_instance_) p_instance_ = new TextLogManager();
         return p_instance_;
-    }
-
-    void TextLogManager::deleteTextLogManager() {
-        if (p_instance_) {
-            delete p_instance_;
-            p_instance_ = nullptr;
-        };
     }
 
     void TextLogManager::addTextLog(const std::string& addText) {

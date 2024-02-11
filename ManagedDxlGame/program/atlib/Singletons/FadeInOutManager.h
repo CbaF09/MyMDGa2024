@@ -8,9 +8,8 @@ namespace atl {
 	// シングルトン設計
 	public:
 		static FadeInOutManager* getFadeInOutManager();
-		static void deleteFadeInOutManager();
+		inline static void deleteFadeInOutManager() { delete getFadeInOutManager(); }
 	private:
-		static FadeInOutManager* p_instance_;
 		FadeInOutManager() {};
 		~FadeInOutManager() {};
 	//------------------------------------------

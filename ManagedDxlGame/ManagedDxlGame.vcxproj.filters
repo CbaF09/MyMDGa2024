@@ -42,9 +42,6 @@
     <Filter Include="program\[002] atlib">
       <UniqueIdentifier>{7ec27916-d34d-4129-bf85-879a25badc3f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="program\[002] atlib\Collision">
-      <UniqueIdentifier>{7bd1d555-4b2e-4c2d-9d90-64d5dfc9770e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="program\[002] atlib\MeshObject">
       <UniqueIdentifier>{c368ad90-6f77-4e19-8a9f-58d9eb80dd0a}</UniqueIdentifier>
     </Filter>
@@ -217,9 +214,6 @@
     </ClCompile>
     <ClCompile Include="program\dxlib_ext\gui\dxlib_ext_gui_check_box.cpp">
       <Filter>program\[001] dxlib_ext\gui</Filter>
-    </ClCompile>
-    <ClCompile Include="program\atlib\Collision\Collision.cpp">
-      <Filter>program\[002] atlib\Collision</Filter>
     </ClCompile>
     <ClCompile Include="program\atlib\MeshObject\Base_MeshObject.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
@@ -529,9 +523,6 @@
     </ClInclude>
     <ClInclude Include="program\dxlib_ext\example\dxlib_ext_example_3d_screen_efffect.h">
       <Filter>program\[001] dxlib_ext\example</Filter>
-    </ClInclude>
-    <ClInclude Include="program\atlib\Collision\Collision.h">
-      <Filter>program\[002] atlib\Collision</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\MeshObject\Base_MeshObject.h">
       <Filter>program\[002] atlib\MeshObject</Filter>

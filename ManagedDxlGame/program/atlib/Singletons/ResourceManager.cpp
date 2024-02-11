@@ -2,19 +2,12 @@
 
 namespace atl {
 
-	ResourceManager* ResourceManager::p_instance_ = nullptr;
-
 	ResourceManager* ResourceManager::getResourceManager() {
+		static ResourceManager* p_instance_ = nullptr;
+
 		if (!p_instance_) p_instance_ = new ResourceManager();
 		return p_instance_;
 	};
-
-	void ResourceManager::deleteResourceManager() {
-		if (p_instance_) {
-			delete p_instance_;
-			p_instance_ = nullptr;
-		};
-	}
 
 	// フライウェイトパターン グラフィックハンドルを取得、無い場合はロードする
 	int ResourceManager::getGraphRes(const std::string& filepath) {

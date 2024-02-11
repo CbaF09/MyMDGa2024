@@ -2,18 +2,12 @@
 
 namespace atl {
     
-    SceneManager* SceneManager::p_instance_ = nullptr;
 
-    SceneManager* SceneManager::getSceneManager(std::shared_ptr<Base_Scene> startScene) {
+    SceneManager* SceneManager::getSceneManager(Shared<Base_Scene> startScene) {
+        static SceneManager* p_instance_ = nullptr;
+
         if (!p_instance_ && startScene != nullptr) p_instance_ = new SceneManager(std::move(startScene));
         return p_instance_;
-    };
-
-    void SceneManager::deleteSceneManager() {
-        if (p_instance_) {
-            delete p_instance_;
-            p_instance_ = nullptr;
-        };
     };
 
     void SceneManager::nowSceneUpdate(float deltaTime) {

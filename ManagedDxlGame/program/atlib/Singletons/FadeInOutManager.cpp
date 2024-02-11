@@ -2,18 +2,11 @@
 
 namespace atl {
 
-    FadeInOutManager* FadeInOutManager::p_instance_ = nullptr;
-
     FadeInOutManager* FadeInOutManager::getFadeInOutManager() {
+        static FadeInOutManager* p_instance_ = nullptr;
+
         if (!p_instance_) p_instance_ = new FadeInOutManager();
         return p_instance_;
-    }
-
-    void FadeInOutManager::deleteFadeInOutManager() {
-        if (p_instance_) {
-            delete p_instance_;
-            p_instance_ = nullptr;
-        };
     }
 
     bool FadeInOutManager::isFading() {

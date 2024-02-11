@@ -9,9 +9,8 @@ namespace atl {
 	// シングルトン設計
 	public:
 		static TextLogManager* getTextLogManager();
-		static void deleteTextLogManager();
+		inline static void deleteTextLogManager() { delete getTextLogManager(); }
 	private:
-		static TextLogManager* p_instance_;
 		TextLogManager() {};
 		~TextLogManager() {};
 	//------------------------------------------
