@@ -251,6 +251,31 @@ namespace atl {
 		return true;
 	}
 
+	// 毎ターン初期化処理
+	bool DungeonScene::seqTurnInit(float deltaTime) {
+		return false;
+	}
+
+	// ターン開始時処理
+	bool DungeonScene::seqTurnStart(float deltaTime) {
+		return false;
+	}
+
+	// キー入力待ち
+	bool DungeonScene::seqKeyInput(float deltaTime) {
+		return false;
+	}
+
+	// ターン処理
+	bool DungeonScene::seqTurn(float deltaTime) {
+		return false;
+	}
+
+	// ターンエンド処理
+	bool DungeonScene::seqTurnEnd(float deltaTime) {
+		return false;
+	}
+
 	// 行動フラグオフ用シーケンス
 	bool DungeonScene::seqAllTurnFlagOff(float deltaTime) {
 		player_->offFlagIsAlreadyTurn();
@@ -306,10 +331,8 @@ namespace atl {
 					seq_.change(&DungeonScene::seqMenuWindow);
 				}
 			}
-
-
 		}
-
+		
 		switch (currentTurn_) {
 		case e_turnState::KEY_INPUT:
 			processKeyInput(deltaTime);

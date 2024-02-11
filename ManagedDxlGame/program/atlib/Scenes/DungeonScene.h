@@ -172,6 +172,17 @@ namespace atl {
         // 最初に一回だけ呼ばれる
         bool seqInit(float deltaTime);
 
+        // 毎ターン初期化処理
+        bool seqTurnInit(float deltaTime);
+        // ターン開始時処理
+        bool seqTurnStart(float deltaTime);
+        // キー入力待ち
+        bool seqKeyInput(float deltaTime);
+        // ターン処理
+        bool seqTurn(float deltaTime);
+        // ターンエンド処理
+        bool seqTurnEnd(float deltaTime);
+
         // 現在のターンに応じた処理を実行
         bool seqTurnStateProcess(float deltaTime);
         // メニューウィンドウ開いている間の処理
