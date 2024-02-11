@@ -103,14 +103,13 @@ namespace atl {
 	// ---------------------------
 
 	bool PlayerPawn::seqWaitKeyInput(float deltaTime) {
-		if (!isAlreadyTurn_) {
-			if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
-				changeMoveDirSeq();
-			}
-			if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
-				seq_.change(&PlayerPawn::actionAttack);
-			}
+		if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
+			changeMoveDirSeq();
 		}
+		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
+			seq_.change(&PlayerPawn::actionAttack);
+		}
+
 		return true;
 	}
 	

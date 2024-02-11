@@ -185,6 +185,7 @@ namespace atl {
 	}
 	
 	bool EnemyPawn::seqWandering(float deltaTime) {
+		// 0 ~ 3 までの四択 ( 四方向 ) をランダムに決定し、そちらに移動する
 		int32_t rand = mtRandomRangeInt(0, 3);
 		switch (rand) {
 		case 0: 

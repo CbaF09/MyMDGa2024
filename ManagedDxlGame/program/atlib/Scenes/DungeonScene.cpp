@@ -326,6 +326,7 @@ namespace atl {
 		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
 
 		// ターン開始時処理へ
+		currentTurn_ = e_Turn::TurnStart;
 		seq_.change(&DungeonScene::seqTurnStart);
 		return true;
 	}
@@ -335,10 +336,16 @@ namespace atl {
 		// HP 自動回復
 		player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
 
+
+		/*---------------------------------------------------------------------------デバッグ中
+		/*---------------------------------------------------------------------------デバッグ中
+		/*---------------------------------------------------------------------------デバッグ中
 		// 敵のリスポーン判定
 		enemyResporn();
+		*/
 
 		// キー入力待ちへ
+		currentTurn_ = e_Turn::KeyInput;
 		seq_.change(&DungeonScene::seqKeyInput);
 		
 		return true;
@@ -355,13 +362,14 @@ namespace atl {
 			player_->playerUpdate(deltaTime);
 			// 移動した場合、階段に乗っているフラグをオフにする
 			isPlayerOnStairs_ = false;
+			currentTurn_ = e_Turn::PlayerMoveTurn1;
 			seq_.change(&DungeonScene::seqPlayerMoveTurn_1);
 			return true;
 		}
 		// 左クリックで攻撃
 		else if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 			player_->playerUpdate(deltaTime);
-			seq_.immediatelyChange(&DungeonScene::seqPlayerActionTurn);
+			seq_.change(&DungeonScene::seqPlayerActionTurn);
 			return true;
 		}
 		// 右クリックでメニューウィンドウ
@@ -393,6 +401,7 @@ namespace atl {
 
 		// プレイヤーと全てのエネミーの移動が完了していたら、遷移
 		if (player_->getIsAlreadyTurn() && allEnemyMoved) {
+			currentTurn_ = e_Turn::PlayerMoveTurn2;
 			seq_.change(&DungeonScene::seqPlayerMoveTurn_2);
 		}
 
@@ -413,6 +422,7 @@ namespace atl {
 		// 全てのエネミーの行動が完了していたら、遷移
 		if (allEnemyAction) {
 			// ターンエンド処理へ
+			currentTurn_ = e_Turn::TurnEnd;
 			seq_.change(&DungeonScene::seqTurnEnd);
 		}
 		return false;
@@ -473,6 +483,7 @@ namespace atl {
 
 	// ターンエンド処理
 	bool DungeonScene::seqTurnEnd(float deltaTime) {
+
 		// HP がゼロになり、死亡演出が終わった敵を探して削除する
 		if (!enemies_.empty()) {
 			deadEnemyErase();
@@ -507,6 +518,7 @@ namespace atl {
 		pickUpItem();
 
 		// ターンの初期化処理へ
+		currentTurn_ = e_Turn::TurnInit;
 		seq_.change(&DungeonScene::seqTurnInit);
 		return true;
 	}
@@ -693,6 +705,7 @@ namespace atl {
 					// ダンジョンを生成し、フェードインし画面を表示させる
 					generateDungeon();
 					FadeInOutManager::getFadeInOutManager()->startFadeIn();
+					currentTurn_ = e_Turn::TurnStart;
 					seq_.change(&DungeonScene::seqTurnInit);
 				}
 
@@ -790,7 +803,10 @@ namespace atl {
 	void DungeonScene::debug_displayDungeonParam(float deltaTime) {
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
-		DrawStringEx(600, 0, -1, "curentTurn ... [ %d ]");
+		DrawStringEx(600, 0, -1, "curentTurn ... [ %d ]",currentTurn_);
+		for (auto& enemy : enemies_) {
+			DrawStringEx(600, 15, -1, "enemyTurn ... [ %d ]", enemy->getCurrentState());
+		}
 
 		// 階段の位置
 		if (originStairs_) {
@@ -798,7 +814,6 @@ namespace atl {
 			DrawStringEx(600, 25, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
 		}
 
-		DrawStringEx(600, 50, -1, "currentFloor ... [ %d ]", currentFloor_);
 		player_->debug_displayPlayerParam(600, 100);
 
 	}

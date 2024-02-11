@@ -81,10 +81,6 @@ namespace atl {
         bool isNextFloorTransition = false; // 次階層に遷移中か ( 黒画面か )
 
         // ターン制御用 --------------------------------
-        enum class e_turnState {
-            NONE,
-            PLAYER_ON_STAIRS,
-        }currentTurn_ = e_turnState::NONE;
 
         // UI 関連 -------------------------------------
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
@@ -177,6 +173,19 @@ namespace atl {
         // シーケンス関連
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);
         
+        enum class e_Turn {
+            TurnInit,
+            TurnStart,
+            KeyInput,
+            PlayerMoveTurn1,
+            PlayerMoveTurn2,
+            PlayerActionTurn1,
+            PlayerActionTurn2,
+            TurnEnd,
+            OnStairs,
+            
+        }currentTurn_ = e_Turn::TurnInit;
+
         // 最初に一回だけ呼ばれる
         bool seqInit(float deltaTime);
 

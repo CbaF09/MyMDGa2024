@@ -13,7 +13,6 @@ namespace atl {
 		EnemyPawn(const tnl::Vector2i& enemyPos);
 		~EnemyPawn();
 
-
 		// ステート用 enum
 		enum class e_EnemyState {
 			Wandering,			// 目的のない探索
@@ -73,7 +72,7 @@ namespace atl {
 
 		// 移動用
 		tnl::Vector3 moveTarget_{ 0,0,0 };
-		const float MOVE_TIME = 1.0f; // 移動にかかる時間 ( 値が大きいほど移動に時間がかかる ) 
+		const float MOVE_TIME = 0.5f; // 移動にかかる時間 ( 値が大きいほど移動に時間がかかる ) 
 		const float MOVE_END_BORDER = 0.1f; // 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
 		float moveLerpTimeCount_ = 0; // lerp移動用タイムカウンター
 		float hoverSinTimer_ = 0; // sin関数で上下にふわふわさせる為のタイムカウンター
