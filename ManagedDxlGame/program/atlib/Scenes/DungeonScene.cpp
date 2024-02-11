@@ -301,8 +301,6 @@ namespace atl {
 				}
 			}
 
-
-
 			{// メニューウィンドウを開いている場合の処理
 				if (menuWindow_) {
 					seq_.change(&DungeonScene::seqMenuWindow);
@@ -593,7 +591,6 @@ namespace atl {
 			}
 			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) { // いいえ、の時
 				selectWindow_.reset();
-				isPlayerOnStairs_ = false;
 				currentTurn_ = e_turnState::KEY_INPUT;
 			}
 		}
