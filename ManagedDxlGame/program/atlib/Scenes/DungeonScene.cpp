@@ -226,75 +226,15 @@ namespace atl {
 		rManager->changeVolumeSoundRes("sound/SE/DungeonSceneOpenMenu.ogg", 180);
 	}
 
-	//---------------------
-	// シーケンス
-	//---------------------
-
-	// 初期設定 ( DungeonSceneのインスタンス生成後、一度だけ通る ) 
-	bool DungeonScene::seqInit(float deltaTime) {
-		// フェードは真っ黒からスタート
-		FadeInOutManager::getFadeInOutManager()->setFadeAlphaValue(255);
-
-		// プレイヤーの生成と初期化
-		player_ = std::make_shared<PlayerPawn>();
-		player_->initialize(shared_from_this());
-
-		// 現在の階層を 初期化
-		currentFloor_ = 0;
-
-		soundVolumeFix();
-
-		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg",DX_PLAYTYPE_LOOP);
-
-		// 本シーケンスに遷移
-		seq_.change(&DungeonScene::seqToNextFloor);
-		return true;
-	}
-
-	// 毎ターン初期化処理
-	bool DungeonScene::seqTurnInit(float deltaTime) {
-		return false;
-	}
-
-	// ターン開始時処理
-	bool DungeonScene::seqTurnStart(float deltaTime) {
-		return false;
-	}
-
-	// キー入力待ち
-	bool DungeonScene::seqKeyInput(float deltaTime) {
-		return false;
-	}
-
-	// ターン処理
-	bool DungeonScene::seqTurn(float deltaTime) {
-		return false;
-	}
-
-	// ターンエンド処理
-	bool DungeonScene::seqTurnEnd(float deltaTime) {
-		return false;
-	}
-
-	// 行動フラグオフ用シーケンス
-	bool DungeonScene::seqAllTurnFlagOff(float deltaTime) {
-		player_->offFlagIsAlreadyTurn();
-		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
-
-		// リスポーン判定
-		++respornTurnTimer_;
-		if (respornTurnTimer_ > RESPORN_TURN_COUNT) {
-			// タイマーがリスポーンカウントを超えたら、敵が一体スポーンする
-			// スポーン先に既にエネミーがいた場合、次のターンにスポーンする
-			enemyResporn();
-		}
-
-		currentTurn_ = e_turnState::KEY_INPUT;
-		seq_.change(&DungeonScene::seqTurnStateProcess);
-		return true;
-	}
-
+	// タイマーがリスポーンカウントを超えたら、敵が一体スポーンする
+	// スポーン先に既にエネミーがいた場合、次のターンにスポーンする
 	void DungeonScene::enemyResporn() {
+		++respornTurnTimer_;
+
+		// スポーン条件を満たしていないなら早期リターン
+		if (!(respornTurnTimer_ > RESPORN_TURN_COUNT)) return;
+
+		// プレイヤーと違うエリアにスポーン
 		auto spawnPos = DungeonCreater::getDungeonCreater()->randomChoiceCanSpawnFieldCellPos(player_->getPlayer2Dpos());
 		for (const auto& enemy : enemies_) {
 			// スポーン先に既に敵がいるかチェック。いたらリターン
@@ -309,129 +249,23 @@ namespace atl {
 		enemies_.emplace_back(enemy);
 	}
 
-	// 現在ターンに応じて処理実行
-	bool DungeonScene::seqTurnStateProcess(float deltaTime) {
-		// ターンの特別遷移がある場合、記述
-		if (seq_.isStart()) {
-
-			auto& player2Dpos = player_->getPlayer2Dpos();
-			{// 階段に乗った場合
-				// 階段に乗るフラグが立っていない場合、階段に乗ったフラグを立てる
-				if (!isPlayerOnStairs_) {
-					auto& stairs2Dpos = originStairs_->get2Dpos();
-					if (stairs2Dpos.x == player2Dpos.x && stairs2Dpos.y == player2Dpos.y) {
-						isPlayerOnStairs_ = true;
-						currentTurn_ = e_turnState::PLAYER_ON_STAIRS;
-					}
-				}
-			}
-
-			{// メニューウィンドウを開いている場合の処理
-				if (menuWindow_) {
-					seq_.change(&DungeonScene::seqMenuWindow);
-				}
-			}
-		}
-		
-		switch (currentTurn_) {
-		case e_turnState::KEY_INPUT:
-			processKeyInput(deltaTime);
-			break;
-		case e_turnState::PLAYER_MOVE:
-			processPlayerMoveTurn(deltaTime);
-			break;
-		case e_turnState::PLAYER_ON_STAIRS:
-			processPlayerOnStairs(deltaTime);
-			break;
-		}
-		return true;
-	}
-
-	bool DungeonScene::seqGameOver(float deltaTime) {
-		// 最初のフレームでフェードアウトを行い、フェードアウトが完了したらゲームオーバーシーンに遷移
-		if (seq_.isStart()) {
-			FadeInOutManager::getFadeInOutManager()->startFadeOut();
-		}
-
-		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
-			SceneManager::getSceneManager()->changeScene(std::make_shared<GameOverScene>());
-		}
-		return true;
-	}
-
-	void DungeonScene::processKeyInput(float deltaTime) {
-		// フェードイン ・ アウト中であれば操作不能
-		if (FadeInOutManager::getFadeInOutManager()->isFading()) return;
-
-		// メニューウィンドウ表示中は、移動・攻撃できない
-		if (!menuWindow_) {
-			if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
-				// プレイヤー側でもキー入力待ちをしていて、プレイヤー操作は 1 フレーム分遅れるので、一回 呼ぶ
-				player_->playerUpdate(deltaTime);
-				// 移動した場合、階段に乗っているフラグをオフにする
-				isPlayerOnStairs_ = false;
-				currentTurn_ = e_turnState::PLAYER_MOVE;
-			}
-
-			if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
-				player_->playerUpdate(deltaTime);
-				currentTurn_ = e_turnState::PLAYER_MOVE;
-			}
-		}
-
-		// 右クリックでメニューウィンドウの生成を行う
-		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
-			if(!menuWindow_) { 
-				openMenu();
-				seq_.change(&DungeonScene::seqMenuWindow);
-			}
+	// 未移動のエネミーのアップデートを回す
+	void DungeonScene::enemyMove(float deltaTime) {
+		for (auto& enemy : enemies_) {
+			if (enemy->getIsAlreadyMove()) { continue; }
+			enemy->enemyUpdate(deltaTime);
 		}
 	}
 
-	// プレイヤーの移動入力
-	void DungeonScene::processPlayerMoveTurn(float deltaTime) {
-		// プレイヤーのターン処理 ( 移動 )
-		if (!player_->getIsAlreadyTurn()) {
-			player_->playerUpdate(deltaTime);
-		}
-
-		// 全エネミーの行動が終わったかフラグ作る
-		bool allEnemyTurned = true;
-		{// エネミーの行動処理
-			// エネミー移動処理
-			enemyMove(deltaTime, allEnemyTurned);
-			// エネミー行動処理
-			enemyAction(deltaTime, allEnemyTurned);
-		}
-
-		// HP がゼロになり、死亡演出が終わった敵を削除
-		deadEnemyErase();
-		
-		// プレイヤー・エネミーが行動完了したら、シーケンス遷移
-		if (player_->getIsAlreadyTurn() && allEnemyTurned) { 
-			{// プレイヤーのHPがゼロになっている場合、直接ゲームオーバーシーケンスに遷移
-				if (player_->getPlayerData()->isZeroHP()) {
-					seq_.change(&DungeonScene::seqGameOver);
-					return;
-				}
-			}
-
-			// 空腹度が0になったら、ゲームオーバーに遷移
-			currentSatiety_ -= SATIETY_SUB_VALUE;
-			if (currentSatiety_ <= 0) {
-				currentSatiety_ = 0;
-				seq_.change(&DungeonScene::seqGameOver);
-				return;
-			}
-
-			// HP 自動回復
-			player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
-
-			seq_.immediatelyChange(&DungeonScene::seqOnItemPosition); 
+	// 未行動のエネミーのアップデートを回す
+	void DungeonScene::enemyAction(float deltaTime) {
+		for (auto& enemy : enemies_) {
+			if (enemy->getIsAlreadyAction()) { continue; }
+			enemy->enemyUpdate(deltaTime);
 		}
 	}
 
-	bool DungeonScene::seqOnItemPosition(float deltaTime) {
+	void DungeonScene::pickUpItem() {
 		auto& player2Dpos = player_->getPlayer2Dpos();
 		for (auto it = items_.begin(); it != items_.end();) {
 			auto& item2Dpos = (*it)->get2Dpos();
@@ -459,26 +293,239 @@ namespace atl {
 				break;
 			}
 		}
-		seq_.change(&DungeonScene::seqAllTurnFlagOff);
+	}
+
+	//---------------------
+	// シーケンス
+	//---------------------
+
+	// 初期設定 ( DungeonSceneのインスタンス生成後、一度だけ通る ) 
+	bool DungeonScene::seqInit(float deltaTime) {
+		// フェードは真っ黒からスタート
+		FadeInOutManager::getFadeInOutManager()->setFadeAlphaValue(255);
+
+		// プレイヤーの生成と初期化
+		player_ = std::make_shared<PlayerPawn>();
+		player_->initialize(shared_from_this());
+
+		// 現在の階層を 初期化
+		currentFloor_ = 0;
+		// サウンド調整
+		soundVolumeFix();
+		// BGM再生
+		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg",DX_PLAYTYPE_LOOP);
+
+		// 本シーケンスに遷移
+		seq_.change(&DungeonScene::seqToNextFloor);
 		return true;
 	}
 
-	void DungeonScene::enemyMove(float deltaTime, bool& allEnemyTurned) {
-		for (auto& enemy : enemies_) {
-			if (enemy->getIsAlreadyMove()) { continue; }
-			enemy->enemyUpdate(deltaTime);
-			allEnemyTurned = false;
-		}
+	// 毎ターン初期化処理
+	bool DungeonScene::seqTurnInit(float deltaTime) {
+		player_->offFlagIsAlreadyTurn();
+		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
+
+		// ターン開始時処理へ
+		seq_.change(&DungeonScene::seqTurnStart);
+		return true;
 	}
 
-	void DungeonScene::enemyAction(float deltaTime, bool& allEnemyTurned) {
-		for (auto& enemy : enemies_) {
-			if (enemy->getIsAlreadyAction()) { continue; }
-			enemy->enemyUpdate(deltaTime);
-			allEnemyTurned = false;
-		}
+	// ターン開始時処理
+	bool DungeonScene::seqTurnStart(float deltaTime) {
+		// HP 自動回復
+		player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
+
+		// 敵のリスポーン判定
+		enemyResporn();
+
+		// キー入力待ちへ
+		seq_.change(&DungeonScene::seqKeyInput);
+		
+		return true;
 	}
 
+	// キー入力待ち
+	bool DungeonScene::seqKeyInput(float deltaTime) {
+		// フェードイン ・ アウト中であれば操作不能
+		if (FadeInOutManager::getFadeInOutManager()->isFading()) return true;
+
+		// WASDで移動
+		if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
+			// プレイヤー側でもキー入力待ちをしていて、プレイヤー操作は 1 フレーム分遅れるので、一回 呼ぶ
+			player_->playerUpdate(deltaTime);
+			// 移動した場合、階段に乗っているフラグをオフにする
+			isPlayerOnStairs_ = false;
+			seq_.change(&DungeonScene::seqPlayerMoveTurn_1);
+			return true;
+		}
+		// 左クリックで攻撃
+		else if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
+			player_->playerUpdate(deltaTime);
+			seq_.immediatelyChange(&DungeonScene::seqPlayerActionTurn);
+			return true;
+		}
+		// 右クリックでメニューウィンドウ
+		else if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
+			openMenu();
+			seq_.change(&DungeonScene::seqMenuWindow);
+		}
+
+		return true;
+	}
+	
+	// プレイヤーが移動を選択したターン
+	bool DungeonScene::seqPlayerMoveTurn_1(float deltaTime) {
+		// プレイヤーのターン処理 ( 移動 )
+		if (!player_->getIsAlreadyTurn()) {
+			player_->playerUpdate(deltaTime);
+		}
+
+		// 未移動のエネミーの移動処理
+		enemyMove(deltaTime);
+
+		// 全てのエネミーの移動が完了しているか
+		bool allEnemyMoved = true;
+		for (auto& enemy : enemies_) {
+			if (!enemy->getIsAlreadyMove()) {
+				allEnemyMoved = false;
+			}
+		}
+
+		// プレイヤーと全てのエネミーの移動が完了していたら、遷移
+		if (player_->getIsAlreadyTurn() && allEnemyMoved) {
+			seq_.change(&DungeonScene::seqPlayerMoveTurn_2);
+		}
+
+		return true;
+	}
+
+	bool DungeonScene::seqPlayerMoveTurn_2(float deltaTime) {
+		// 未行動エネミーの行動
+		enemyAction(deltaTime);
+
+		// 全てのエネミーの行動が完了しているか
+		bool allEnemyAction = true;
+		for (auto& enemy : enemies_) {
+			if (!enemy->getIsAlreadyAction()) {
+				allEnemyAction = false;
+			}
+		}
+		// 全てのエネミーの行動が完了していたら、遷移
+		if (allEnemyAction) {
+			// ターンエンド処理へ
+			seq_.change(&DungeonScene::seqTurnEnd);
+		}
+		return false;
+	}
+
+	// プレイヤーが攻撃を選択したターン
+	bool DungeonScene::seqPlayerActionTurn(float deltaTime) {
+		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
+			// プレイヤーのターン処理 ( 攻撃 )
+			if (!player_->getIsAlreadyTurn()) {
+				player_->playerUpdate(deltaTime);
+			}
+
+			// 未行動エネミーの行動
+			enemyAction(deltaTime);
+
+			// 全てのエネミーの行動が完了しているか
+			bool allEnemyAction = true;
+			for (auto& enemy : enemies_) {
+				if (!enemy->getIsAlreadyAction()) {
+					allEnemyAction = false;
+				}
+			}
+
+			// 全てのエネミーの行動が完了していたらコルーチン終了
+			if (allEnemyAction) {
+				SEQ_CO_BREAK;
+			}
+		});
+
+		// 行動の結果死んだエネミーがいた場合、削除する
+		deadEnemyErase();
+
+		// エネミーの移動
+		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
+			// 未移動のエネミーの移動処理
+			enemyMove(deltaTime);
+
+			// 全てのエネミーの移動が完了しているか
+			bool allEnemyMoved = true;
+			for (auto& enemy : enemies_) {
+				if (!enemy->getIsAlreadyMove()) {
+					allEnemyMoved = false;
+				}
+			}
+
+			// プレイヤーと全てのエネミーの移動が完了していたら、コルーチン終了
+			if (player_->getIsAlreadyTurn() && allEnemyMoved) {
+				SEQ_CO_BREAK;
+			}
+		});
+
+		// ターンエンド処理へ
+		seq_.change(&DungeonScene::seqTurnEnd);
+
+		SEQ_CO_END;
+	}
+
+	// ターンエンド処理
+	bool DungeonScene::seqTurnEnd(float deltaTime) {
+		// HP がゼロになり、死亡演出が終わった敵を探して削除する
+		if (!enemies_.empty()) {
+			deadEnemyErase();
+		}
+
+		// プレイヤーのHPがゼロになっている場合、直接ゲームオーバーシーケンスに遷移
+		if (player_->getPlayerData()->isZeroHP()) {
+			seq_.change(&DungeonScene::seqGameOver);
+			return true;;
+		}
+
+		// 空腹度を減らし、0になったら、ゲームオーバーに遷移
+		currentSatiety_ -= SATIETY_SUB_VALUE;
+		if (currentSatiety_ <= 0) {
+			currentSatiety_ = 0;
+			seq_.change(&DungeonScene::seqGameOver);
+			return true;;
+		}
+
+		// 階段に乗っているフラグが立っていない場合、階段シーケンスに遷移
+		if (!isPlayerOnStairs_) {
+			auto& player2Dpos = player_->getPlayer2Dpos();
+			auto& stairs2Dpos = originStairs_->get2Dpos();
+			if (stairs2Dpos.x == player2Dpos.x && stairs2Dpos.y == player2Dpos.y) {
+				isPlayerOnStairs_ = true;
+				seq_.change(&DungeonScene::seqOnStairs);
+				return true;
+			}
+		}
+
+		// 足元にアイテムがあったら拾う
+		pickUpItem();
+
+		// ターンの初期化処理へ
+		seq_.change(&DungeonScene::seqTurnInit);
+		return true;
+	}
+
+	bool DungeonScene::seqGameOver(float deltaTime) {
+		// 最初のフレームでフェードアウトを行い、フェードアウトが完了したらゲームオーバーシーンに遷移
+		if (seq_.isStart()) {
+			FadeInOutManager::getFadeInOutManager()->startFadeOut();
+		}
+
+		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
+			SceneManager::getSceneManager()->changeScene(std::make_shared<GameOverScene>());
+		}
+		return true;
+	}
+
+
+
+	// 死んだ敵を配列から削除
 	void DungeonScene::deadEnemyErase() {
 		for (auto it = enemies_.begin(); it != enemies_.end();) {
 			// HP がゼロの敵を発見
@@ -504,7 +551,7 @@ namespace atl {
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
 			if (menuWindow_) {
 				closeMenu();
-				seq_.change(&DungeonScene::seqAllTurnFlagOff);
+				seq_.change(&DungeonScene::seqKeyInput);
 			}
 		}
 
@@ -525,12 +572,12 @@ namespace atl {
 		case MenuWindow::e_SelectedMenuWindow::CloseMenu: // メニューを閉じる
 		{
 			closeMenu();
-			seq_.change(&DungeonScene::seqAllTurnFlagOff);
+			seq_.change(&DungeonScene::seqKeyInput);
 			break;
 		}
 		case MenuWindow::e_SelectedMenuWindow::ReturnToTitle: // タイトルに戻る
 		{
-			seq_.change(&DungeonScene::seqReallyReturnToTitle);
+			seq_.change(&DungeonScene::seqKeyInput);
 			break;
 		}
 		}
@@ -552,8 +599,7 @@ namespace atl {
 				selectWindow_.reset();
 				closeMenu();
 				player_->onFlagIsAlreadyTurn();
-				currentTurn_ = e_turnState::PLAYER_MOVE;
-				seq_.change(&DungeonScene::seqTurnStateProcess);
+				seq_.change(&DungeonScene::seqPlayerActionTurn);
 			}
 			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
 				selectWindow_.reset();
@@ -563,7 +609,7 @@ namespace atl {
 		return true;
 	}
 
-	// タイトルに戻るかどうか確認中
+	// 本当にタイトルに戻るかどうか確認中
 	bool DungeonScene::seqReallyReturnToTitle(float deltaTime) {
 		if (seq_.isStart()) {
 			selectWindow_ = std::make_shared<SelectWindow>("タイトル画面に戻りますか？\n進捗データは残りません");
@@ -576,8 +622,7 @@ namespace atl {
 			}
 			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
 				selectWindow_.reset();
-				seq_.change(&DungeonScene::seqAllTurnFlagOff);
-				currentTurn_ = e_turnState::KEY_INPUT;
+				seq_.change(&DungeonScene::seqMenuWindow);
 			}
 		}
 
@@ -601,9 +646,11 @@ namespace atl {
 	}
 
 	// 階段に乗った時の処理
-	void DungeonScene::processPlayerOnStairs(float deltaTime) {
+	bool DungeonScene::seqOnStairs(float deltaTime) {
 		// ウィンドウがまだ無い場合は生成する
-		if (!selectWindow_) selectWindow_ = std::make_shared<SelectWindow>("次の階層に進みますか？");
+		if (seq_.isStart()) { 
+			selectWindow_ = std::make_shared<SelectWindow>("次の階層に進みますか？"); 
+		}
 
 		// ポインタが有効化どうか
 		if (selectWindow_) {
@@ -614,9 +661,11 @@ namespace atl {
 			}
 			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) { // いいえ、の時
 				selectWindow_.reset();
-				currentTurn_ = e_turnState::KEY_INPUT;
+				seq_.change(&DungeonScene::seqTurnStart);
 			}
 		}
+
+		return true;
 	}
 
 	// 次の階層に進む処理
@@ -628,16 +677,13 @@ namespace atl {
 			FadeInOutManager::getFadeInOutManager()->startFadeOut();
 			// フロア数をインクリメント
 			++currentFloor_;
-
 		}
-
 		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
 			// 次階層に遷移中フラグを立てる
 			isNextFloorTransition = true;
 
 			// 待機 
 			SEQ_CO_YIELD_RETURN_TIME(nextFloorTransitionTime, deltaTime, [&] {})
-
 
 				// 最大階層に到達したら、クリアシーンに遷移
 				if (currentFloor_ >= MAX_FLOOR) {
@@ -647,7 +693,7 @@ namespace atl {
 					// ダンジョンを生成し、フェードインし画面を表示させる
 					generateDungeon();
 					FadeInOutManager::getFadeInOutManager()->startFadeIn();
-					seq_.change(&DungeonScene::seqAllTurnFlagOff);
+					seq_.change(&DungeonScene::seqTurnInit);
 				}
 
 			// 次階層へ遷移中フラグをオフに
@@ -744,7 +790,7 @@ namespace atl {
 	void DungeonScene::debug_displayDungeonParam(float deltaTime) {
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
-		DrawStringEx(600, 0, -1, "curentTurn ... [ %d ]", currentTurn_);
+		DrawStringEx(600, 0, -1, "curentTurn ... [ %d ]");
 
 		// 階段の位置
 		if (originStairs_) {

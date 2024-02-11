@@ -82,10 +82,9 @@ namespace atl {
 
         // ターン制御用 --------------------------------
         enum class e_turnState {
-            KEY_INPUT,
-            PLAYER_MOVE,
+            NONE,
             PLAYER_ON_STAIRS,
-        }currentTurn_ = e_turnState::KEY_INPUT;
+        }currentTurn_ = e_turnState::NONE;
 
         // UI 関連 -------------------------------------
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
@@ -132,7 +131,6 @@ namespace atl {
         void render(float deltaTime , const Shared<Atl3DCamera> camera);
         // 2D系の描画 ( 2D系をまとめて描画する )
         void draw2D(float deltaTime);
-
         // 2D UI の描画
         void drawUI(float deltaTime);
         // 2D 操作説明の描画
@@ -148,10 +146,8 @@ namespace atl {
 
         // ダンジョンの初期化
         void initDungeon();
-
         // ダンジョン生成
         void generateDungeon();
-
         // 壁を生成
         // arg ... 2D座標位置
         void generateWall(int generatePosX, int generatePosZ);
@@ -163,8 +159,20 @@ namespace atl {
         void openMenu();
         // メニューを閉じる
         void closeMenu();
+
         // シーンで使う音源データのヴォリュームをまとめて調整
         void soundVolumeFix();
+        
+        // 敵のリスポーン処理
+        void enemyResporn();
+        // アイテムに乗ったら拾う、拾えなかったらアイテムの上に乗る
+        void pickUpItem();
+        // エネミーの移動処理
+        void enemyMove(float deltaTime);
+        // エネミーの行動処理
+        void enemyAction(float deltaTime);
+        // HP がゼロになり、死亡演出が終わった敵を削除
+        void deadEnemyErase();
 
         // シーケンス関連
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);
@@ -178,45 +186,35 @@ namespace atl {
         bool seqTurnStart(float deltaTime);
         // キー入力待ち
         bool seqKeyInput(float deltaTime);
-        // ターン処理
-        bool seqTurn(float deltaTime);
+        // プレイヤーが移動を選択したターン ( 1.プレイヤーとエネミーの移動 )
+        bool seqPlayerMoveTurn_1(float deltaTime);        
+        // プレイヤーが移動を選択したターン ( 2.エネミーの行動 )
+        bool seqPlayerMoveTurn_2(float deltaTime);
+
+        // プレイヤーが攻撃を選択したターン
+        bool seqPlayerActionTurn(float deltaTime);
         // ターンエンド処理
         bool seqTurnEnd(float deltaTime);
 
-        // 現在のターンに応じた処理を実行
-        bool seqTurnStateProcess(float deltaTime);
+        // プレイヤーが階段に乗った時
+        bool seqOnStairs(float deltaTime);
+        // 次の階層に移動している間
+        bool seqToNextFloor(float deltaTime);
+
         // メニューウィンドウ開いている間の処理
         bool seqMenuWindow(float deltaTime);
         // アイテムを使う処理
         bool seqReallyUseItem(float deltaTime);
-        // ゲームオーバーの処理 ( ゲームオーバーシーンに遷移 )
-        bool seqGameOver(float deltaTime);
-        // 敵とプレイヤーの行動完了フラグをオフにする
-        bool seqAllTurnFlagOff(float deltaTime);
-        // 探索中の敵のリスポーン処理
-        void enemyResporn();
-        // 次の階層に移動している間
-        bool seqToNextFloor(float deltaTime);
         // メニューからタイトルに戻るを選択した時 ( 確認画面 )
         bool seqReallyReturnToTitle(float deltaTime);
         // タイトルに戻る間のフェードなどの処理
         bool seqReturnToTitle(float deltaTime);
-        // アイテムの上に乗った時の処理 ( 拾う、拾えない、など )
-        bool seqOnItemPosition(float deltaTime);
 
-        // キー入力待ち
-        void processKeyInput(float deltaTime);
-        // プレイヤーが移動したターンの処理
-        void processPlayerMoveTurn(float deltaTime);
-        // プレイヤーが階段に乗った時
-        void processPlayerOnStairs(float deltaTime);
+        // ゲームオーバーの処理 ( ゲームオーバーシーンに遷移 )
+        bool seqGameOver(float deltaTime);
 
-        // エネミーの移動処理
-        void enemyMove(float deltaTime, bool& allEnemyTurned);
-        // エネミーの行動処理
-        void enemyAction(float deltaTime, bool& allEnemyTurned);
-        // HP がゼロになり、死亡演出が終わった敵を削除
-        void deadEnemyErase();
+
+
 
         // デバッグ用 ----------------------------------
         bool isDebug = false;
