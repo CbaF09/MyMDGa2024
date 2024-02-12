@@ -6,6 +6,7 @@ namespace atl {
 
 	class TitleScene final : public atl::Base_Scene {
 	public:
+		TitleScene();
 		~TitleScene();
 
 	private:
@@ -54,22 +55,11 @@ namespace atl {
 		// プロローグ関連
 		const int PROROGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
 
-		const std::vector<std::string> prorogueText = {
-			"(エンターキーかスペースキーで戻る)",
-			"",
-			"――ワイズマンと呼ばれる大魔法使いが居た。",
-			"彼が住んでいた塔には、強力な結界が貼られており、",
-			"\"招待状\" を持った者でなければ、その塔に立ち入る事は出来ない。",
-			"不思議な事に、その \"招待状\" は、見習い魔法使いの元に、忽然と現れる。",
-			"道中、私は\"招待状\" を見つめながら、何度もその意味を考えていた。",
-			"ワイズマンの修練塔――",
-			"いつからかそう呼ばれるようになったその塔に、私はようやく辿り着いた。",
-			"(エンターキーかスペースキーで戻る)",
-		};
+		std::vector<std::string> prorogueText{};
 		const int32_t PROROGUE_BACKGROUND_BRIGHT = 126;	// プロローグ中の背景の明るさ ( 0 で元と同じ、255 で真っ黒 )
 		const tnl::Vector2i TEXT_POSITION{ 25,250 };	// 一番上の行の表示位置
 		const tnl::Vector2i TEXT_OFFSET{ 5,40 };		// 一行ごとにオフセットされる量
-		const int32_t PROROGUE_FIRST_LOG = 3;			// 一番最初に表示される行数
+		const int32_t PROROGUE_FIRST_LOG = 2;			// 一番最初に表示される行数
 		const float LOG_LINE_INTERVAL = 5.0f;			// 表示行を増やす間隔 ( 秒 )
 		int32_t drawLogLine_ = 0;
 		float totalDeltaTime_ = 0.0f;	// 累積時間

@@ -5,6 +5,16 @@
 #include "../Singletons/SceneManager.h"
 
 namespace atl {
+	TitleScene::TitleScene() {
+		prorogueText.clear();
+		
+		// CSV からプロローグの文章を読み込み
+		auto csv = tnl::LoadCsv("csv/ProrogueStringCSV.csv");
+		for (int i = 1; i < csv.size(); ++i) {
+			auto& string = csv[i][1].getString();
+			prorogueText.emplace_back(string);
+		}
+	}
 
 	TitleScene::~TitleScene() {
 		{// タイトルシーンで使っているリソースを解放
