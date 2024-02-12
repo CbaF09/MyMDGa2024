@@ -117,7 +117,7 @@ namespace atl {
 
 		//----------------------- 
 		// メンバ変数
-		const int32_t ENEMY_SPAWN_NUM = 1; // 敵の数
+		const int32_t ENEMY_SPAWN_NUM = 3; // 敵の数
 		const int32_t ITEM_SPAWN_NUM = 5; // アイテムの数
 
 		tnl::Vector2i playerSpawnPos_{ 0,0 };	// プレイヤーがスポーンする位置

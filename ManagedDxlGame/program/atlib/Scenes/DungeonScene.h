@@ -24,22 +24,6 @@ namespace atl {
         DungeonScene();
         ~DungeonScene();
 
-        // 現在ターン伝達用 enum
-        // シーン内部ではシーケンスで制御しているが、現在どのターンなのかを外部 ( Player や Enemy ) が取得する為に必要
-        // ターンのシーケンスが切り替わったら、これも切り替えてください
-        // TODO : 設計がダサい。もっといいやり方があるはずだが思いつかない
-        enum class e_Turn {
-            TurnInit,
-            TurnStart,
-            KeyInput,
-            PlayerMoveTurn1,
-            PlayerMoveTurn2,
-            PlayerActionTurn1,
-            PlayerActionTurn2,
-            TurnEnd,
-            OnStairs,
-        };
-
         // ゲッター
         // 3D上のセル一辺の全長を取得。色々なクラスで取得するので static に
         inline static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
@@ -47,8 +31,6 @@ namespace atl {
         inline const std::list<Shared<EnemyPawn>>& getEnemyArray() const { return enemies_; }
         // プレイヤーポーンを取得
         inline const Shared<PlayerPawn> getPlayerPawn() const { return player_; }
-        // 現在ターンを取得
-        inline const e_Turn& getCurrentTurn() const { return currentTurn_; }
 
         // セッター
         // 満腹度のセッター ( 0 ~ SATIETY_FULL の間にクランプ )
@@ -99,9 +81,6 @@ namespace atl {
         const int32_t MAX_FLOOR = 4;    // 最上階 ( 到達したらクリア階 )
         const float nextFloorTransitionTime = 2.5f;  // 次階層に進む時、黒画面のままの待機する時間
         bool isNextFloorTransition = false; // 次階層に遷移中か ( 黒画面か )
-
-        // ターン制御用 --------------------------------
-        e_Turn currentTurn_ = e_Turn::TurnInit;
 
         // UI 関連 -------------------------------------
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
@@ -204,13 +183,11 @@ namespace atl {
         bool seqTurnStart(float deltaTime);
         // キー入力待ち
         bool seqKeyInput(float deltaTime);
-        // プレイヤーが移動を選択したターン ( 1.プレイヤーとエネミーの移動 )
-        bool seqPlayerMoveTurn_1(float deltaTime);        
-        // プレイヤーが移動を選択したターン ( 2.エネミーの行動 )
-        bool seqPlayerMoveTurn_2(float deltaTime);
-
+        // プレイヤーが移動を選択したターン
+        bool seqPlayerMoveTurn(float deltaTime);
         // プレイヤーが攻撃を選択したターン
         bool seqPlayerActionTurn(float deltaTime);
+
         // ターンエンド処理
         bool seqTurnEnd(float deltaTime);
 

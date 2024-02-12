@@ -326,7 +326,6 @@ namespace atl {
 		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
 
 		// ターン開始時処理へ
-		currentTurn_ = e_Turn::TurnStart;
 		seq_.change(&DungeonScene::seqTurnStart);
 		return true;
 	}
@@ -336,16 +335,10 @@ namespace atl {
 		// HP 自動回復
 		player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
 
-
-		/*---------------------------------------------------------------------------デバッグ中
-		/*---------------------------------------------------------------------------デバッグ中
-		/*---------------------------------------------------------------------------デバッグ中
 		// 敵のリスポーン判定
 		enemyResporn();
-		*/
 
 		// キー入力待ちへ
-		currentTurn_ = e_Turn::KeyInput;
 		seq_.change(&DungeonScene::seqKeyInput);
 		
 		return true;
@@ -358,17 +351,17 @@ namespace atl {
 
 		// WASDで移動
 		if (tnl::Input::IsKeyDown(eKeys::KB_W, eKeys::KB_A, eKeys::KB_S, eKeys::KB_D)) {
-			// プレイヤー側でもキー入力待ちをしていて、プレイヤー操作は 1 フレーム分遅れるので、一回 呼ぶ
-			player_->playerUpdate(deltaTime);
-			// 移動した場合、階段に乗っているフラグをオフにする
-			isPlayerOnStairs_ = false;
-			currentTurn_ = e_Turn::PlayerMoveTurn1;
-			seq_.change(&DungeonScene::seqPlayerMoveTurn_1);
+			// 移動可能か判定してから、シーケンス遷移
+			if (player_->startMove()) {
+				// 移動した場合、階段に乗っているフラグをオフにする
+				isPlayerOnStairs_ = false;
+				seq_.change(&DungeonScene::seqPlayerMoveTurn);
+			}
 			return true;
 		}
 		// 左クリックで攻撃
 		else if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
-			player_->playerUpdate(deltaTime);
+			player_->startAttack();
 			seq_.change(&DungeonScene::seqPlayerActionTurn);
 			return true;
 		}
@@ -381,54 +374,46 @@ namespace atl {
 		return true;
 	}
 	
-	// プレイヤーが移動を選択したターン
-	bool DungeonScene::seqPlayerMoveTurn_1(float deltaTime) {
-		// プレイヤーのターン処理 ( 移動 )
-		if (!player_->getIsAlreadyTurn()) {
+	bool DungeonScene::seqPlayerMoveTurn(float deltaTime) {
+		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
 			player_->playerUpdate(deltaTime);
-		}
 
-		// 未移動のエネミーの移動処理
-		// enemyMove(deltaTime);
+			enemyMove(deltaTime);
 
-		// 全てのエネミーの移動が完了しているか
-		bool allEnemyMoved = true;
-		for (auto& enemy : enemies_) {
-			// もし移動が完了していたら、スルー
-			if (enemy->getIsAlreadyMove()) { continue; }
-			else {// 移動が未完了なら、update、全エネミー完了フラグをオフにする
-				enemy->enemyUpdate(deltaTime);
-				allEnemyMoved = false;
+			// 全てのエネミーの移動が完了しているか
+			bool allEnemyMoved = true;
+			for (auto& enemy : enemies_) {
+				// もし移動が完了していたら、スルー
+				if (!enemy->getIsAlreadyMove()) {
+					allEnemyMoved = false;
+				}
 			}
-		}
 
-		// プレイヤーと全てのエネミーの移動が完了していたら、遷移
-		if (player_->getIsAlreadyTurn() && allEnemyMoved) {
-			currentTurn_ = e_Turn::PlayerMoveTurn2;
-			seq_.change(&DungeonScene::seqPlayerMoveTurn_2);
-		}
-
-		return true;
-	}
-
-	bool DungeonScene::seqPlayerMoveTurn_2(float deltaTime) {
-		// 未行動エネミーの行動
-		enemyAction(deltaTime);
-
-		// 全てのエネミーの行動が完了しているか
-		bool allEnemyAction = true;
-		for (auto& enemy : enemies_) {
-			if (!enemy->getIsAlreadyAction()) {
-				allEnemyAction = false;
+			// プレイヤーと全てのエネミーの移動が完了していたら、遷移
+			if (player_->getIsAlreadyTurn() && allEnemyMoved) {
+				SEQ_CO_BREAK;
 			}
-		}
-		// 全てのエネミーの行動が完了していたら、遷移
-		if (allEnemyAction) {
-			// ターンエンド処理へ
-			currentTurn_ = e_Turn::TurnEnd;
-			seq_.change(&DungeonScene::seqTurnEnd);
-		}
-		return false;
+			});
+
+		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
+			// 未行動エネミーの行動
+			enemyAction(deltaTime);
+
+			// 全てのエネミーの行動が完了しているか
+			bool allEnemyAction = true;
+			for (auto& enemy : enemies_) {
+				if (!enemy->getIsAlreadyAction()) {
+					allEnemyAction = false;
+				}
+			}
+			// 全てのエネミーの行動が完了していたら、遷移
+			if (allEnemyAction) {
+				// ターンエンド処理へ
+				seq_.change(&DungeonScene::seqTurnEnd);
+			}
+			});
+
+		SEQ_CO_END;
 	}
 
 	// プレイヤーが攻撃を選択したターン
@@ -521,7 +506,6 @@ namespace atl {
 		pickUpItem();
 
 		// ターンの初期化処理へ
-		currentTurn_ = e_Turn::TurnInit;
 		seq_.change(&DungeonScene::seqTurnInit);
 		return true;
 	}
@@ -706,7 +690,6 @@ namespace atl {
 					// ダンジョンを生成し、フェードインし画面を表示させる
 					generateDungeon();
 					FadeInOutManager::getFadeInOutManager()->startFadeIn();
-					currentTurn_ = e_Turn::TurnStart;
 					seq_.change(&DungeonScene::seqTurnInit);
 				}
 
@@ -804,8 +787,6 @@ namespace atl {
 	void DungeonScene::debug_displayDungeonParam(float deltaTime) {
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
-		DrawStringEx(600, 0, -1, "curentTurn ... [ %d ]",currentTurn_);
-
 		// 階段の位置
 		if (originStairs_) {
 			auto& stairsPos = originStairs_->get2Dpos();
@@ -850,8 +831,10 @@ namespace atl {
 		auto& player2Dpos = player_->getPlayer2Dpos();
 		DrawStringEx(player2Dpos.y * 15, player2Dpos.x * 15, GetColor(0, 0, 255), "P");
 
-		auto& stairs2Dpos = originStairs_->get2Dpos();
-		DrawStringEx(stairs2Dpos.y * 15, stairs2Dpos.x * 15, GetColor(200, 200, 200), "S");
+		if (originStairs_) {
+			auto& stairs2Dpos = originStairs_->get2Dpos();
+			DrawStringEx(stairs2Dpos.y * 15, stairs2Dpos.x * 15, GetColor(200, 200, 200), "S");
+		}
 	}
 
 }

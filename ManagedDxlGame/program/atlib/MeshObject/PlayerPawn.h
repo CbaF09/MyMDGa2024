@@ -22,7 +22,7 @@ namespace atl {
 
 		// デバッグ用。dungeonSceneへの弱参照を持たない
 		void initialize();
-		
+
 		// ゲッター
 		inline const Shared<Atl3DCamera> getPlayerCamera() const { return playerCamera_; }
 		inline const tnl::Vector3& getPlayerPos() const { return player3Dpos_; }
@@ -42,13 +42,19 @@ namespace atl {
 
 		// 2D座標上の位置で Spawn する
 		void playerSpawn2Dpos(const tnl::Vector2i& spawn2Dpos);
-		
 
-		// シーケンス管理実行用
+
+		// シーケンス実行用
 		bool playerUpdate(float deltaTime) {
 			seq_.update(deltaTime);
 			return false;
 		}
+		// 移動アクションをスタート
+		// ret ... 移動先が移動可能 => true , 移動不可能 => false
+		bool startMove();
+		// 攻撃アクションをスタート
+		void startAttack();
+
 
 		// render系
 		void render(float deltaTime);
@@ -71,11 +77,11 @@ namespace atl {
 		const float PLAYER_HEAD_LINE = 500;		// プレイヤーのY高さ（カメラ・目線の高さ）
 
 		// moveLerp用
-		const float MOVE_TIME = 0.6f;		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
+		const float MOVE_TIME = 0.35f;		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
 		const float MOVE_END_BORDER = 0.1f; // 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
 		float moveLerpTimeCount_ = 0;
 		tnl::Vector3 moveTarget_{ 0,0,0 };
-		
+
 		// パーティクル用
 		Shared<dxe::Particle> explosion_ = std::make_shared<dxe::Particle>("graphics/particle/explosion.bin");
 
@@ -83,8 +89,8 @@ namespace atl {
 		bool isAlreadyTurn_ = false;
 		float totalDeltaTimer_ = 0.0f; // 停止時間用タイマー
 		float waitTime_ = 0.0f; // 実際の停止時間設定用
-		const float ATTACK_TIME = 1.5f;	// 攻撃した時の停止時間
-		const float ATTACK_MISS_TIME = 0.5f; // 攻撃を空振りした時の停止時間
+		const float ATTACK_TIME = 0.5f;	// 攻撃した時の停止時間
+		const float ATTACK_MISS_TIME = 0.05f; // 攻撃を空振りした時の停止時間
 
 
 		// --------------------------------------------------
@@ -93,23 +99,26 @@ namespace atl {
 
 		// --------------------------------------------------
 		// メソッド
-		
+
 		// 移動できるか判定
 		bool isCanMovePos(const tnl::Vector2i& moveToPos);
 		// 移動先を指定 ( moveLerp用 ) 
 		void setMoveTarget(const tnl::Vector2i& moveToPos);
-		void changeMoveDirSeq();
+		// 攻撃命中時の演出
+		void attackHitEffectAndLog(const Shared<atl::EnemyPawn>& enemy);
+
 
 		// --------------------------------------------------
 		// シーケンス用
-		
-		SEQUENCE(PlayerPawn, &PlayerPawn::seqWaitKeyInput);
-		
-		bool seqWaitKeyInput(float deltaTime);
 
-		bool actionMoveLerp(float deltaTime);
-		bool actionAttack(float deltaTime);
-		void attackHitEffectAndLog(const Shared<atl::EnemyPawn>& enemy);
+		SEQUENCE(PlayerPawn, &PlayerPawn::seqWait);
+
+		// 待機状態
+		bool seqWait(float deltaTime);
+
+		bool seqMoveLerp(float deltaTime);
+		bool seqActionAttackDelay(float deltaTime);
+
 	};
 
 }

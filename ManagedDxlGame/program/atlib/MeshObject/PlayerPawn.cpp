@@ -67,8 +67,17 @@ namespace atl {
 		moveTarget_ = { playerCamera_->pos_.x + (moveToPos.x * cellLength),playerCamera_->pos_.y,playerCamera_->pos_.z + (moveToPos.y * cellLength) };
 		player2Dpos_ += moveToPos;
 	}
-	
-	void PlayerPawn::changeMoveDirSeq() {
+
+	// ---------------------------
+	// シーケンス
+	// ---------------------------
+
+	bool PlayerPawn::seqWait(float deltaTime) {
+		// 何もしない
+		return true;
+	}
+
+	bool PlayerPawn::startMove() {
 		// カメラが保持する正面方向を取得
 		// 前進 ( W ) => そのまま
 		// 後退 ( S ) => 前進を反転
@@ -78,42 +87,40 @@ namespace atl {
 		auto forwardNormalDir = playerCamera_->getCurrentForwardDir();
 		tnl::Vector2i forwardV2i = { static_cast<int>(forwardNormalDir.x),static_cast<int>(forwardNormalDir.z) };
 		tnl::Vector2i backV2i = -forwardV2i;
-		auto rightNormalDir = tnl::Vector3::Cross( { 0,1,0 },forwardNormalDir);
+		auto rightNormalDir = tnl::Vector3::Cross({ 0,1,0 }, forwardNormalDir);
 		tnl::Vector2i rightV2i = { static_cast<int>(rightNormalDir.x),static_cast<int>(rightNormalDir.z) };
 		tnl::Vector2i leftV2i = -rightV2i;
 
+		// 移動可能かどうか
+		bool canMove = false;
+
 		if (tnl::Input::IsKeyDown(eKeys::KB_W)) {
-			if (isCanMovePos(forwardV2i)) {	setMoveTarget(forwardV2i); }
+			canMove = isCanMovePos(forwardV2i);
+			if (canMove) { setMoveTarget(forwardV2i); }
 		}
 		else if (tnl::Input::IsKeyDown(eKeys::KB_S)) {
-			if (isCanMovePos(backV2i)) { setMoveTarget(backV2i);}
+			canMove = isCanMovePos(backV2i);
+			if (canMove) { setMoveTarget(backV2i); }
 		}
 		else if (tnl::Input::IsKeyDown(eKeys::KB_D)) {
-			if (isCanMovePos(rightV2i)) { setMoveTarget(rightV2i); }
+			canMove = isCanMovePos(rightV2i);
+			if (canMove) { setMoveTarget(rightV2i); }
 		}
 		else if (tnl::Input::IsKeyDown(eKeys::KB_A)) {
-			if (isCanMovePos(leftV2i)) { setMoveTarget(leftV2i); }
+			canMove = isCanMovePos(leftV2i);
+			if (canMove) { setMoveTarget(leftV2i); }
 		}
 
-		seq_.change(&PlayerPawn::actionMoveLerp);
+		// 移動可能なら、シーケンス遷移させる
+		if (canMove) {
+			seq_.change(&PlayerPawn::seqMoveLerp);
+		}
+
+		// 移動可能かどうかの結果をDungeonSceneに返す
+		return canMove;
 	}
 
-	// ---------------------------
-	// シーケンス
-	// ---------------------------
-
-	bool PlayerPawn::seqWaitKeyInput(float deltaTime) {
-		if (tnl::Input::IsKeyDown(eKeys::KB_A, eKeys::KB_D, eKeys::KB_W, eKeys::KB_S)) {
-			changeMoveDirSeq();
-		}
-		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
-			seq_.change(&PlayerPawn::actionAttack);
-		}
-
-		return true;
-	}
-	
-	bool PlayerPawn::actionMoveLerp(float deltaTime) {
+	bool PlayerPawn::seqMoveLerp(float deltaTime) {
 		if (seq_.isStart()) {
 			ResourceManager::getResourceManager()->playSoundRes("sound/SE/PlayerFootStep.ogg", DX_PLAYTYPE_BACK);
 		}
@@ -128,41 +135,40 @@ namespace atl {
 			moveLerpTimeCount_ = 0;
 			playerCamera_->pos_ = moveTarget_;
 			isAlreadyTurn_ = true;
-			seq_.change(&PlayerPawn::seqWaitKeyInput);
+			seq_.change(&PlayerPawn::seqWait);
 		}
 		player3Dpos_ = playerCamera_->pos_;
 		return false;
 	}
 
-	bool PlayerPawn::actionAttack(float deltaTime) {
-		// 最初のフレームで本処理、その後は待機時間
-		if (seq_.isStart()) {
-			auto& enemies = weakDungeonScene_.lock()->getEnemyArray();
-			tnl::Vector2i attackPos = player2Dpos_ + playerCamera_->getCurrentForwardDirToV2i();
-			
-			// 停止時間 => 空振り
-			waitTime_ = ATTACK_MISS_TIME;
+	void PlayerPawn::startAttack() {
+		// 停止時間 => 空振り
+		waitTime_ = ATTACK_MISS_TIME;
 
-			for (auto& enemy : enemies) {
-				auto& enemyPos = enemy->get2Dpos();
-				if (enemyPos.x == attackPos.x && enemyPos.y == attackPos.y) { 
-					// 攻撃ヒット処理
+		auto& enemies = weakDungeonScene_.lock()->getEnemyArray();
+		tnl::Vector2i attackPos = player2Dpos_ + playerCamera_->getCurrentForwardDirToV2i();
 
-					// 停止時間 => 攻撃ヒット時
-					waitTime_ = ATTACK_TIME;
+		for (auto& enemy : enemies) {
+			auto& enemyPos = enemy->get2Dpos();
+			if (enemyPos.x == attackPos.x && enemyPos.y == attackPos.y) {
+				// 攻撃ヒット処理
 
-					attackHitEffectAndLog(enemy);
-				}
+				// 停止時間 => 攻撃ヒット時
+				waitTime_ = ATTACK_TIME;
+				attackHitEffectAndLog(enemy);
 			}
 		}
+		seq_.change(&PlayerPawn::seqActionAttackDelay);
+	}
 
+	bool PlayerPawn::seqActionAttackDelay(float deltaTime) {
 		// waitTimeに設定された時間分、停止する
 		totalDeltaTimer_ += deltaTime;
 		if (totalDeltaTimer_ > waitTime_) {
 			totalDeltaTimer_ = 0.0f;
 			// ターン終了
 			isAlreadyTurn_ = true;
-			seq_.change(&PlayerPawn::seqWaitKeyInput);
+			seq_.change(&PlayerPawn::seqWait);
 		}
 
 		return true;
@@ -171,20 +177,17 @@ namespace atl {
 	void PlayerPawn::attackHitEffectAndLog(const Shared<atl::EnemyPawn>& enemy) {
 		auto damage = enemy->getEnemyData()->damaged(playerData_->getAttackPower());
 
-		{// 爆発パーティクル
-			auto& forwardNormal = playerCamera_->getCurrentForwardDir();
-			auto particlePos = playerCamera_->pos_ + (forwardNormal * 500);
-			explosion_->setPosition(particlePos);
-			explosion_->start();
-		}
+		// 爆発パーティクル
+		auto& forwardNormal = playerCamera_->getCurrentForwardDir();
+		auto particlePos = playerCamera_->pos_ + (forwardNormal * 500);
+		explosion_->setPosition(particlePos);
+		explosion_->start();
 
-		{// サウンド
-			ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonScenePlayerAttack.ogg", DX_PLAYTYPE_BACK);
-		}
+		// サウンド
+		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonScenePlayerAttack.ogg", DX_PLAYTYPE_BACK);
 
-		{// ログ
-			TextLogManager::getTextLogManager()->addTextLog("プレイヤーの攻撃！" + convertFullWidthNumber(damage) + "のダメージを与えた");
-		}
+		// ログ
+		TextLogManager::getTextLogManager()->addTextLog("プレイヤーの攻撃！" + convertFullWidthNumber(damage) + "のダメージを与えた");
 	}
 
 	// ---------------------------
@@ -205,9 +208,11 @@ namespace atl {
 			"cellID ... [ %d ]", DungeonCreater::getDungeonCreater()->getFieldCellID(player2Dpos_));
 	}
 
+
+
 	void PlayerPawn::render(float deltaTime) {
 		forwardArrow_->renderObject(playerCamera_);
-		playerHaveMagicWand_->renderObjects(playerCamera_,deltaTime);
+		playerHaveMagicWand_->renderObjects(playerCamera_, deltaTime);
 		playerHaveMenuBook_->renderObject(playerCamera_, deltaTime);
 
 		dxe::DirectXRenderBegin();
