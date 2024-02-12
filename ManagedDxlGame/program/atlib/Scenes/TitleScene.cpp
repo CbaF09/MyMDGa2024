@@ -56,8 +56,14 @@ namespace atl {
 			drawButton(deltaTime);
 			drawSpaceIsEnter();
 		}
+
 		// フェードインアウト用描画
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
+
+		// 真っ黒画面の上に表示したいのでこの位置
+		if (isGameEnd) {
+			DrawStringEx(DXE_WINDOW_WIDTH / 2, DXE_WINDOW_HEIGHT / 2, -1, "ウィンドウの×ボタンを押してね");
+		}
 	}
 
 	// 背景とロゴを描画
@@ -285,6 +291,12 @@ namespace atl {
 		if (seq_.isStart()) {
 			ClipCursor(NULL);
 			SetMouseDispFlag(true);
+			isDisplayButton = false;
+			FadeInOutManager::getFadeInOutManager()->startFadeOut();
+		}
+
+		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
+			isGameEnd = true;
 		}
 
 		// 終了処理。記述しない

@@ -49,8 +49,8 @@ namespace atl {
 		const tnl::Vector2i SPACE_IS_ENTER_BACK_LEFTUP_POINT{ 780,180 };	// 文字列の背景になるボックスの位置
 		const tnl::Vector2i SPACE_IS_ENTER_BACK_RIGHTDOWN_POINT{ 1125,250 };	// 文字列の背景になるボックスの大きさ
 
-
-		bool isDisplayButton = false;		// ボタンを表示するか否かのフラグ
+		bool isDisplayButton = false;	// ボタンを表示するか否かのフラグ
+		bool isGameEnd = false;			// ゲーム終了状態かのフラグ
 
 		// プロローグ関連
 		const int PROROGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
