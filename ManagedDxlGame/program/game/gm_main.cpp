@@ -46,11 +46,10 @@ void gameMain(float delta_time) {
 
 void gameEnd() {
     // ƒVƒ“ƒOƒ‹ƒgƒ“ŒQ‚ğ‰ğ•ú
-    atl::TextLogManager::deleteTextLogManager();
-    atl::DungeonCreater::deleteDungeonCreater();
-    atl::FadeInOutManager::deleteFadeInOutManager();
     atl::SceneManager::deleteSceneManager();
-
+    atl::DungeonCreater::deleteDungeonCreater();
+    atl::TextLogManager::deleteTextLogManager();
+    atl::FadeInOutManager::deleteFadeInOutManager();
     atl::ResourceManager::deleteResourceManager();
 
     // DXlib ‚ÌŠÖ”‚Åƒƒ‚ƒŠ‚ğ‚Ü‚Æ‚ß‚Ä‰ğ•ú

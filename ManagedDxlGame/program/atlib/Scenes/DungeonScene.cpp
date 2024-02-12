@@ -48,14 +48,6 @@ namespace atl {
 			// フォントデータの解放
 			DeleteFontToHandle(NEXT_FLOOR_FONT);
 			DeleteFontToHandle(LEVEL_STRING_FONT);
-
-			{// ダンジョンクリエイターのシングルトンを解放
-				DungeonCreater::getDungeonCreater()->deleteDungeonCreater();
-			}
-
-			{// テキストログのシングルトンを解放
-				TextLogManager::getTextLogManager()->deleteTextLogManager();
-			}
 		}
 	}
 

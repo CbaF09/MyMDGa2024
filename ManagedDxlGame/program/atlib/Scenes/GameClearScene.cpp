@@ -5,6 +5,17 @@
 #include "../Singletons/SceneManager.h"
 
 namespace atl {
+	GameClearScene::GameClearScene() {
+		// テクスチャによるメモリリーク対策
+		dxe::Texture::DestroyUnReferenceTextures();
+
+		// エピローグの文字列をCSVから読み込み
+		auto csv = tnl::LoadCsv("csv/EpirogueStringCSV.csv");
+		for (int i = 1; i < csv.size(); ++i) {
+			auto& string = csv[i][1].getString();
+			epilogueString_.emplace_back(string);
+		}
+	}
 
 	GameClearScene::~GameClearScene() {
 		{// リソース解放
@@ -62,60 +73,29 @@ namespace atl {
 
 	bool GameClearScene::seqEpilogue(float deltaTime) {
 		// 常に表示する文字
-		DrawStringToHandleEx(CAN_BACK_TEXT_POSITION.x, CAN_BACK_TEXT_POSITION.y, GetColor(255, 255, 255), EPILOGUE_FONT, "スペースキー で タイトル画面に戻ります");
-		
-		// 最初の 1 フレーム
-		if (seq_.isStart()) {
-			drawLogLine_ = 0;
-			textAlpha_ = 255;
-			// 3秒ごとに、描画する行を増やす
-			seq_.invokeRepeating(&GameClearScene::invokeDrawLogLineIncrement, 0, LOG_LINE_INTERVAL);
-		}
-		
-		// サイズを超えて drawLogLine が増えないように
-		if (drawLogLine_ >= epiloguePage[static_cast<int>(currentPage_)].size()) {
-			seq_.cancelInvoke(&GameClearScene::invokeDrawLogLineIncrement);
-		}
+		DrawStringToHandleEx(CAN_BACK_TEXT_POSITION.x, CAN_BACK_TEXT_POSITION.y, GetColor(255, 255, 255), EPILOGUE_FONT, "スペースキー で タイトル画面に戻ります\nW,Sキーで上下にスクロールします");
 
-		SetDrawBlendMode(DX_BLENDMODE_ALPHA, textAlpha_);
-		// 表示すべき行を全て表示する
-		for (int i = 0; i < drawLogLine_; ++i) {
-			DrawStringToHandleEx(static_cast<float>(TEXT_POSITION.x + (i * TEXT_OFFSET.x)), static_cast<float>(TEXT_POSITION.y + (i * TEXT_OFFSET.y)), -1,EPILOGUE_FONT, "%s", epiloguePage[static_cast<int>(currentPage_)][i].c_str());
+		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_W)) {
+			--currentTopLogIndex_;
+			// インデックスが範囲下限を下回ったら範囲内にクランプ
+			if (currentTopLogIndex_ < 0) {
+				currentTopLogIndex_ = 0;
+			}
+		}
+		else if (tnl::Input::IsKeyDownTrigger(eKeys::KB_S)) {
+			++currentTopLogIndex_;
+			// インデックスが範囲上限を超えたら範囲内にクランプ
+			if (currentTopLogIndex_ > epilogueString_.size() - 1) {
+				currentTopLogIndex_ = epilogueString_.size() - 1;
+			}
 		}
 
-		SetDrawBlendMode(DX_BLENDMODE_NOBLEND,0);
-
-		// 全行表示されたら、透明化に入る
-		if (drawLogLine_ == epiloguePage[static_cast<int>(currentPage_)].size()) {
-			// 待機
-			SEQ_CO_YIELD_RETURN_TIME(FULL_ALPHA_TIME, deltaTime, [&] {});
-
-			// alpha をマイナスする
-			SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
-				textAlpha_ -= ALPHA_MINUS_SPEED;
-				// alpha が 0 になったらコルーチン破棄
-				if (textAlpha_ < 0) {
-					textAlpha_ = 0;
-					// インデックスを 1 進める
-					currentPage_ = static_cast<e_EpiloguePage>(static_cast<int>(currentPage_) + 1);
-					
-					// ページが残っていたらシーケンス再実行、残っていなかったらシーケンス遷移
-					if (currentPage_ != e_EpiloguePage::PAGE_MAX) {
-						seq_.change(&GameClearScene::seqEpilogue);
-					}
-					else {
-						seq_.change(&GameClearScene::seqToTitleScene);
-					}
-					SEQ_CO_BREAK;
-				}
-				});
+		// 現在のトップ行数から、最後までを描画
+		for (int i = currentTopLogIndex_; i < epilogueString_.size(); ++i) {
+			DrawStringToHandleEx(static_cast<float>(TEXT_POSITION.x), static_cast<float>(TEXT_POSITION.y + ((i - currentTopLogIndex_) * TEXT_OFFSET.y)), -1, EPILOGUE_FONT,epilogueString_[i].c_str());
 		}
-		SEQ_CO_END;
-	}
 
-	void GameClearScene::invokeDrawLogLineIncrement() {
-		ResourceManager::getResourceManager()->playSoundRes("sound/SE/NextPaper.ogg", DX_PLAYTYPE_BACK);
-		++drawLogLine_; // 表示行増やす
+		return true;
 	}
 
 	bool GameClearScene::seqToTitleScene(float deltaTime) {
@@ -124,14 +104,9 @@ namespace atl {
 		}
 
 		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
-			// 待機
-			SEQ_CO_YIELD_RETURN_TIME(FULL_ALPHA_TIME, deltaTime, [&] {});
-
 			SceneManager::getSceneManager()->changeScene(std::make_shared<TitleScene>());
 		}
-
-		SEQ_CO_END;
-
+		return true;
 	}
 
 }
