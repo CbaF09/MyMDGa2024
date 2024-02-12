@@ -24,6 +24,22 @@ namespace atl {
         DungeonScene();
         ~DungeonScene();
 
+        // 現在ターン伝達用 enum
+        // シーン内部ではシーケンスで制御しているが、現在どのターンなのかを外部 ( Player や Enemy ) が取得する為に必要
+        // ターンのシーケンスが切り替わったら、これも切り替えてください
+        // TODO : 設計がダサい。もっといいやり方があるはずだが思いつかない
+        enum class e_Turn {
+            TurnInit,
+            TurnStart,
+            KeyInput,
+            PlayerMoveTurn1,
+            PlayerMoveTurn2,
+            PlayerActionTurn1,
+            PlayerActionTurn2,
+            TurnEnd,
+            OnStairs,
+        };
+
         // ゲッター
         // 3D上のセル一辺の全長を取得。色々なクラスで取得するので static に
         inline static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
@@ -31,6 +47,8 @@ namespace atl {
         inline const std::list<Shared<EnemyPawn>>& getEnemyArray() const { return enemies_; }
         // プレイヤーポーンを取得
         inline const Shared<PlayerPawn> getPlayerPawn() const { return player_; }
+        // 現在ターンを取得
+        inline const e_Turn& getCurrentTurn() const { return currentTurn_; }
 
         // セッター
         // 満腹度のセッター ( 0 ~ SATIETY_FULL の間にクランプ )
@@ -39,6 +57,8 @@ namespace atl {
             if (currentSatiety_ <= 0) { currentSatiety_ = 0; }
             if (currentSatiety_ > SATIETY_FULL) { currentSatiety_ = SATIETY_FULL; }
         }
+
+
 
     private: 
         //----------------------------------------------
@@ -81,6 +101,7 @@ namespace atl {
         bool isNextFloorTransition = false; // 次階層に遷移中か ( 黒画面か )
 
         // ターン制御用 --------------------------------
+        e_Turn currentTurn_ = e_Turn::TurnInit;
 
         // UI 関連 -------------------------------------
         const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; // HPバーの枠の位置
@@ -173,18 +194,6 @@ namespace atl {
         // シーケンス関連
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);
         
-        enum class e_Turn {
-            TurnInit,
-            TurnStart,
-            KeyInput,
-            PlayerMoveTurn1,
-            PlayerMoveTurn2,
-            PlayerActionTurn1,
-            PlayerActionTurn2,
-            TurnEnd,
-            OnStairs,
-            
-        }currentTurn_ = e_Turn::TurnInit;
 
         // 最初に一回だけ呼ばれる
         bool seqInit(float deltaTime);

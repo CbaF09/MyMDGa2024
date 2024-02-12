@@ -389,12 +389,15 @@ namespace atl {
 		}
 
 		// 未移動のエネミーの移動処理
-		enemyMove(deltaTime);
+		// enemyMove(deltaTime);
 
 		// 全てのエネミーの移動が完了しているか
 		bool allEnemyMoved = true;
 		for (auto& enemy : enemies_) {
-			if (!enemy->getIsAlreadyMove()) {
+			// もし移動が完了していたら、スルー
+			if (enemy->getIsAlreadyMove()) { continue; }
+			else {// 移動が未完了なら、update、全エネミー完了フラグをオフにする
+				enemy->enemyUpdate(deltaTime);
 				allEnemyMoved = false;
 			}
 		}
@@ -535,15 +538,13 @@ namespace atl {
 		return true;
 	}
 
-
-
 	// 死んだ敵を配列から削除
 	void DungeonScene::deadEnemyErase() {
 		for (auto it = enemies_.begin(); it != enemies_.end();) {
 			// HP がゼロの敵を発見
 			if ((*it)->getEnemyData()->isZeroHP()) {
-				// 死亡演出が終わっているかどうか ( Deading なら死亡演出中 )
-				if ((*it)->getCurrentState() == EnemyPawn::e_EnemyState::Dead) {
+				// 死亡しているかどうか
+				if ((*it)->getIsDead()) {
 					// エネミーが死亡する時、プレイヤーはエネミーの持っていた経験値を得る
 					auto getEXP = (*it)->getEnemyData()->getEnemyExp();
 					player_->getPlayerData()->changeCurrentEXP(getEXP);
@@ -804,9 +805,6 @@ namespace atl {
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
 		DrawStringEx(600, 0, -1, "curentTurn ... [ %d ]",currentTurn_);
-		for (auto& enemy : enemies_) {
-			DrawStringEx(600, 15, -1, "enemyTurn ... [ %d ]", enemy->getCurrentState());
-		}
 
 		// 階段の位置
 		if (originStairs_) {

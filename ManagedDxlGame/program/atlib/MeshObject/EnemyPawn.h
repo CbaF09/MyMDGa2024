@@ -13,19 +13,10 @@ namespace atl {
 		EnemyPawn(const tnl::Vector2i& enemyPos);
 		~EnemyPawn();
 
-		// ステート用 enum
-		enum class e_EnemyState {
-			Wandering,			// 目的のない探索
-			ChasePlayer,		// プレイヤーに向かう
-			PlayerNeighboring,	// その場で足踏み,プレイヤーの方を向く
-			Deading,			// 死亡中 ( 徐々に消えていくなどの処理 )
-			Dead,				// 死亡 ( Deading から遷移 )
-		};
-
 		// ゲッター
 		inline const bool getIsAlreadyMove() const { return isAlreadyMove_; }
 		inline const bool getIsAlreadyAction() const { return isAlreadyAction_; }
-		inline const e_EnemyState& getCurrentState() const{ return currentState_; }
+		inline const bool getIsDead() const{ return isDead_; }
 		inline const Shared<EnemyData> getEnemyData() const { return enemyData_; }
 
 		// セッター
@@ -79,9 +70,9 @@ namespace atl {
 		float hoverSinAmplitude_ = 100.0f; // 上下運動の振幅
 
 		// ターン制御用
-		e_EnemyState currentState_ = e_EnemyState::Wandering;
 		bool isAlreadyMove_ = false;
 		bool isAlreadyAction_ = false;
+		bool isDead_ = false;
 
 		// ダンジョンシーンへの弱参照
 		std::weak_ptr<DungeonScene> weakDungeonScene_;

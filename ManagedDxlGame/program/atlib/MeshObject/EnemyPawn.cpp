@@ -140,24 +140,16 @@ namespace atl {
 	/// --------------------------
 
 	bool EnemyPawn::seqStateTransition(float deltaTime) {
+		// 未移動もしくは未行動の場合のみシーケンスが遷移する
 		if (!isAlreadyAction_ || !isAlreadyMove_) {
-
 			// HPがゼロになっている場合
-			if (enemyData_->isZeroHP()) currentState_ = e_EnemyState::Deading;
+			if (enemyData_->isZeroHP()) { seq_.change(&EnemyPawn::seqDeading); }
 			// プレイヤーと隣接していた場合
-			else if (isNeighborPlayer()) currentState_ = e_EnemyState::PlayerNeighboring;
+			else if (isNeighborPlayer()) { seq_.change(&EnemyPawn::seqPlayerNeighboring); }
 			// プレイヤーと同じエリアにいる場合
-			else if (isSameAreaPlayer()) currentState_ = e_EnemyState::ChasePlayer;
+			else if (isSameAreaPlayer()) { seq_.change(&EnemyPawn::seqChasePlayer); }
 			// それ以外の場合
-			else currentState_ = e_EnemyState::Wandering;
-
-			switch (currentState_) {
-			case e_EnemyState::Wandering:			seq_.change(&EnemyPawn::seqWandering); break;
-			case e_EnemyState::PlayerNeighboring:	seq_.change(&EnemyPawn::seqPlayerNeighboring); break;
-			case e_EnemyState::ChasePlayer:			seq_.change(&EnemyPawn::seqChasePlayer); break;
-			case e_EnemyState::Deading:				seq_.change(&EnemyPawn::seqDeading); break;
-			case e_EnemyState::Dead:				break; // 死んだ場合、ダンジョンシーン側で削除されるので、こちらでは何も無し
-			}
+			else { seq_.change(&EnemyPawn::seqWandering); }
 		}
 		return true;
 	}
@@ -176,7 +168,7 @@ namespace atl {
 
 		isAlreadyAction_ = true;
 		isAlreadyMove_ = true;
-		currentState_ = e_EnemyState::Dead;
+		isDead_ = true;
 
 		auto& enemyName = getEnemyData()->getEnemyName();
 		TextLogManager::getTextLogManager()->addTextLog(enemyName + "を倒した！");
