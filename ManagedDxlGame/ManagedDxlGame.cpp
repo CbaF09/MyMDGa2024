@@ -49,6 +49,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // ウィンドウサイズ設定
     SetGraphMode(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT, 32);
 
+    // ウィンドウタイトルバーのテキスト変更
     SetMainWindowText("ワイズマンの修練塔");
 
     SetWaitVSyncFlag(TRUE);

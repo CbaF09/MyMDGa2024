@@ -67,9 +67,6 @@ namespace atl {
         bool seqProcess(float deltaTime) {
             
             {// デバッグ用。ESCキーでウィンドウ落とす。
-                if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) {
-                    exit(1);
-                }
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
                     ResourceManager::getResourceManager()->playSoundRes("sound/explosion.ogg",DX_PLAYTYPE_BACK);
                 }

@@ -198,7 +198,6 @@ namespace atl {
 		{// デバッグモード中に可能な操作
 			if (isDebug) {
 				if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) 	generateDungeon();;
-				if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
 			}
 		}
 	}

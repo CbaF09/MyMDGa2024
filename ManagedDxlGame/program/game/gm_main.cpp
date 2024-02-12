@@ -49,8 +49,9 @@ void gameEnd() {
     atl::TextLogManager::deleteTextLogManager();
     atl::DungeonCreater::deleteDungeonCreater();
     atl::FadeInOutManager::deleteFadeInOutManager();
-    atl::ResourceManager::deleteResourceManager();
     atl::SceneManager::deleteSceneManager();
+
+    atl::ResourceManager::deleteResourceManager();
 
     // DXlib ‚ÌŠÖ”‚Åƒƒ‚ƒŠ‚ğ‚Ü‚Æ‚ß‚Ä‰ğ•ú
     InitGraph();

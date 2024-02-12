@@ -282,12 +282,18 @@ namespace atl {
 	}
 
 	bool TitleScene::seqExit(float deltaTime) {
-		exit(1);
+		if (seq_.isStart()) {
+			ClipCursor(NULL);
+			SetMouseDispFlag(true);
+		}
+
+		// 終了処理。記述しない
+		// exit 関数で終了していたが、これではgameEnd()やDxLib_End()が呼ばれない。
+		// TODO : やり方聞く
 		return true;
 	}
 
 	void TitleScene::debug_keyInput() {
-		if(tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) exit(1);
 
 	}
 
