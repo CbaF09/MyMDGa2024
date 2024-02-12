@@ -1,7 +1,7 @@
 #include "ItemPawn.h"
 #include "PlayerPawn.h"
 #include "../Scenes/DungeonScene.h"
-#include "../Object/ItemData.h"
+#include "../Object/Item.h"
 
 namespace atl {
 
@@ -47,11 +47,11 @@ namespace atl {
 
 	void ItemPawn::assignWeakDungeonScene(std::weak_ptr<DungeonScene> dungeonScene) {
 		weakDungeonScene_ = dungeonScene;
-		itemData_ = std::make_shared<ItemData>(weakDungeonScene_);
+		item_ = std::make_shared<Item>(weakDungeonScene_);
 
-		// itemData が出来てから、Plane 生成する
+		// item が出来てから、Plane 生成する
 		auto plane = dxe::Mesh::CreatePlaneMV({ 200,200,0 });
-		plane->setTexture(itemData_->getItemIllust());
+		plane->setTexture(item_->getItemIllust());
 		plane->pos_ = getRootMesh()->pos_ + tnl::Vector3{0,200,0};
 		addChildMesh(plane);
 	}

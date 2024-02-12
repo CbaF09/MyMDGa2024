@@ -165,7 +165,7 @@
     <ClCompile Include="program\atlib\Object\Base_ActorData.cpp" />
     <ClCompile Include="program\atlib\Object\EnemyData.cpp" />
     <ClCompile Include="program\atlib\Object\Inventory.cpp" />
-    <ClCompile Include="program\atlib\Object\ItemData.cpp" />
+    <ClCompile Include="program\atlib\Object\Item.cpp" />
     <ClCompile Include="program\atlib\Object\MenuWindow.cpp" />
     <ClCompile Include="program\atlib\Object\PlayerData.cpp" />
     <ClCompile Include="program\atlib\Object\SelectWindow.cpp" />
@@ -369,7 +369,7 @@
     <ClInclude Include="program\atlib\Object\Base_ActorData.h" />
     <ClInclude Include="program\atlib\Object\EnemyData.h" />
     <ClInclude Include="program\atlib\Object\Inventory.h" />
-    <ClInclude Include="program\atlib\Object\ItemData.h" />
+    <ClInclude Include="program\atlib\Object\Item.h" />
     <ClInclude Include="program\atlib\Object\MenuWindow.h" />
     <ClInclude Include="program\atlib\Object\PlayerData.h" />
     <ClInclude Include="program\atlib\Object\SelectWindow.h" />

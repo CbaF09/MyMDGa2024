@@ -13,10 +13,10 @@ namespace atl {
 		auto inv = weakInventory_.lock();
 
 		for (int i = 0; i < inv->getItemList().size(); ++i) {
-			auto& itemData = inv->getItemData(i);
-			if (itemData) {
-				itemStrings_.at(i) = itemData->getItemName();
-				itemDesc_.at(i) = itemData->getItemDescString();
+			auto& item = inv->getItem(i);
+			if (item) {
+				itemStrings_.at(i) = item->getItemName();
+				itemDesc_.at(i) = item->getItemDescString();
 			}
 		}
 	}

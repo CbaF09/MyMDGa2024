@@ -4,12 +4,12 @@
 namespace atl {
 
 	// 指定のアイテムが最初から入っている ( デバッグ用 )
-	Inventory::Inventory(Shared<ItemData> items) {
+	Inventory::Inventory(Shared<Item> items) {
 		pushbackItemToInventory(items);
 	}
 
 	// 範囲外アクセスチェック有。引っかかったらnullptrを返す
-	const Shared<ItemData> Inventory::getItemData(int index) const {
+	const Shared<Item> Inventory::getItem(int index) const {
 		// 範囲外アクセスチェック。引っかかったらnullptrを返す
 		if (index < 0 || index >= static_cast<int>(itemList_.size())) {
 			 return nullptr;
@@ -18,7 +18,7 @@ namespace atl {
 		return itemList_[index];
 	}
 
-	bool Inventory::pushbackItemToInventory(const Shared<ItemData> newItemData) {
+	bool Inventory::pushbackItemToInventory(const Shared<Item> newItemData) {
 		if (itemList_.size() < INVENTORY_MAX) {
 			itemList_.emplace_back(newItemData);
 			return true;

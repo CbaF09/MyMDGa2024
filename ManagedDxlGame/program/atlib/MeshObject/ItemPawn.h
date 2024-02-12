@@ -4,7 +4,7 @@
 namespace atl {
 
 	class PlayerPawn;
-	class ItemData;
+	class Item;
 	class DungeonScene;
 
 	class ItemPawn final : public Base_MultiMeshObject {
@@ -14,7 +14,7 @@ namespace atl {
 		explicit ItemPawn(const tnl::Vector2i& spawnPos);
 		
 		// ゲッター
-		inline const Shared<ItemData> getItemData() { return itemData_; }
+		inline const Shared<Item> getItem() { return item_; }
 
 		//　オーバーライド
 		void adjustChildsMeshes(float deltaTime) override;
@@ -27,7 +27,7 @@ namespace atl {
 		// ダンジョンシーンへの弱参照
 		std::weak_ptr<DungeonScene> weakDungeonScene_;
 		// アイテムポーンは、アイテムデータを持つ
-		Shared<ItemData> itemData_;
+		Shared<Item> item_;
 		// アイテムの周りに浮かぶパーティクル用
 		Shared<dxe::Particle> itemParticle_ = std::make_shared<dxe::Particle>("graphics/particle/ItemEffect.bin");
 	};

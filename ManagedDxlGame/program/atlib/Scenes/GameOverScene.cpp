@@ -44,7 +44,6 @@ namespace atl {
 			ResourceManager::getResourceManager()->playSoundRes("sound/SE/GameOverContinue.ogg", DX_PLAYTYPE_NORMAL);
 			SceneManager::getSceneManager()->changeScene(std::make_shared<TitleScene>());
 		}
-
 		return false;
 	}
 

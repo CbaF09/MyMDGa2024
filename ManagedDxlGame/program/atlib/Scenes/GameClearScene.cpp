@@ -29,11 +29,11 @@ namespace atl {
 	void GameClearScene::sceneUpdate(float deltaTime) {
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) seq_.change(&GameClearScene::seqToTitleScene);
 
-		draw(deltaTime);
+		drawBackground(deltaTime);
 		seq_.update(deltaTime);
 	}
 
-	void GameClearScene::draw(float deltaTime) {
+	void GameClearScene::drawBackground(float deltaTime) {
 
 		DrawExtendGraph(0,0,DXE_WINDOW_WIDTH,DXE_WINDOW_HEIGHT,ResourceManager::getResourceManager()->getGraphRes("graphics/BackgroundIllust/ClearSceneBack.jpg"),true);
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
@@ -54,16 +54,15 @@ namespace atl {
 			fadeInOutManager->stopFade();
 			ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/BGM/GameClearBGM.ogg", 125);
 			ResourceManager::getResourceManager()->playSoundRes("sound/BGM/GameClearBGM.ogg",DX_PLAYTYPE_LOOP);
-			seq_.change(&GameClearScene::seqEpilogue1);
+			seq_.change(&GameClearScene::seqEpilogue);
 		}
 
 		return true;
 	}
 
-	bool GameClearScene::seqEpilogue1(float deltaTime) {
+	bool GameClearScene::seqEpilogue(float deltaTime) {
 		// 常に表示する文字
 		DrawStringToHandleEx(CAN_BACK_TEXT_POSITION.x, CAN_BACK_TEXT_POSITION.y, GetColor(255, 255, 255), EPILOGUE_FONT, "スペースキー で タイトル画面に戻ります");
-
 		
 		// 最初の 1 フレーム
 		if (seq_.isStart()) {
@@ -102,7 +101,7 @@ namespace atl {
 					
 					// ページが残っていたらシーケンス再実行、残っていなかったらシーケンス遷移
 					if (currentPage_ != e_EpiloguePage::PAGE_MAX) {
-						seq_.change(&GameClearScene::seqEpilogue1);
+						seq_.change(&GameClearScene::seqEpilogue);
 					}
 					else {
 						seq_.change(&GameClearScene::seqToTitleScene);
@@ -111,9 +110,6 @@ namespace atl {
 				}
 				});
 		}
-
-
-
 		SEQ_CO_END;
 	}
 

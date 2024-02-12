@@ -5,19 +5,18 @@
 namespace atl {
 
 
-	class ItemData final {
+	class Item final {
 	public:
-		explicit ItemData(std::weak_ptr<DungeonScene> dungeonScene);
+		explicit Item(std::weak_ptr<DungeonScene> dungeonScene);
 
 		const Shared<dxe::Texture> getItemIllust() { return itemIllust_; }
 		const std::string& getItemName() const { return itemName_; }
 		const std::string& getItemDescString() const { return descString_; }
 
-		// 使用時効果。enumで管理
+		// 使用時処理を実行する関数。Inventoryクラス の useItem() から呼び出される
 		void executeItemPerformAction();
 
 	private:
-
 		// アイテム名とIDを一致させるためのenum
 		enum class e_itemList {
 			NONE = 0,

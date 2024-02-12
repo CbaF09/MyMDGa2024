@@ -42,7 +42,7 @@ namespace atl {
 			FOUR,
 			PAGE_MAX
 		}currentPage_ = e_EpiloguePage::ZERO;
-		const std::vector<std::vector<std::string>> epiloguePage = {
+		std::vector<std::vector<std::string>> epiloguePage = {
 			{// 0ページ目
 				"最上階に辿り着いた。",
 				"中央には、光り輝く巨大な杖が鎮座している。",
@@ -88,16 +88,23 @@ namespace atl {
 		// -------------------------------------
 		// メソッド
 
+		// 毎フレーム呼ぶ
 		void sceneUpdate(float deltaTime) override;
-		void draw(float deltaTime);
+		
+		// 背景描画
+		void drawBackground(float deltaTime);
 
+		// シーケンス ( 文字の描画も行う )
 		SEQUENCE(GameClearScene,&GameClearScene::seqInit);
 
+		// 初期化 ( 最初に一度だけ呼ばれる )
 		bool seqInit(float deltaTime);
-		bool seqEpilogue1(float deltaTime);
+		// 本シーケンス
+		bool seqEpilogue(float deltaTime);
 
 		void invokeDrawLogLineIncrement();
 
+		// タイトルシーンに遷移するフェードインアウト
 		bool seqToTitleScene(float deltaTime);
 
 	};

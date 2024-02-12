@@ -1,4 +1,4 @@
-#include "ItemData.h"
+#include "Item.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Utilities/AtlRandom.h"
@@ -9,7 +9,7 @@
 
 namespace atl {
 
-	ItemData::ItemData(std::weak_ptr<DungeonScene> dungeonScene) : weakDungeonScene_(dungeonScene) {
+	Item::Item(std::weak_ptr<DungeonScene> dungeonScene) : weakDungeonScene_(dungeonScene) {
 		// CSV からロードして、ランダムなアイテムに設定される
 		auto csv = tnl::LoadCsv("csv/ItemCSV.csv");
 
@@ -29,22 +29,23 @@ namespace atl {
 	}
 
 	// ログ出力のための関数。いちいちgetTextLogManager書くのがめんどいので。
-	void ItemData::addTextItemUse(std::string text) {
+	void Item::addTextItemUse(std::string text) {
 		TextLogManager::getTextLogManager()->addTextLog(text);
 	}
 
-	void ItemData::executeItemPerformAction() {
+	void Item::executeItemPerformAction() {
 		switch (itemID_) {
-		case e_itemList::NONE: break;
 		case e_itemList::HealHerb: healHerbAction(); break;
 		case e_itemList::HealPotion: healPotionAction(); break;
 		case e_itemList::ThunderStone: thunderStoneAction(); break;
 		case e_itemList::ThunderScroll: thunderScrollAction(); break;
 		case e_itemList::MagicInc: magicIncAction(); break;
+		default : break;
 		}
 	}
 
-	void ItemData::healHerbAction() {
+	// 回復の草 ... 体力小回復
+	void Item::healHerbAction() {
 		auto lock = weakDungeonScene_.lock();
 		if (lock) {
 			lock->getPlayerPawn()->getPlayerData()->changeCurrentHP(HERB_HEAL_VALUE);
@@ -53,7 +54,8 @@ namespace atl {
 		addTextItemUse("体力が" + convertFullWidthNumber(HERB_HEAL_VALUE) + "回復した");
 	}
 
-	void ItemData::healPotionAction(){
+	// 回復薬　... 体力中回復
+	void Item::healPotionAction(){
 		auto lock = weakDungeonScene_.lock();
 		if (lock) {
 			lock->getPlayerPawn()->getPlayerData()->changeCurrentHP(POTION_HEAL_VALUE);
@@ -64,7 +66,7 @@ namespace atl {
 	}
 
 	// プレイヤーと同じエリアの敵にダメージ
-	void ItemData::thunderStoneAction() {
+	void Item::thunderStoneAction() {
 		auto lock = weakDungeonScene_.lock();
 		if (lock) {
 			auto& enemies = lock->getEnemyArray();
@@ -83,7 +85,7 @@ namespace atl {
 	}
 
 	// フィールドの敵全員にダメージ
-	void ItemData::thunderScrollAction() {
+	void Item::thunderScrollAction() {
 		auto lock = weakDungeonScene_.lock();
 		if (lock) {
 			auto& enemies = lock->getEnemyArray();
@@ -95,7 +97,7 @@ namespace atl {
 		}
 	}
 
-	void ItemData::magicIncAction() {
+	void Item::magicIncAction() {
 		auto lock = weakDungeonScene_.lock();
 		if (lock) {
 			lock->changeSatiety(MAGIC_INC_HEAL_VALUE);

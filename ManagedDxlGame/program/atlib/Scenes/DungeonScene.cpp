@@ -275,11 +275,11 @@ namespace atl {
 				continue;
 			}
 
-			auto itemData = (*it)->getItemData();
+			auto item = (*it)->getItem();
 			// インベントリにアイテムデータを格納した時
-			if (player_->getPlayerData()->getInventory()->pushbackItemToInventory(itemData)) {
+			if (player_->getPlayerData()->getInventory()->pushbackItemToInventory(item)) {
 				// テキストログに拾ったアイテム名を出力
-				auto& itemName = itemData->getItemName();
+				auto& itemName = item->getItemName();
 				std::string textLog = "　" + itemName + "を拾った";
 				TextLogManager::getTextLogManager()->addTextLog(textLog);
 
@@ -564,7 +564,7 @@ namespace atl {
 		case MenuWindow::e_SelectedMenuWindow::Item5: // ブレイクスルー
 		case MenuWindow::e_SelectedMenuWindow::Item6: 
 			// 範囲外アクセスチェックをしてから、本当に使うかの確認シーケンスに遷移
-			if (player_->getPlayerData()->getInventory()->getItemData(static_cast<int>(selectedMenu)) != nullptr) { seq_.change(&DungeonScene::seqReallyUseItem); } break;
+			if (player_->getPlayerData()->getInventory()->getItem(static_cast<int>(selectedMenu)) != nullptr) { seq_.change(&DungeonScene::seqReallyUseItem); } break;
 		case MenuWindow::e_SelectedMenuWindow::Setting: break; // 現状何も無し
 		case MenuWindow::e_SelectedMenuWindow::CloseMenu: // メニューを閉じる
 		{
@@ -585,7 +585,7 @@ namespace atl {
 
 	// 本当にアイテムを使うか確認
 	bool DungeonScene::seqReallyUseItem(float deltaTime) {
-		auto& item = player_->getPlayerData()->getInventory()->getItemData(static_cast<int>(selectedMenu));
+		auto& item = player_->getPlayerData()->getInventory()->getItem(static_cast<int>(selectedMenu));
 		if (seq_.isStart()) {
 			selectWindow_ = std::make_shared<SelectWindow>(item->getItemName() + "\nを使いますか？");
 		}
