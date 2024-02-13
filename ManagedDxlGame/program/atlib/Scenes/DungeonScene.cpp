@@ -199,9 +199,6 @@ namespace atl {
 				else if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_PATH) {
 					drawColor = GetColor(0, 0, 255);
 				}
-				else if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
-					drawColor = GetColor(0, 0, 0);
-				}
 				// 描画位置の計算
 				tnl::Vector2i drawPos = calcDrawMinimapPos(x, y);
 				// 描画
@@ -210,8 +207,21 @@ namespace atl {
 		}
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
+		// 壁は真っ黒で描画
+		for (int x = 0; x < field.size(); ++x) {
+			for (int y = 0; y < field[x].size();++y) {
+				// 壁以外は早期リターン
+				if (field[x][y].cellType_ != DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) { continue; }
 
-		{// プレイヤーの描画
+				// 描画位置の計算
+				tnl::Vector2i drawPos = calcDrawMinimapPos(x, y);
+				// 描画
+				DrawBoxEx({ (float)drawPos.x,(float)drawPos.y ,0 }, MINIMAP_CELL_SIZE, MINIMAP_CELL_SIZE, true, GetColor(0,0,0));
+			}
+		}
+
+
+		{// プレイヤーの位置描画
 			auto& player2Dpos = player_->getPlayer2Dpos();
 			tnl::Vector2i playerDrawPos = calcDrawMinimapPos(player2Dpos.x, player2Dpos.y);
 			DrawCircle(playerDrawPos.x, playerDrawPos.y,MINIMAP_PLAYER_SIZE, GetColor(255, 255, 0));
@@ -622,7 +632,7 @@ namespace atl {
 		}
 		case MenuWindow::e_SelectedMenuWindow::ReturnToTitle: // タイトルに戻る
 		{
-			seq_.change(&DungeonScene::seqKeyInput);
+			seq_.change(&DungeonScene::seqReallyReturnToTitle);
 			break;
 		}
 		}
@@ -679,8 +689,10 @@ namespace atl {
 		}
 
 		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
-			// 待機 
-			SEQ_CO_YIELD_RETURN_TIME(nextFloorTransitionTime, deltaTime, [&] {})
+			ResourceManager::getResourceManager()->stopSoundRes("sound/BGM/DungeonSceneBGM.ogg");
+
+			// 1秒 待機
+			SEQ_CO_YIELD_RETURN_TIME(1, deltaTime, [&] {})
 
 			SceneManager::getSceneManager()->changeScene(std::make_shared<TitleScene>());
 		}
