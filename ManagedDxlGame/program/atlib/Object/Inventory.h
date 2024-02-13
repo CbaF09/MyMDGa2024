@@ -7,9 +7,7 @@ namespace atl {
 	class Inventory final {
 	public:
 		Inventory() {};
-
-		// デバッグ用 ( 指定のアイテムが最初から入っている )
-		Inventory(Shared<Item> items);
+		~Inventory();
 
 		// ゲッター
 		const std::vector<Shared<Item>>& getItemList() const { return itemList_; }

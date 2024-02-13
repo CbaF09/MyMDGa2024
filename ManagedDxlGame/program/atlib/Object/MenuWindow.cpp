@@ -7,18 +7,11 @@ namespace atl {
 
 	MenuWindow::~MenuWindow() {
 		DeleteFontToHandle(MENU_FONT);
+		DeleteFontToHandle(DESC_FONT);
 	}
 
-	MenuWindow::MenuWindow(std::weak_ptr<Inventory> inventory) : weakInventory_(inventory) {
-		auto inv = weakInventory_.lock();
-
-		for (int i = 0; i < inv->getItemList().size(); ++i) {
-			auto& item = inv->getItem(i);
-			if (item) {
-				itemStrings_.at(i) = item->getItemName();
-				itemDesc_.at(i) = item->getItemDescString();
-			}
-		}
+	MenuWindow::MenuWindow(std::weak_ptr<Inventory> inventory) 
+		: weakInventory_(inventory) {
 	}
 
 	MenuWindow::e_SelectedMenuWindow MenuWindow::process(float deltaTime) {
@@ -48,14 +41,14 @@ namespace atl {
 			tnl::Vector2i actualyPos = TOP_STRINGS_POSITION;
 
 			// アイテムリストの描画
-			for (int i = 0; i < itemStrings_.size(); ++i) {
+			for (int i = 0; i < itemWindows_.size(); ++i) {
 
 				// 現在選択中の選択肢は強調する
 				if (currentSelectIndex_ == i) {
-					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), SELECTED_COLOR, MENU_FONT, itemStrings_.at(i).c_str());
+					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), SELECTED_COLOR, MENU_FONT, itemWindows_.at(i).first.c_str());
 				}
 				else {
-					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), UN_SELECTED_COLOR, MENU_FONT, itemStrings_.at(i).c_str());
+					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), UN_SELECTED_COLOR, MENU_FONT, itemWindows_.at(i).first.c_str());
 				}
 				actualyPos.y += STRINGS_OFFSET;
 			}
@@ -63,13 +56,13 @@ namespace atl {
 			actualyPos.y += ITEM_SYSTEM_OFFSET; // システム文字列の位置に描画位置を移動
 
 			// システム文字列の描画
-			for (int i = 0; i < systemOptions_.size(); ++i) {
+			for (int i = 0; i < systemWindows_.size(); ++i) {
 				// インデックス位置調整
-				if (currentSelectIndex_ == i + itemStrings_.size()) {
-					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), SELECTED_COLOR, MENU_FONT, systemOptions_.at(i).first.c_str());
+				if (currentSelectIndex_ == i + itemWindows_.size()) {
+					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), SELECTED_COLOR, MENU_FONT, systemWindows_.at(i).first.c_str());
 				}
 				else {
-					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), UN_SELECTED_COLOR, MENU_FONT, systemOptions_.at(i).first.c_str());
+					DrawStringToHandleEx(static_cast<float>(actualyPos.x), static_cast<float>(actualyPos.y), UN_SELECTED_COLOR, MENU_FONT, systemWindows_.at(i).first.c_str());
 				}
 				actualyPos.y += STRINGS_OFFSET;
 			}
@@ -82,21 +75,40 @@ namespace atl {
 		}
 
 		{// 説明文を描画
-			auto descString = getDescription(currentSelectIndex_);
+			auto& descString = getDescription(currentSelectIndex_);
 			DrawStringToHandleEx(static_cast<float>(DESC_STRING_POSITION.x), static_cast<float>(DESC_STRING_POSITION.y), -1, DESC_FONT, descString.c_str());
 		}
 	}
 
-	std::string MenuWindow::getDescription(int currentSelectIndex) const {
+	void MenuWindow::itemWindowsUpdate() {
+		auto inv = weakInventory_.lock();
+		for (int i = 0; i < itemWindows_.size(); ++i) {
+			auto& item = inv->getItem(i);
+			// アイテムがあったら
+			if (item) {
+				// アイテムの名前と説明文をセット
+				itemWindows_.at(i).first = item->getItemName();
+				itemWindows_.at(i).second = item->getItemDescString();
+			}
+			// アイテムがなかったら
+			else {
+				// デフォの名前と説明文をセット
+				itemWindows_.at(i).first = "( 空きスロット )";
+				itemWindows_.at(i).second = "アイテムが無い";
+			}
+		}
+	}
+
+	const std::string& MenuWindow::getDescription(int currentSelectIndex) const {
 		// アイテム一覧を指している場合
-		if (0 <= currentSelectIndex_ && currentSelectIndex_ < itemStrings_.size()) {
+		if (0 <= currentSelectIndex_ && currentSelectIndex_ < itemWindows_.size()) {
 			// アイテム一覧の説明文を返す
-			return itemDesc_[currentSelectIndex];
+			return itemWindows_.at(currentSelectIndex).second;
 		}
 		else {// システム一覧を指している場合
 			// システム一覧の説明文を返す
 			// アイテムの下にシステムのボタンがある
-			return systemOptions_[currentSelectIndex_ - itemStrings_.size()].second;
+			return systemWindows_.at(currentSelectIndex_ - itemWindows_.size()).second;
 		}
 	}
 }

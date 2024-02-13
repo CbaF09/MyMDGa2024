@@ -1,11 +1,11 @@
 #include "Inventory.h"
 #include "../Singletons/TextLogManager.h"
+#include "../Singletons/ResourceManager.h"
 
 namespace atl {
 
-	// 指定のアイテムが最初から入っている ( デバッグ用 )
-	Inventory::Inventory(Shared<Item> items) {
-		pushbackItemToInventory(items);
+	Inventory::~Inventory() {
+		ResourceManager::getResourceManager()->deleteResource("sound/SE/DungeonSceneItemGet.ogg");
 	}
 
 	// 範囲外アクセスチェック有。引っかかったらnullptrを返す
@@ -21,6 +21,7 @@ namespace atl {
 	bool Inventory::pushbackItemToInventory(const Shared<Item> newItemData) {
 		if (itemList_.size() < INVENTORY_MAX) {
 			itemList_.emplace_back(newItemData);
+			ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneItemGet.ogg",DX_PLAYTYPE_BACK);
 			return true;
 		}
 		else {

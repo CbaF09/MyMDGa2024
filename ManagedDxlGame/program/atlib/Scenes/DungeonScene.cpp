@@ -24,6 +24,9 @@ namespace atl {
 		groundTiles_.clear();
 		enemies_.clear();
 		items_.clear();
+
+		player_ = std::make_shared<PlayerPawn>();
+		menuWindow_ = std::make_shared<MenuWindow>(player_->getPlayerData()->getInventory());
 	}
 
 	DungeonScene::~DungeonScene() {
@@ -72,9 +75,6 @@ namespace atl {
 
 		drawUI(deltaTime);
 
-		// セレクトウィンドウがある時は、描画する
-		if (selectWindow_) selectWindow_->draw(deltaTime);
-
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
 
 		// 現在階層の描画は真っ黒な画面の上にやりたいので、この位置
@@ -103,44 +103,26 @@ namespace atl {
 		// HP バー 表示
 		drawHPbar();
 		
-		//
+		// 操作説明の描画
 		drawInstruction();
 
 		// メニューを開いている時はログ表示無し,レベル表示無し,満腹度表示無し
-		if (!menuWindow_) { 
+		if (!player_->getIsMenuOpen()) { 
 			TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); 
 			drawLevel();
 			drawInvatation();
 		}
 
 		// メニューを開いている間の描画
-		if (menuWindow_) { menuWindow_->draw(deltaTime); }
+		if (player_->getIsMenuOpen()) {
+			menuWindow_->draw(deltaTime); 
+			drawMinimap(deltaTime);
+		}
+
+		// セレクトウィンドウがある時は、描画する
+		if (selectWindow_) selectWindow_->draw(deltaTime);
 	}
 
-	void DungeonScene::drawInstruction() {
-		SetDrawBlendMode(DX_BLENDGRAPHTYPE_ALPHA, 125);
-		DrawBoxEx({static_cast<float>(INSTRUCTION_POSITION.x),static_cast<float>(INSTRUCTION_POSITION.y),0}, static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.x), static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.y),true,GetColor(0,0,255));
-		SetDrawBlendMode(DX_BLENDGRAPHTYPE_NORMAL, 0);
-		DrawRotaGraph(INSTRUCTION_POSITION.x, INSTRUCTION_POSITION.y, INSTRUCTION_SIZE, 0, ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Instruction.png"), true);
-	}
-
-	void DungeonScene::drawLevel() {
-		auto playerData = player_->getPlayerData();
-		DrawStringToHandleEx(static_cast<float>(LEVEL_STRING_POSITION.x), static_cast<float>(LEVEL_STRING_POSITION.y), -1, LEVEL_STRING_FONT,"レベル ... [ %d ]", playerData->getCurrentLevel());
-	}
-
-	void DungeonScene::drawInvatation() {
-		// 招待状 UI を描画
-		auto invatation = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Invatation.png");
-		// 空腹度は、最大2550なので、現在空腹度の10分の1を輝度に
-		SetDrawBright(currentSatiety_/10, currentSatiety_/10, currentSatiety_/10);
-		DrawRotaGraph(INVATATION_POSITION.x, INVATATION_POSITION.y, INVATATION_SIZE, tnl::ToRadian(INVATATION_ANGLE), invatation, true);
-		// 描画輝度を元に戻す
-		SetDrawBright(255,255,255);
-
-		// 文字列「招待状」を描画。レベルを表示しているフォントを流用。
-		DrawStringToHandleEx(static_cast<float>(INVATATION_STRING_POSITION.x), static_cast<float>(INVATATION_STRING_POSITION.y), -1, LEVEL_STRING_FONT, "招待状");
-	}
 
 	void DungeonScene::drawHPbar() {
 		// 背景 ( 枠 ) の描画
@@ -172,6 +154,75 @@ namespace atl {
 		DrawStringToHandleEx(static_cast<float>(HP_STRING_POSITION.x), static_cast<float>(HP_STRING_POSITION.y), -1, LEVEL_STRING_FONT, "HP :  %d / %d ", currentHP, maxHP);
 	}
 
+	void DungeonScene::drawLevel() {
+		auto playerData = player_->getPlayerData();
+		DrawStringToHandleEx(static_cast<float>(LEVEL_STRING_POSITION.x), static_cast<float>(LEVEL_STRING_POSITION.y), -1, LEVEL_STRING_FONT, "レベル ... [ %d ]", playerData->getCurrentLevel());
+	}
+
+	void DungeonScene::drawInstruction() {
+		// 操作説明の背景描画
+		SetDrawBlendMode(DX_BLENDGRAPHTYPE_ALPHA, 125);
+		DrawBoxEx({static_cast<float>(INSTRUCTION_POSITION.x),static_cast<float>(INSTRUCTION_POSITION.y),0}, static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.x), static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.y),true,GetColor(0,0,255));
+		SetDrawBlendMode(DX_BLENDGRAPHTYPE_NORMAL, 0);
+		// 操作説明の画像描画
+		DrawRotaGraph(INSTRUCTION_POSITION.x, INSTRUCTION_POSITION.y, INSTRUCTION_SIZE, 0, ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Instruction.png"), true);
+	}
+
+
+	void DungeonScene::drawInvatation() {
+		// 招待状 UI を描画
+		auto invatation = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Invatation.png");
+		// 空腹度は、最大2550なので、現在空腹度の10分の1を輝度に
+		SetDrawBright(currentSatiety_/10, currentSatiety_/10, currentSatiety_/10);
+		DrawRotaGraph(INVATATION_POSITION.x, INVATATION_POSITION.y, INVATATION_SIZE, tnl::ToRadian(INVATATION_ANGLE), invatation, true);
+		// 描画輝度を元に戻す
+		SetDrawBright(255,255,255);
+
+		// 文字列「招待状」を描画。レベルを表示しているフォントを流用。
+		DrawStringToHandleEx(static_cast<float>(INVATATION_STRING_POSITION.x), static_cast<float>(INVATATION_STRING_POSITION.y), -1, LEVEL_STRING_FONT, "招待状");
+	}
+
+	void DungeonScene::drawMinimap(float deltaTime) {
+		auto& field = DungeonCreater::getDungeonCreater()->getFieldCells();
+		// フィールド情報の描画
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, MINIMAP_ALPHA);
+		for (int x = 0; x < field.size(); ++x) {
+			for (int y = 0; y < field[x].size(); ++y) {
+				int drawColor = 0;
+				// cellType に応じて色を変える
+				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM) {
+					drawColor = GetColor(255,255,255);
+				}
+				else if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_PATH) {
+					drawColor = GetColor(0, 0, 255);
+				}
+				else if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
+					drawColor = GetColor(0, 0, 0);
+
+				}
+				// 描画位置の計算
+				tnl::Vector2i drawPos = calcDrawMinimapPos(x, y);
+				// 描画
+				DrawBoxEx({ (float)drawPos.x,(float)drawPos.y ,0 }, MINIMAP_CELL_SIZE, MINIMAP_CELL_SIZE, true, drawColor);
+			}
+		}
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+
+		{// プレイヤーの描画
+			auto& player2Dpos = player_->getPlayer2Dpos();
+			tnl::Vector2i playerDrawPos = calcDrawMinimapPos(player2Dpos.x, player2Dpos.y);
+			DrawCircle(playerDrawPos.x, playerDrawPos.y,MINIMAP_PLAYER_SIZE, GetColor(255, 255, 0));
+		}
+	}
+
+	const tnl::Vector2i DungeonScene::calcDrawMinimapPos(int32_t x, int32_t y){
+		// Y と X が逆になっているのは、三次元空間との整合性を取る為なので、問題ないです。
+		int32_t drawPosX = (y * MINIMAP_CELL_SIZE) + MINIMAP_LEFTUP_POSITION.x;
+		int32_t drawPosY = (x * MINIMAP_CELL_SIZE) + MINIMAP_LEFTUP_POSITION.y;
+		return { drawPosX,drawPosY };
+	};
+
 	void DungeonScene::sceneUpdate(float deltaTime) {
 		if (tnl::Input::IsKeyDown(eKeys::KB_LSHIFT, eKeys::KB_O) && tnl::Input::IsKeyDownTrigger(eKeys::KB_P)) isDebug = !isDebug;
 
@@ -195,17 +246,15 @@ namespace atl {
 	}
 
 	void DungeonScene::openMenu() {
-		if (menuWindow_) return;
 		// メニューを開く
-		menuWindow_ = std::make_shared<MenuWindow>(player_->getPlayerData()->getInventory());
 		player_->openMenuBook();
+		// アイテム一覧の表示を更新する
+		menuWindow_->itemWindowsUpdate();
 		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneOpenMenu.ogg", DX_PLAYTYPE_BACK);
 	}
 
 	void DungeonScene::closeMenu() {
-		if (!menuWindow_) return;
 		// メニューウィンドウを閉じる
-		menuWindow_.reset();
 		player_->closeMenuBook();
 		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneCloseMenu.ogg", DX_PLAYTYPE_BACK);
 	}
@@ -243,6 +292,7 @@ namespace atl {
 	// 未移動のエネミーのアップデートを回す
 	void DungeonScene::enemyMove(float deltaTime) {
 		for (auto& enemy : enemies_) {
+			// 既に移動終わっているエネミーは早期リターン
 			if (enemy->getIsAlreadyMove()) { continue; }
 			enemy->enemyUpdate(deltaTime);
 		}
@@ -251,6 +301,7 @@ namespace atl {
 	// 未行動のエネミーのアップデートを回す
 	void DungeonScene::enemyAction(float deltaTime) {
 		for (auto& enemy : enemies_) {
+			// 既に行動終わっているエネミーは早期リターン
 			if (enemy->getIsAlreadyAction()) { continue; }
 			enemy->enemyUpdate(deltaTime);
 		}
@@ -296,7 +347,6 @@ namespace atl {
 		FadeInOutManager::getFadeInOutManager()->setFadeAlphaValue(255);
 
 		// プレイヤーの生成と初期化
-		player_ = std::make_shared<PlayerPawn>();
 		player_->initialize(shared_from_this());
 
 		// 現在の階層を 初期化
@@ -533,14 +583,12 @@ namespace atl {
 	}
 
 	bool DungeonScene::seqMenuWindow(float deltaTime) {
-		if (!menuWindow_) return true; // メニューウィンドウが有効でない場合、早期リターン
+		if (!player_->getIsMenuOpen()) return true; // メニューウィンドウが有効でない場合、早期リターン
 
 		// 右クリックで menuWindowを閉じる
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
-			if (menuWindow_) {
-				closeMenu();
-				seq_.change(&DungeonScene::seqKeyInput);
-			}
+			closeMenu();
+			seq_.change(&DungeonScene::seqKeyInput);
 		}
 
 		selectedMenu = menuWindow_->process(deltaTime);

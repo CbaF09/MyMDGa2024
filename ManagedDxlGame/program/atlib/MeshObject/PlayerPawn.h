@@ -4,12 +4,12 @@
 #include "../Scenes/DungeonScene.h"
 
 #include "../Object/PlayerData.h"
+#include "MenuBook.h"
 
 namespace atl {
 
 	class DungeonScene;
 	class MagicWand;
-	class MenuBook;
 	class ForwardArrow;
 
 	class PlayerPawn final : public std::enable_shared_from_this<PlayerPawn> {
@@ -29,6 +29,7 @@ namespace atl {
 		inline const tnl::Vector2i& getPlayer2Dpos() const { return player2Dpos_; }
 		inline bool getIsAlreadyTurn() const { return isAlreadyTurn_; }
 		inline const Shared<PlayerData> getPlayerData() const { return playerData_; }
+		inline bool getIsMenuOpen() const { return playerHaveMenuBook_->isOpenMenu(); }
 
 		// セッター
 		inline void offFlagIsAlreadyTurn() { isAlreadyTurn_ = false; }
@@ -42,7 +43,6 @@ namespace atl {
 
 		// 2D座標上の位置で Spawn する
 		void playerSpawn2Dpos(const tnl::Vector2i& spawn2Dpos);
-
 
 		// シーケンス実行用
 		bool playerUpdate(float deltaTime) {

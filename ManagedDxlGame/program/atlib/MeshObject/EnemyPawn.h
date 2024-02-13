@@ -37,23 +37,8 @@ namespace atl {
 		void assignWeakDungeonScene(std::weak_ptr<DungeonScene> player);
 
 	private:
-		//----------------------
-		// メソッド
-		
-		// メッシュ群の位置を調整する。renderObjectsから呼び出される
-		void adjustChildsMeshes(float deltaTime) override;
-
-		// ret ... 移動できる => true , 移動できない => false
-		// arg ... 現在位置からの移動先
-		bool isCanMove(const tnl::Vector2i& moveToPos);
-		void setMoveTarget(const tnl::Vector2i& moveToPos);
-		// プレイヤーと前後左右で隣接しているか
-		bool isNeighborPlayer();
-		// プレイヤーと同じエリアにいるか
-		bool isSameAreaPlayer();
-
 		//-----------------------
-		// メンバ変数
+		// 変数
 		
 		// メッシュの生成用
 		// エネミーの大きさ
@@ -79,6 +64,23 @@ namespace atl {
 
 		// データ保持
 		Shared<EnemyData> enemyData_ = std::make_shared<EnemyData>();
+
+		//----------------------
+		// メソッド
+
+		// メッシュ群の位置を調整する。renderObjectsから呼び出される
+		void adjustChildsMeshes(float deltaTime) override;
+
+		// 移動できるかどうかの判定
+		// ret ... 移動できる => true , 移動できない => false
+		// arg ... 現在位置からの移動先
+		bool isCanMove(const tnl::Vector2i& moveToPos);
+		// 移動先の設定 ( シーケンスのseqMoveToTargetで移動する )
+		void setMoveTarget(const tnl::Vector2i& moveToPos);
+		// プレイヤーと前後左右で隣接しているか
+		bool isNeighborPlayer();
+		// プレイヤーと同じエリアにいるか
+		bool isSameAreaPlayer();
 
 		//-----------------------
 		// シーケンス

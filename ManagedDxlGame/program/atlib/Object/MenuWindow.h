@@ -27,8 +27,12 @@ namespace atl {
 			NONE,
 		};
 
+		// 入力に応じて選択肢を変える。毎フレーム呼ぶ
 		e_SelectedMenuWindow process(float deltaTime);
+		// 選択肢の強調表示など。毎フレーム呼ぶ
 		void draw(float deltaTime);
+		// メニューを開いた時にのみ呼ぶ。アイテム一覧のstringを更新する
+		void itemWindowsUpdate();
 
 
 	private:
@@ -50,42 +54,23 @@ namespace atl {
 		// インベントリへの弱参照
 		std::weak_ptr<Inventory> weakInventory_;
 
-		// アイテムの選択肢
-		std::array<std::string,6> itemStrings_ = {
-			"( 空きスロット )",
-			"( 空きスロット )",
-			"( 空きスロット )",
-			"( 空きスロット )",
-			"( 空きスロット )",
-			"( 空きスロット )"
-		};
+		// アイテムの選択肢と説明文。pair でまとめている。 first->選択肢名。second->説明文
+		std::array<std::pair<std::string, std::string>, 6> itemWindows_{};
 
-		// アイテムの説明文
-		std::array<std::string, 6> itemDesc_ = {
-			"アイテムが無い",
-			"アイテムが無い",
-			"アイテムが無い",
-			"アイテムが無い",
-			"アイテムが無い",
-			"アイテムが無い",
-		};
-
-		// 試しで pair でまとめられないかやってみた。成功。
-		// TODO : アイテムの方も　pair でまとめてみる。( インベントリから情報を引き出す処理があるので注意 )
-		// システム系の選択肢と説明文。pair でまとまっている。 first->選択肢名。second->説明文
-		std::array<std::pair<std::string, std::string>, 3> systemOptions_{
+		// システム系の選択肢と説明文。pair でまとめている。 first->選択肢名。second->説明文
+		std::array<std::pair<std::string, std::string>, 3> systemWindows_{
 			std::pair{("設定"),("各種設定")},
 			std::pair{("メニューを閉じる"),("メニューを閉じる。右クリックでも閉じられる")},
 			std::pair{("タイトル画面"),("タイトル画面に戻る。進捗保存はありません")},
 		};
 
 		// 総選択肢数
-		int32_t totalStrings = static_cast<int32_t>(itemStrings_.size() + systemOptions_.size());
+		int32_t totalStrings = static_cast<int32_t>(itemWindows_.size() + systemWindows_.size());
 
 		// 現在選択中のもの
 		int32_t currentSelectIndex_ = 0;
 
-		std::string getDescription(int currentSelectIndex) const;
+		const std::string& getDescription(int currentSelectIndex) const;
 
 	};
 

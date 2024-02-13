@@ -155,16 +155,16 @@ namespace atl {
 	}
 
 	bool EnemyPawn::seqDeading(float deltaTime) {
-		// 0.3•bŠÔA‚­‚é‚­‚é‰ñ“]
-		SEQ_CO_YIELD_RETURN_TIME(0.3f, deltaTime, [&] {
-			getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(10));
-		})
+		// 0.2•bŠÔA‚­‚é‚­‚é‰ñ“]
+		SEQ_CO_YIELD_RETURN_TIME(0.2f, deltaTime, [&] {
+			getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(15));
+		});
 
-		// ˆê‰ñ‰¹‚ð–Â‚ç‚µA‚à‚¤ 2.2 •bŠÔ‰ñ“]
-		SEQ_CO_YIELD_RETURN_TIME(2.2f, deltaTime, [&] {
+		// ˆê‰ñ‰¹‚ð–Â‚ç‚µA‚à‚¤ 1.3 •bŠÔ‰ñ“]
+		SEQ_CO_YIELD_RETURN_TIME(1.3f, deltaTime, [&] {
 			if (SEQ_CO_YIELD_TIME_IS_START) { ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneEnemyDead.ogg", DX_PLAYTYPE_BACK); }
-			getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(10));
-			});
+			getRootMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(15));
+		});
 
 		isAlreadyAction_ = true;
 		isAlreadyMove_ = true;
