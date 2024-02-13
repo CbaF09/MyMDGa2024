@@ -114,6 +114,7 @@ namespace atl {
         MenuWindow::e_SelectedMenuWindow selectedMenu = MenuWindow::e_SelectedMenuWindow::Item1;
 
         // スカイボックス用 ----------------------------
+        // Skyboxは引数無しコンストラクタ一つのみを持っている
         Skybox skybox_;
 
         // 満腹度 ( 招待状 ) 関連 ----------------------

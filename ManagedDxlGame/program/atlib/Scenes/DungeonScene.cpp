@@ -55,8 +55,10 @@ namespace atl {
 	}
 
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
+		// スカイボックスのアップデート
+		skybox_.update(camera);
+
 		// 不透明なもの描画
-		SetWriteZBuffer3D(TRUE);
 		for (const auto& ground : groundTiles_) { ground->renderObject(camera); }
 		for (const auto& wall : walls_) { wall->renderObject(camera); }
 		for (const auto& enemy : enemies_) { enemy->renderObjects(camera, deltaTime); }
@@ -65,10 +67,7 @@ namespace atl {
 		if (player_)player_->render(deltaTime);
 
 		// 透明なもの描画
-		SetWriteZBuffer3D(FALSE);
 		for (const auto& enemy : enemies_) { enemy->renderTransparentObject(camera, deltaTime); }
-
-		SetWriteZBuffer3D(TRUE);
 	}
 
 	void DungeonScene::draw2D(float deltaTime) {
@@ -188,6 +187,9 @@ namespace atl {
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, MINIMAP_ALPHA);
 		for (int x = 0; x < field.size(); ++x) {
 			for (int y = 0; y < field[x].size(); ++y) {
+				// 何もない場合、早期リターン
+				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_NONE) { continue; }
+
 				int drawColor = 0;
 				// cellType に応じて色を変える
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM) {
@@ -198,7 +200,6 @@ namespace atl {
 				}
 				else if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
 					drawColor = GetColor(0, 0, 0);
-
 				}
 				// 描画位置の計算
 				tnl::Vector2i drawPos = calcDrawMinimapPos(x, y);
@@ -224,14 +225,15 @@ namespace atl {
 	};
 
 	void DungeonScene::sceneUpdate(float deltaTime) {
-		if (tnl::Input::IsKeyDown(eKeys::KB_LSHIFT, eKeys::KB_O) && tnl::Input::IsKeyDownTrigger(eKeys::KB_P)) isDebug = !isDebug;
+		// デバッグモードへの切り替え
+		if (tnl::Input::IsKeyDown(eKeys::KB_O) && tnl::Input::IsKeyDownTrigger(eKeys::KB_P)) isDebug = !isDebug;
 
+		// シーケンスアップデート
 		seq_.update(deltaTime);
-
+		
 		// カメラのアップデート
 		player_->getPlayerCamera()->update();
-		// スカイボックスのアップデート
-		skybox_.update(player_->getPlayerCamera());
+
 		// レンダー ( カメラアップデートの後 )
 		render(deltaTime, player_->getPlayerCamera());
 
@@ -275,7 +277,7 @@ namespace atl {
 		if (!(respornTurnTimer_ > RESPORN_TURN_COUNT)) return;
 
 		// プレイヤーと違うエリアにスポーン
-		auto spawnPos = DungeonCreater::getDungeonCreater()->randomChoiceCanSpawnFieldCellPos(player_->getPlayer2Dpos());
+		auto spawnPos = DungeonCreater::getDungeonCreater()->randomChoiceEnemyRespawnPos(player_->getPlayer2Dpos());
 		for (const auto& enemy : enemies_) {
 			// スポーン先に既に敵がいるかチェック。いたらリターン
 			if (enemy->get2Dpos().x == spawnPos.x && enemy->get2Dpos().y == spawnPos.y) {
@@ -761,6 +763,9 @@ namespace atl {
 
 		for (int x = 0; x < fieldData.size(); ++x) {
 			for (int y = 0; y < fieldData[x].size(); ++y) {
+				// 何もない場所なら早期リターン
+				if (fieldData[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_NONE) { continue; }
+
 				// その位置が壁なら壁を生成、壁でないなら地面を生成
 				if (fieldData[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
 					generateWall(x, y);
@@ -848,10 +853,10 @@ namespace atl {
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM) {
 					DrawStringEx((y * 15), (x * 15), -1, " ");
 				}
-				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_PATH) {
+				else if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_PATH) {
 					DrawStringEx((y * 15), (x * 15), -1, "-");
 				}
-				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
+				else if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) {
 					DrawStringEx((y * 15), (x * 15), -1, "*");
 				}
 			}

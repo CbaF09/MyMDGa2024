@@ -4,7 +4,7 @@
 namespace atl {
 
 	Skybox::Skybox() {
-		skybox_ = dxe::Mesh::CreateCubeMV(30000, 30, 30);
+		skybox_ = dxe::Mesh::CreateCubeMV(50000, 30, 30);
 		skybox_->setTexture(dxe::Texture::CreateFromFile("graphics/skybox/Skybox.jpg"));
 	}
 

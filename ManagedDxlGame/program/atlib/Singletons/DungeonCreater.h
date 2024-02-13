@@ -19,7 +19,7 @@ namespace atl {
 	public:
 		// セルの状態用 enum
 		enum class e_FieldCellType {
-			CELL_TYPE_NONE = 0, // 外れ値、初期化用
+			CELL_TYPE_NONE = 0, // 何もない
 			CELL_TYPE_ROOM,	// 部屋
 			CELL_TYPE_PATH,	// 通路
 			CELL_TYPE_WALL,	// 壁
@@ -71,11 +71,11 @@ namespace atl {
 
 		// fieldCells_ から、スポーン可能状態の空セルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 選ばれた XY地点の fieldCell は、スポーン不可状態に切り替わる
-		tnl::Vector2i randomChoiceCanSpawnFieldCellPos();
+		tnl::Vector2i randomChoiceCanFirstSpawnFieldCellPos();
 		// fieldCells_ から、スポーン可能状態のセルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 敵のリスポーン用
 		// arg ... スポーンから除外するフィールドセルのID
-		tnl::Vector2i randomChoiceCanSpawnFieldCellPos(const tnl::Vector2i& playerPos);
+		tnl::Vector2i randomChoiceEnemyRespawnPos(const tnl::Vector2i& playerPos);
 
 		// 移動先が、移動可能かどうかチェックする
 		bool isCanMoveFieldCellPos(const tnl::Vector2i& toMovePos);
@@ -145,7 +145,6 @@ namespace atl {
 		void setFieldCellsID();
 		// 通路設定
 		void pathwayCreate();
-
 		// 通路を生成する為の関数群
 		// TODO : 時間があったら一個にまとめてみるのに挑戦
 		void createPathwayToTop(const Area& area);
@@ -153,12 +152,22 @@ namespace atl {
 		void createPathwayToLeft(const Area& area);
 		void createPathwayToRight(const Area& area);
 
+
+		// 四方を壁で囲まれている壁は除去する
+		void eraseNonMeanWall();
+		// eraseNonMeamWall のヘルパー関数。配列境界チェックしながら、指定座標のセルが壁かどうかを判定する
+		// 配列外は壁として扱う
+		// ret ... 壁 => true , 壁でない = false
+		// arg ... 指定座標
+		bool isWall(int x, int y);
+
 		// スポーン候補地点を設定する関数群
 		// TODO : 時間があったら一個にまとめてみるのに挑戦
 		void choicePlayerSpawnPos();
 		void choiceStairsSpawnPos();
 		void choiceEnemySpawnPos();
 		void choiceItemSpawnPos();
+
 	};
 
 };

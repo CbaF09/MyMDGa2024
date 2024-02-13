@@ -25,7 +25,11 @@ namespace atl {
 		roomCreate();
 		pathwayCreate();
 
+		// フィールドセルにIDを設定する ( どの Area に属しているか )
 		setFieldCellsID();
+
+		// 四方を壁に囲まれているセルは、NONEに設定する ( 四方を壁に囲まれている箇所には何も生成しない )
+		eraseNonMeanWall();
 
 		// 各種スポーン
 		choicePlayerSpawnPos();
@@ -261,13 +265,52 @@ namespace atl {
 		}
 	}
 
+	void DungeonCreater::eraseNonMeanWall() {
+		// NONEになる壁のインデックスが入る一時配列
+		std::vector<std::pair<int,int>> eraseCellIndex;
+
+		for (auto x = 0; x < fieldCells_.size(); ++x) {
+			for (auto y = 0; y < fieldCells_[x].size(); ++y) {
+
+				// 壁以外のセルタイプなら早期リターン
+				if (fieldCells_[x][y].cellType_ != e_FieldCellType::CELL_TYPE_WALL) { continue; }
+
+				// 四近傍が壁なら、自身はNONEに設定される
+				if (isWall(x + 1, y) && 
+					isWall(x - 1, y) && 
+					isWall(x, y + 1) && 
+					isWall(x, y - 1)) {
+					eraseCellIndex.emplace_back(std::make_pair(x,y));
+				}
+			}
+		}
+
+		// 一時配列の中身を元に、NONEに設定する
+		for (auto& cellIndex : eraseCellIndex) {
+			fieldCells_[cellIndex.first][cellIndex.second].cellType_ = e_FieldCellType::CELL_TYPE_NONE;
+		}
+	}
+
+	// true => 壁、 fale => 壁ではない
+	bool DungeonCreater::isWall(int x, int y) {
+		// 境界チェック
+		if (x < 0 || x >  fieldCells_.size() - 1 || 
+			y < 0 || y > fieldCells_[x].size() - 1) {
+			// 配列の範囲外は壁として扱う
+			return true;
+		}
+
+		// セルタイプが壁なら true
+		return fieldCells_[x][y].cellType_ == e_FieldCellType::CELL_TYPE_WALL;
+	}
+
 	//------------------------------
 	// 
 	//	各種スポーン用
 	// 
 	//------------------------------
 
-	tnl::Vector2i DungeonCreater::randomChoiceCanSpawnFieldCellPos() {
+	tnl::Vector2i DungeonCreater::randomChoiceCanFirstSpawnFieldCellPos() {
 		std::vector<tnl::Vector2i> canSpawnCellsPos{};
 
 		for (int x = 0; x < FIELD_WIDTH; ++x) {
@@ -283,7 +326,7 @@ namespace atl {
 		return returnPos;
 	}
 
-	tnl::Vector2i DungeonCreater::randomChoiceCanSpawnFieldCellPos(const tnl::Vector2i& playerPos) {
+	tnl::Vector2i DungeonCreater::randomChoiceEnemyRespawnPos(const tnl::Vector2i& playerPos) {
 		std::vector <tnl::Vector2i> canSpawnCellsPos{};
 
 		auto playerPosID = getFieldCellID(playerPos);
@@ -305,24 +348,24 @@ namespace atl {
 	}
 
 	void DungeonCreater::choicePlayerSpawnPos() {
-		playerSpawnPos_ = randomChoiceCanSpawnFieldCellPos();
+		playerSpawnPos_ = randomChoiceCanFirstSpawnFieldCellPos();
 	}
 
 	void DungeonCreater::choiceStairsSpawnPos() {
-		stairsSpawnPos_ = randomChoiceCanSpawnFieldCellPos();
+		stairsSpawnPos_ = randomChoiceCanFirstSpawnFieldCellPos();
 	}
 
 	void DungeonCreater::choiceEnemySpawnPos() {
 		enemySpawnPosArray_.clear();
 		for (int i = 0;i < ENEMY_SPAWN_NUM;++i) {
-			enemySpawnPosArray_.emplace_back(randomChoiceCanSpawnFieldCellPos());
+			enemySpawnPosArray_.emplace_back(randomChoiceCanFirstSpawnFieldCellPos());
 		}
 	}
 
 	void DungeonCreater::choiceItemSpawnPos() {
 		itemSpawnPosArray_.clear();
 		for (int i = 0; i < ITEM_SPAWN_NUM;++i) {
-			itemSpawnPosArray_.emplace_back(randomChoiceCanSpawnFieldCellPos());
+			itemSpawnPosArray_.emplace_back(randomChoiceCanFirstSpawnFieldCellPos());
 		}
 	}
 
