@@ -27,9 +27,9 @@ namespace atl {
 		// ダンジョンシーンへの弱参照
 		std::weak_ptr<DungeonScene> weakDungeonScene_;
 		// アイテムポーンは、アイテムデータを持つ
-		Shared<Item> item_;
+		Shared<Item> item_ = nullptr;
 		// アイテムの周りに浮かぶパーティクル用
-		Shared<dxe::Particle> itemParticle_ = std::make_shared<dxe::Particle>("graphics/particle/ItemEffect.bin");
+		Shared<dxe::Particle> itemParticle_ = nullptr;
 	};
 
 }

@@ -83,5 +83,16 @@ namespace atl {
 		return false;
 	}
 
+	Shared<dxe::Particle> ResourceManager::getParticleRes(const std::string& filepath) {
+		// particleResourceMap_ に filepath が見つかった場合、それと対応するグラフィックハンドルを返す
+		if (particleResourceMap_.find(filepath) != particleResourceMap_.end()) return particleResourceMap_[filepath];
+
+		Shared<dxe::Particle> newParticle = std::make_shared<dxe::Particle>(filepath);
+		if (newParticle != nullptr) { // エラーの場合 nullptr が返ってくるので、エラーでない場合はuiResourceMapに追加する
+			particleResourceMap_.insert(std::make_pair(filepath, newParticle));
+		}
+		return newParticle;
+	}
+
 
 }

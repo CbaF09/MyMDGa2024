@@ -15,7 +15,11 @@ namespace atl {
 		static void deleteResourceManager() { delete getResourceManager(); };
 	private:
 		ResourceManager() {};
-		~ResourceManager() {};
+		~ResourceManager() {
+			for (auto& particle : particleResourceMap_) {
+				particle.second.reset();
+			}
+		};
 	//------------------------------------------
 	public:
 
@@ -40,11 +44,17 @@ namespace atl {
 		// 指定パスのリソースを解放する。成功 => false , 失敗 => false
 		bool deleteResource(const std::string& filepath);
 
+		// パーティクル用 フライウェイトパターン ( filepath, パーティクルへのポインター )
+		Shared<dxe::Particle> getParticleRes(const std::string& filepath);
+
 	private:
 		// 2D イラスト用 Map ( filepath, graphHandle)
 		std::unordered_map<std::string, int> graphResourceMap_;
 		// 音源データ用 map ( filepath, soundHandle )
 		std::unordered_map<std::string, int> soundResouceMap_;
+		// パーティクル用 map ( filepath, ポインター )
+		std::unordered_map<std::string, Shared<dxe::Particle>> particleResourceMap_;
+		
 
 		// 音源データ用 フライウェイトパターン。ロードと取得を行うだけ。
 		// サウンドは直接再生・音量調整・停止が出来た方がいいと思うので、ロードと取得を行うだけの関数は内部に隠蔽

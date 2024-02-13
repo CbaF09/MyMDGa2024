@@ -2,6 +2,7 @@
 #include "PlayerPawn.h"
 #include "../Scenes/DungeonScene.h"
 #include "../Object/Item.h"
+#include "../Singletons/ResourceManager.h"
 
 namespace atl {
 
@@ -14,6 +15,8 @@ namespace atl {
 		rootMesh->pos_ = item3Dpos;
 		setRootMesh(rootMesh);
 
+		auto particle = ResourceManager::getResourceManager()->getParticleRes("graphics/particle/ItemEffect.bin");
+		itemParticle_ = particle->createClone(); 
 		itemParticle_->setPosition(getRootMesh()->pos_);
 	}
 
