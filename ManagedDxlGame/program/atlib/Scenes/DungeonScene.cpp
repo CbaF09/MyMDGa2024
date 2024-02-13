@@ -27,6 +27,7 @@ namespace atl {
 
 		player_ = std::make_shared<PlayerPawn>();
 		menuWindow_ = std::make_shared<MenuWindow>(player_->getPlayerData()->getInventory());
+		selectWindow_ = std::make_shared<SelectWindow>();
 	}
 
 	DungeonScene::~DungeonScene() {
@@ -119,7 +120,7 @@ namespace atl {
 		}
 
 		// セレクトウィンドウがある時は、描画する
-		if (selectWindow_) selectWindow_->draw(deltaTime);
+		if (isSelectWindow_) selectWindow_->draw(deltaTime);
 	}
 
 
@@ -259,6 +260,15 @@ namespace atl {
 		// メニューウィンドウを閉じる
 		player_->closeMenuBook();
 		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneCloseMenu.ogg", DX_PLAYTYPE_BACK);
+	}
+
+	void DungeonScene::openSelectWindow(const std::string& question) {
+		selectWindow_->openSelectWindow(question);
+		isSelectWindow_ = true;
+	}
+
+	void DungeonScene::closeSelectWindow() {
+		isSelectWindow_ = false;
 	}
 
 	void DungeonScene::soundVolumeFix() {
@@ -534,15 +544,12 @@ namespace atl {
 			return true;;
 		}
 
-		// 階段に乗っているフラグが立っていない場合、階段シーケンスに遷移
-		if (!isPlayerOnStairs_) {
-			auto& player2Dpos = player_->getPlayer2Dpos();
-			auto& stairs2Dpos = originStairs_->get2Dpos();
-			if (stairs2Dpos.x == player2Dpos.x && stairs2Dpos.y == player2Dpos.y) {
-				isPlayerOnStairs_ = true;
-				seq_.change(&DungeonScene::seqOnStairs);
-				return true;
-			}
+		// 階段に乗った時、階段に乗っているフラグが立っていない場合、階段シーケンスに遷移
+		auto& player2Dpos = player_->getPlayer2Dpos();
+		auto& stairs2Dpos = originStairs_->get2Dpos();
+		if (stairs2Dpos.x == player2Dpos.x && stairs2Dpos.y == player2Dpos.y && !isPlayerOnStairs_) {
+			seq_.change(&DungeonScene::seqOnStairs);
+			return true;
 		}
 
 		// 足元にアイテムがあったら拾う
@@ -623,24 +630,23 @@ namespace atl {
 		return true;
 	}
 
-
 	// 本当にアイテムを使うか確認
 	bool DungeonScene::seqReallyUseItem(float deltaTime) {
 		auto& item = player_->getPlayerData()->getInventory()->getItem(static_cast<int>(selectedMenu));
 		if (seq_.isStart()) {
-			selectWindow_ = std::make_shared<SelectWindow>(item->getItemName() + "\nを使いますか？");
+			openSelectWindow(item->getItemName() + "\nを使いますか？");
 		}
-		if (selectWindow_) {
+		if (isSelectWindow_) {
 			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
 				// アイテム使用してメニューウィンドウを閉じる。エネミーが行動する
 				player_->getPlayerData()->getInventory()->useItem(static_cast<int32_t>(selectedMenu));
-				selectWindow_.reset();
 				closeMenu();
+				closeSelectWindow();
 				player_->onFlagIsAlreadyTurn();
 				seq_.change(&DungeonScene::seqPlayerActionTurn);
 			}
 			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
-				selectWindow_.reset();
+				closeSelectWindow();
 				seq_.change(&DungeonScene::seqMenuWindow);
 			}
 		}
@@ -650,16 +656,15 @@ namespace atl {
 	// 本当にタイトルに戻るかどうか確認中
 	bool DungeonScene::seqReallyReturnToTitle(float deltaTime) {
 		if (seq_.isStart()) {
-			selectWindow_ = std::make_shared<SelectWindow>("タイトル画面に戻りますか？\n進捗データは残りません");
+			openSelectWindow("タイトル画面に戻りますか？\n進捗データは残りません");
 		}
 
-		if (selectWindow_) {
+		if (isSelectWindow_) {
 			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
-				selectWindow_.reset();
 				seq_.change(&DungeonScene::seqReturnToTitle);
 			}
 			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
-				selectWindow_.reset();
+				closeSelectWindow();
 				seq_.change(&DungeonScene::seqMenuWindow);
 			}
 		}
@@ -687,19 +692,20 @@ namespace atl {
 	bool DungeonScene::seqOnStairs(float deltaTime) {
 		// ウィンドウがまだ無い場合は生成する
 		if (seq_.isStart()) { 
-			selectWindow_ = std::make_shared<SelectWindow>("次の階層に進みますか？"); 
+			isPlayerOnStairs_ = true;
+			openSelectWindow("次の階層に進みますか？"); 
 		}
 
-		// ポインタが有効化どうか
-		if (selectWindow_) {
-			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
-				selectWindow_.reset();
+		if (isSelectWindow_) {
+			// はい、の時の処理
+			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) {
 				seq_.change(&DungeonScene::seqToNextFloor);
 
 			}
-			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) { // いいえ、の時
-				selectWindow_.reset();
-				seq_.change(&DungeonScene::seqTurnStart);
+			// いいえ、の時
+			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {
+				closeSelectWindow();
+				seq_.change(&DungeonScene::seqTurnInit);
 			}
 		}
 

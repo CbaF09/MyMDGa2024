@@ -108,6 +108,7 @@ namespace atl {
 
         // 選択肢ウィンドウ関連 ------------------------
         Shared<SelectWindow> selectWindow_ = nullptr;
+        bool isSelectWindow_ = false;
 
         // メニュー関連 --------------------------------
         Shared<MenuWindow> menuWindow_ = nullptr;
@@ -170,6 +171,12 @@ namespace atl {
         void openMenu();
         // メニューを閉じる
         void closeMenu();
+        // 選択肢ウィンドウを開く
+        // arg ... 質問文
+        void openSelectWindow(const std::string& question);
+        // 選択肢ウィンドウを閉じる
+        void closeSelectWindow();
+
 
         // シーンで使う音源データのヴォリュームをまとめて調整
         void soundVolumeFix();
@@ -184,6 +191,7 @@ namespace atl {
         void enemyAction(float deltaTime);
         // HP がゼロになり、死亡演出が終わった敵を削除
         void deadEnemyErase();
+        
 
         // シーケンス関連
         SEQUENCE(DungeonScene, &DungeonScene::seqInit);

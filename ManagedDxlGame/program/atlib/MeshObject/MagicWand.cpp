@@ -4,7 +4,7 @@
 namespace atl {
 
 	// ƒvƒŒƒCƒ„[‚É•Û‚³‚ê‚½ó‘Ô‚Å¶¬‚³‚ê‚é
-	MagicWand::MagicWand(std::weak_ptr<const PlayerPawn> player) : weakPlayerPawn(player) {
+	MagicWand::MagicWand(std::weak_ptr<PlayerPawn> player) : weakPlayerPawn(player) {
 		auto playerLock = weakPlayerPawn.lock();
 		if (playerLock) {
 

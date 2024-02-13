@@ -2,10 +2,8 @@
 #include "../Singletons/ResourceManager.h"
 
 namespace atl {
-
-	SelectWindow::SelectWindow(std::string questionText) : questionText_(questionText) {
+	SelectWindow::SelectWindow() {
 		ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/SE/DungeonSceneOpenSelectMenu.ogg", 160);
-		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneOpenSelectMenu.ogg", DX_PLAYTYPE_BACK);
 	}
 
 	SelectWindow::~SelectWindow(){
@@ -15,6 +13,8 @@ namespace atl {
 		std::vector<std::string> tempDeleteRes = {
 		"graphics/UI/SelectWindowQuestionText.png",
 		"graphics/UI/SelectWindowYesNo.png",
+		"graphics/UI/KeyboardA.png",
+		"graphics/UI/KeyboardD.png",
 		"sound/SE/DungeonSceneOpenSelectMenu.ogg",
 		};
 
@@ -77,6 +77,11 @@ namespace atl {
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_D)) {
 			currentSelectedChoice_ = e_SelectChoice::NO;
 		}
+	}
+
+	void SelectWindow::openSelectWindow(const std::string& questionText) {
+		questionText_ = questionText;
+		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneOpenSelectMenu.ogg", DX_PLAYTYPE_BACK);
 	}
 
 	// エンター or スペース or 左クリックを押した時、currentSelectedChoice == YES なら true を返す。NO なら false を返す。

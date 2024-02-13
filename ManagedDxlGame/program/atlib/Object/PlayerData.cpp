@@ -29,6 +29,8 @@ namespace atl {
         ++currentLevel_;
         // 蓄積経験値がゼロに
         currentExp_ = 0;
+        // MAX HP が 増える
+        setMaxHP(getMaxHP() + LEVEL_UP_HP_UP_VALUE);
         TextLogManager::getTextLogManager()->addTextLog("レベルが上がった！");
 
     }

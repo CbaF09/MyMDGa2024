@@ -22,11 +22,11 @@ namespace atl {
 	private:
 		// 現在のレベル
 		int32_t currentLevel_ = 1;
-
 		// 現在蓄積中の経験値
 		int32_t currentExp_ = 0;
 		// レベルアップに必要な経験値
 		int32_t needExp_ = 15;
+		const int32_t LEVEL_UP_HP_UP_VALUE = 5;
 
 		// プレイヤーのインベントリ
 		Shared<Inventory> playerInventory_ = std::make_shared<Inventory>();

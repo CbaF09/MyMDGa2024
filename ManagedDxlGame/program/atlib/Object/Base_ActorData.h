@@ -16,7 +16,7 @@ namespace atl {
 		inline const int32_t getAttackPower() const { return attackPower_; }
 
 		// セッター
-		inline void setMaxHP(int32_t maxHP) { maxHP_ = maxHP; }
+		inline void setMaxHP(int32_t maxHP) { maxHP_ = maxHP; calcAndSetCurrentHPpersent(); }
 		inline void setCurrentHP(int32_t currentHP) { currentHP_ = currentHP; calcAndSetCurrentHPpersent(); }
 		inline void setAttackPower(int32_t attackPower) { attackPower_ = attackPower; }
 

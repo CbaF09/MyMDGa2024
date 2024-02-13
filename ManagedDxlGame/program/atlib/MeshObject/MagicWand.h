@@ -7,13 +7,13 @@ namespace atl {
 
 	class MagicWand final : public Base_MultiMeshObject {
 	public:
-		explicit MagicWand(std::weak_ptr<const PlayerPawn> player);
+		explicit MagicWand(std::weak_ptr<PlayerPawn> player);
 
 		void adjustChildsMeshes(float deltaTime) override;
 
 	private:
 		tnl::Quaternion initRot_;
-		std::weak_ptr<const PlayerPawn> weakPlayerPawn;
+		std::weak_ptr<PlayerPawn> weakPlayerPawn;
 	};
 
 }

@@ -7,9 +7,7 @@ namespace atl {
 	// 対応している選択肢は二つのみ
 	class SelectWindow {
 	public:
-		// コンストラクタで文言（階段を登りますか？等）を指定する
-		SelectWindow(std::string questionText);
-
+		SelectWindow();
 		~SelectWindow();
 
 		// 選択中の選択肢を表現
@@ -18,6 +16,9 @@ namespace atl {
 		// 質問文言やUIを描画する
 		void draw(float deltaTime);
 		
+		// セレクトウィンドウを開く。
+		// arg ... 質問文
+		void openSelectWindow(const std::string& questionText);
 		// エンター or スペースを押した時、currentSelectedChoice == YES なら true を返す。NO なら false を返す。
 		const e_SelectChoice windowChoice();
 
