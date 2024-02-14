@@ -84,8 +84,8 @@ namespace atl {
 		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneOpenSelectMenu.ogg", DX_PLAYTYPE_BACK);
 	}
 
-	// エンター or スペース or 左クリックを押した時、currentSelectedChoice == YES なら true を返す。NO なら false を返す。
-	// 右クリックを押した時、いいえを選んだ判定
+	// エンター or スペース or 左クリックを押した時、currentSelectedChoice == YES なら YES を返す。NO なら NO を返す。
+	// 右クリックを押した時は、いいえを選んだ判定
 	const SelectWindow::e_SelectChoice SelectWindow::windowChoice() {
 		// エンター or スペース or 左クリックを押した時
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)||

@@ -724,6 +724,7 @@ namespace atl {
 		if (isSelectWindow_) {
 			// ‚Í‚¢A‚ÌŽž‚Ìˆ—
 			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) {
+				closeSelectWindow();
 				seq_.change(&DungeonScene::seqToNextFloor);
 
 			}

@@ -324,7 +324,10 @@
       <Filter>program\[002] atlib\MagicRuneSystem</Filter>
     </ClCompile>
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRune.cpp">
-      <Filter>program</Filter>
+      <Filter>program\[002] atlib\MagicRuneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneWindow.cpp">
+      <Filter>program\[002] atlib\MagicRuneSystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -651,6 +654,9 @@
       <Filter>program\[002] atlib\MagicRuneSystem</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRune.h">
+      <Filter>program\[002] atlib\MagicRuneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneWindow.h">
       <Filter>program\[002] atlib\MagicRuneSystem</Filter>
     </ClInclude>
   </ItemGroup>

@@ -6,6 +6,9 @@
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/PlayerPawn.h"
+#include "../MagicRuneSystem/MagicRune.h"
+#include "../MagicRuneSystem/MagicRuneWindow.h"
+#include "../MagicRuneSystem/MagicRuneSystemManager.h"
 
 namespace atl {
 
@@ -18,11 +21,7 @@ namespace atl {
 
     private:
         Shared<PlayerPawn> player_ = nullptr;
-        Shared<Stairs> stairs_ = nullptr;
-
-        Shared<GroundTile> groundOrigin = std::make_shared<GroundTile>(tnl::Vector3{ 1000, 1000, 1000 });
-        Shared<GroundTile> ground1_ = std::make_shared<GroundTile>(groundOrigin->getMesh());
-        Shared<GroundTile> ground2_ = std::make_shared<GroundTile>(groundOrigin->getMesh());
+        MagicRuneWindow magicRuneWindow_;
 
         void sceneUpdate(float deltaTime) override {
             seq_.update(deltaTime);
@@ -35,14 +34,13 @@ namespace atl {
 
             camera->update();
 
-            ground1_->renderObject(camera, deltaTime);
-            ground2_->renderObject(camera, deltaTime);
-            stairs_->renderObjects(camera, deltaTime);
+            magicRuneWindow_.draw();
 
             player_->render(deltaTime);
 
+
 //            DrawDefaultLightGuiController();
-//            DrawGridGround(player_->getPlayerCamera(), 50, 20);
+            DrawGridGround(player_->getPlayerCamera(), 50, 20);
             DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
         }
 
@@ -53,12 +51,7 @@ namespace atl {
 
             player_ = std::make_shared<PlayerPawn>();
             player_->initialize();
-            player_->playerSpawn2Dpos({ 0,-1 });
-
-            stairs_ = std::make_shared<Stairs>(tnl::Vector2i{ 0,0 }, tnl::Vector3{ 333,333,333 });
-
-            ground1_->setMeshPos({ 0,0,0 });
-            ground2_->setMeshPos({ 0,0,-1000 });
+            player_->playerSpawn2Dpos({ 0,0 });
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
@@ -66,6 +59,14 @@ namespace atl {
 
         bool seqProcess(float deltaTime) {
             
+            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_1)) {
+                MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealBuffMagicRune>());
+            }
+
+            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_2)) {
+                MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(2);
+            }
+
             {// デバッグ用。ESCキーでウィンドウ落とす。
                 if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
                     ResourceManager::getResourceManager()->playSoundRes("sound/explosion.ogg",DX_PLAYTYPE_BACK);

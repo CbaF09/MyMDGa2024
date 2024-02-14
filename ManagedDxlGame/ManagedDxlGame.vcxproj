@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="ManagedDxlGame.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRune.cpp" />
+    <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneWindow.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Base_MeshObject.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Base_MultiMeshObject.cpp" />
     <ClCompile Include="program\atlib\MeshObject\EnemyPawn.cpp" />
@@ -358,6 +359,7 @@
   <ItemGroup>
     <ClInclude Include="program\atlib\MagicRuneSystem\Base_MagicRune.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRune.h" />
+    <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneWindow.h" />
     <ClInclude Include="program\atlib\MeshObject\Base_MeshObject.h" />
     <ClInclude Include="program\atlib\MeshObject\Base_MultiMeshObject.h" />
     <ClInclude Include="program\atlib\MeshObject\EnemyPawn.h" />
