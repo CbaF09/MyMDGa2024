@@ -222,7 +222,6 @@ namespace atl {
 			}
 		}
 
-
 		{// プレイヤーの位置描画
 			auto& player2Dpos = player_->getPlayer2Dpos();
 			tnl::Vector2i playerDrawPos = calcDrawMinimapPos(player2Dpos.x, player2Dpos.y);
@@ -380,8 +379,6 @@ namespace atl {
 		// BGM再生
 		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg",DX_PLAYTYPE_LOOP);
 
-		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealBuffMagicRune>());
-
 		// 本シーケンスに遷移
 		seq_.change(&DungeonScene::seqToNextFloor);
 		return true;
@@ -402,9 +399,6 @@ namespace atl {
 	bool DungeonScene::seqTurnStart(float deltaTime) {
 		// HP 自動回復
 		turnHealHP();
-
-		// ターンスタート時のルーン効果発動
-		MagicRuneSystemManager::getMagicRuneSystemManager()->notifyOnEvent(e_EventType::TurnStart,*this);
 
 		// 敵のリスポーン判定
 		enemyResporn();

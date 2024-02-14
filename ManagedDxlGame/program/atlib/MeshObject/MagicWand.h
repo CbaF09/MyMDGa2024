@@ -13,6 +13,7 @@ namespace atl {
 
 	private:
 		tnl::Quaternion initRot_;
+		const float WAND_SIZE = 25.0f;
 		std::weak_ptr<PlayerPawn> weakPlayerPawn;
 	};
 

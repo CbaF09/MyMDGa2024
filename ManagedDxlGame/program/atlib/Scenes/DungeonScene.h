@@ -55,11 +55,11 @@ namespace atl {
 
         // 壁 用 ---------------------------------------
         Shared<Wall> originWall_ = std::make_shared<Wall>(tnl::Vector3{ CELL_FULL_LENGTH, CELL_FULL_LENGTH * 2 ,CELL_FULL_LENGTH }); // クローン元になる壁メッシュ
-        std::vector<Shared<Wall>> walls_;   // 壁メッシュ群のリスト
+        std::vector<Shared<Wall>> walls_{};   // 壁メッシュ群のリスト
 
         // 地面 用 -------------------------------------
         Shared<GroundTile> originGroundTile_ = std::make_shared<GroundTile>(tnl::Vector3{ CELL_FULL_LENGTH,CELL_FULL_LENGTH,0 }); // クローン元になる地面メッシュ PlaneMVモデルの関係で、Yの所にZの値を入れてます 
-        std::vector<Shared<GroundTile>> groundTiles_;   // 地面メッシュ群のリスト
+        std::vector<Shared<GroundTile>> groundTiles_{};   // 地面メッシュ群のリスト
 
         // 階段関連 -------------------------------------
         Shared<Stairs> originStairs_ = nullptr; // 階段へのポインタ
@@ -232,9 +232,6 @@ namespace atl {
 
         // ゲームオーバーの処理 ( ゲームオーバーシーンに遷移 )
         bool seqGameOver(float deltaTime);
-
-
-
 
         // デバッグ用 ----------------------------------
         bool isDebug = false;

@@ -10,20 +10,19 @@ namespace atl {
 
 			auto& playerPos = playerLock->getPlayerPos();
 
-			float initSize = 25;
 
-			auto stick = dxe::Mesh::CreateConeCylinderMV(initSize / 4, initSize / 10, initSize * 2.5f);
+			auto stick = dxe::Mesh::CreateConeCylinderMV(WAND_SIZE / 4, WAND_SIZE / 10, WAND_SIZE * 2.5f);
 			stick->rot_ *= tnl::Quaternion::RotationAxis({ 0,0,1 }, tnl::ToRadian(180));
 			stick->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(90));
 			initRot_ = stick->rot_;
 			stick->setTexture(dxe::Texture::CreateFromFile("graphics/Texture/WandStick.png"));
 			setRootMesh(stick);
 
-			auto sphere = dxe::Mesh::CreateSphereMV(initSize / 3);
+			auto sphere = dxe::Mesh::CreateSphereMV(WAND_SIZE / 3);
 			sphere->setTexture(dxe::Texture::CreateFromFile("graphics/Texture/WandCore.png"));
 			addChildMesh(sphere);
 
-			auto outerRing = dxe::Mesh::CreateTorusMV(initSize / 1.2f, initSize / 4);
+			auto outerRing = dxe::Mesh::CreateTorusMV(WAND_SIZE / 2, WAND_SIZE / 4);
 			outerRing->rot_ *= tnl::Quaternion::RotationAxis({ 0,0,1 }, tnl::ToRadian(90));
 			outerRing->setTexture(dxe::Texture::CreateFromFile("graphics/Texture/WandStick.png"));
 			addChildMesh(outerRing);

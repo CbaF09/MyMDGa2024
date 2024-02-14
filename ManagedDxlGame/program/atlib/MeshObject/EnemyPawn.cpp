@@ -31,7 +31,7 @@ namespace atl {
 		rightHone->setTexture(texture);
 		addChildMesh(rightHone);
 
-		auto leftHone = dxe::Mesh::CreateConeMV(ENEMY_SIZE_RADIUS / 3.0f, ENEMY_SIZE_RADIUS / 2.0f);
+		auto leftHone = rightHone->createClone();
 		leftHone->setTexture(texture);
 		addChildMesh(leftHone);
 

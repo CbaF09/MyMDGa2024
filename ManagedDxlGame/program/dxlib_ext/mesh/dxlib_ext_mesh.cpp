@@ -93,7 +93,7 @@ namespace dxe {
 	//----------------------------------------------------------------------------------------
 	std::string Mesh::getXFormatString() noexcept {
 
-		char buf[128] = { 0 };
+		char buf[512] = { 0 };
 
 		std::string str;
 		str.resize(10000);
