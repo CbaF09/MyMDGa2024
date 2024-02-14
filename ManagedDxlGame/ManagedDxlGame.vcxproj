@@ -370,6 +370,7 @@
     <ClInclude Include="program\atlib\Object\EnemyData.h" />
     <ClInclude Include="program\atlib\Object\Inventory.h" />
     <ClInclude Include="program\atlib\Object\Item.h" />
+    <ClInclude Include="program\atlib\Object\MagicRuneSlot.h" />
     <ClInclude Include="program\atlib\Object\MenuWindow.h" />
     <ClInclude Include="program\atlib\Object\PlayerData.h" />
     <ClInclude Include="program\atlib\Object\SelectWindow.h" />

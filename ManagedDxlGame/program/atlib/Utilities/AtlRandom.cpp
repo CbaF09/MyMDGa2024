@@ -14,10 +14,19 @@ namespace atl {
     }
 
     int mtRandomRangeInt(int32_t min, int32_t max) {
-
+        // max ‚ª min ˆÈ‰º‚Ìê‡Amin‚ğ•Ô‚·
         if (max <= min) return min;
 
         int ret = std::uniform_int_distribution<int>(min, max)(mtRandom);
+        return ret;
+    }
+
+
+    float mtRandomRangeFloat(float min, float max) {
+        // max ‚ª min ˆÈ‰º‚Ìê‡Amin‚ğ•Ô‚·
+        if (max <= min) return min;
+
+        float ret = std::uniform_real_distribution<float>(min, max)(mtRandom);
         return ret;
     }
 

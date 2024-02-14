@@ -74,11 +74,11 @@ namespace atl {
 			auto playerArea = DungeonCreater::getDungeonCreater()->getFieldCellID(player->getPlayer2Dpos());
 			for (auto& enemy : enemies) {
 				auto enemyArea = DungeonCreater::getDungeonCreater()->getFieldCellID(enemy->get2Dpos());
-				auto enemyName = enemy->getEnemyData()->getEnemyName();
+				auto& enemyName = enemy->getEnemyData()->getEnemyName();
 				// プレイヤーと同じエリアなら
 				if (playerArea == enemyArea) {
-					auto realyDamaged = enemy->getEnemyData()->damaged(THUNDER_STONE_DAMAGE_VALUE);
-					addTextItemUse(enemyName + "に" + convertFullWidthNumber(realyDamaged) + "のダメージ！");
+					enemy->getEnemyData()->changeCurrentHP(-THUNDER_STONE_DAMAGE_VALUE);
+					addTextItemUse(enemyName + "に" + convertFullWidthNumber(THUNDER_STONE_DAMAGE_VALUE) + "のダメージ！");
 				}
 			}
 		}
@@ -90,9 +90,9 @@ namespace atl {
 		if (lock) {
 			auto& enemies = lock->getEnemyArray();
 			for (auto& enemy : enemies) {
-				auto realyDamaged = enemy->getEnemyData()->damaged(THUNDER_SCROLL_DAMAGE_VALUE);
-				auto enemyName = enemy->getEnemyData()->getEnemyName();
-				addTextItemUse(enemyName + "に" + convertFullWidthNumber(realyDamaged) + "のダメージ！");
+				enemy->getEnemyData()->changeCurrentHP(-THUNDER_SCROLL_DAMAGE_VALUE);
+				auto& enemyName = enemy->getEnemyData()->getEnemyName();
+				addTextItemUse(enemyName + "に" + convertFullWidthNumber(THUNDER_SCROLL_DAMAGE_VALUE) + "のダメージ！");
 			}
 		}
 	}

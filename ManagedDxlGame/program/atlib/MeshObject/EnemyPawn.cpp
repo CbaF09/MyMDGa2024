@@ -276,7 +276,7 @@ namespace atl {
 		// 攻撃処理
 		auto player = weakDungeonScene_.lock()->getPlayerPawn();
 		if (player->getIsAlreadyTurn()) {
-			auto damage = player->getPlayerData()->damaged(enemyData_->getAttackPower());
+			auto damage = Base_ActorData::damaged(*enemyData_, *player->getPlayerData());
 			TextLogManager::getTextLogManager()->addTextLog("プレイヤーは" + convertFullWidthNumber(damage) + "のダメージを受けた");
 			isAlreadyAction_ = true;
 			seq_.change(&EnemyPawn::seqStateTransition);

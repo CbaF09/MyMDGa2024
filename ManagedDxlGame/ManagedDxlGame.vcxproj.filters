@@ -635,5 +635,8 @@
     <ClInclude Include="program\atlib\MeshObject\Skybox.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
+    <ClInclude Include="program\atlib\Object\MagicRuneSlot.h">
+      <Filter>program\[002] atlib\Object</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

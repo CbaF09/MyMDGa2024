@@ -175,7 +175,7 @@ namespace atl {
 	}
 
 	void PlayerPawn::attackHitEffectAndLog(const Shared<atl::EnemyPawn>& enemy) {
-		auto damage = enemy->getEnemyData()->damaged(playerData_->getAttackPower());
+		auto damage = Base_ActorData::damaged(*playerData_,*enemy->getEnemyData());
 
 		// 爆発パーティクル
 		auto& forwardNormal = playerCamera_->getCurrentForwardDir();

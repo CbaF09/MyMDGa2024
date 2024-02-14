@@ -1,10 +1,11 @@
 #pragma once
 #include "Base_ActorData.h"
 #include "Inventory.h"
+#include "MagicRuneSlot.h"
 
 namespace atl {
 
-	class PlayerData : public Base_ActorData {
+	class PlayerData final: public Base_ActorData {
 	public:
 		PlayerData();
 
@@ -30,6 +31,9 @@ namespace atl {
 
 		// プレイヤーのインベントリ
 		Shared<Inventory> playerInventory_ = std::make_shared<Inventory>();
+		
+		// プレイヤーのマジックルーンスロット
+		Shared<MagicRuneSlot> playerMagicRuneSlot = std::make_shared<MagicRuneSlot>();
 
 		// 現在経験値がレベルアップに必要な経験値を超えた時の処理。レベルアップ
 		void levelUp();
