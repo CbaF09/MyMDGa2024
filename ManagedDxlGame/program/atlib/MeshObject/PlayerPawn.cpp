@@ -1,4 +1,5 @@
 #include "PlayerPawn.h"
+#include "EnemyPawn.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/ResourceManager.h"
@@ -7,7 +8,8 @@
 #include "../MeshObject/MenuBook.h"
 #include "../MeshObject/ForwardArrow.h"
 #include "../Utilities/AtlString.h"
-#include "EnemyPawn.h"
+#include "../MagicRuneSystem/MagicRune.h"
+#include "../MagicRuneSystem/MagicRuneSystemManager.h"
 
 namespace atl {
 
@@ -142,6 +144,7 @@ namespace atl {
 	}
 
 	void PlayerPawn::startAttack() {
+
 		// 停止時間 => 空振り
 		waitTime_ = ATTACK_MISS_TIME;
 
@@ -228,9 +231,10 @@ namespace atl {
 		forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
 		player3Dpos_ = playerCamera_->pos_;
 		weakDungeonScene_ = dungeonScene;
+
 	}
 
-	// 引数無し
+	// 引数無し,デバッグ用
 	void PlayerPawn::initialize() {
 		playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
 		playerHaveMenuBook_ = std::make_shared<MenuBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));

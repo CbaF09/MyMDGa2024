@@ -5,7 +5,7 @@ namespace atl {
 
 	// ‘I‘ðŽˆ‚Ì‚ ‚é 2D UI—p
 	// ‘Î‰ž‚µ‚Ä‚¢‚é‘I‘ðŽˆ‚Í“ñ‚Â‚Ì‚Ý
-	class SelectWindow {
+	class SelectWindow final {
 	public:
 		SelectWindow();
 		~SelectWindow();

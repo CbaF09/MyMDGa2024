@@ -40,6 +40,8 @@ namespace atl {
             if (currentSatiety_ > SATIETY_FULL) { currentSatiety_ = SATIETY_FULL; }
         }
 
+        // 毎ターンのHP回復
+        void turnHealHP();
 
 
     private: 
@@ -101,7 +103,7 @@ namespace atl {
         const int NEXT_FLOOR_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
 
         // ミニマップ関連-------------------------------
-        const float MINIMAP_ALPHA = 128;  // ミニマップの透過度
+        const int32_t MINIMAP_ALPHA = 128;  // ミニマップの透過度
         const tnl::Vector2i MINIMAP_LEFTUP_POSITION{ 600,130 }; // ミニマップの一番左上に位置する座標
         const int32_t MINIMAP_CELL_SIZE = 12;    // ミニマップの1マスの大きさ
         const int32_t MINIMAP_PLAYER_SIZE = MINIMAP_CELL_SIZE / 3;    // ミニマップの1マスの大きさ
@@ -177,7 +179,6 @@ namespace atl {
         // 選択肢ウィンドウを閉じる
         void closeSelectWindow();
 
-
         // シーンで使う音源データのヴォリュームをまとめて調整
         void soundVolumeFix();
         
@@ -204,6 +205,7 @@ namespace atl {
         bool seqTurnInit(float deltaTime);
         // ターン開始時処理
         bool seqTurnStart(float deltaTime);
+
         // キー入力待ち
         bool seqKeyInput(float deltaTime);
         // プレイヤーが移動を選択したターン

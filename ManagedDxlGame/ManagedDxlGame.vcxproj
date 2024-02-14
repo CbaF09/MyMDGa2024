@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ManagedDxlGame.cpp" />
+    <ClCompile Include="program\atlib\MagicRuneSystem\MagicRune.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Base_MeshObject.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Base_MultiMeshObject.cpp" />
     <ClCompile Include="program\atlib\MeshObject\EnemyPawn.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="program\atlib\Scenes\TitleScene.cpp" />
     <ClCompile Include="program\atlib\Singletons\DungeonCreater.cpp" />
     <ClCompile Include="program\atlib\Singletons\FadeInOutManager.cpp" />
+    <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneSystemManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\ResourceManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\SceneManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\TextLogManager.cpp" />
@@ -354,6 +356,8 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="program\atlib\MagicRuneSystem\Base_MagicRune.h" />
+    <ClInclude Include="program\atlib\MagicRuneSystem\MagicRune.h" />
     <ClInclude Include="program\atlib\MeshObject\Base_MeshObject.h" />
     <ClInclude Include="program\atlib\MeshObject\Base_MultiMeshObject.h" />
     <ClInclude Include="program\atlib\MeshObject\EnemyPawn.h" />
@@ -370,7 +374,6 @@
     <ClInclude Include="program\atlib\Object\EnemyData.h" />
     <ClInclude Include="program\atlib\Object\Inventory.h" />
     <ClInclude Include="program\atlib\Object\Item.h" />
-    <ClInclude Include="program\atlib\Object\MagicRuneSlot.h" />
     <ClInclude Include="program\atlib\Object\MenuWindow.h" />
     <ClInclude Include="program\atlib\Object\PlayerData.h" />
     <ClInclude Include="program\atlib\Object\SelectWindow.h" />
@@ -383,6 +386,7 @@
     <ClInclude Include="program\atlib\Scenes\TitleScene.h" />
     <ClInclude Include="program\atlib\Singletons\DungeonCreater.h" />
     <ClInclude Include="program\atlib\Singletons\FadeInOutManager.h" />
+    <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneSystemManager.h" />
     <ClInclude Include="program\atlib\Singletons\ResourceManager.h" />
     <ClInclude Include="program\atlib\Singletons\SceneManager.h" />
     <ClInclude Include="program\atlib\Singletons\TextLogManager.h" />

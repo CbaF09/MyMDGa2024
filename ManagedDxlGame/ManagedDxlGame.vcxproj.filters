@@ -60,6 +60,9 @@
     <Filter Include="program\[002] atlib\Utilities">
       <UniqueIdentifier>{4b83cbea-da4d-4825-9efa-6aae39adf278}</UniqueIdentifier>
     </Filter>
+    <Filter Include="program\[002] atlib\MagicRuneSystem">
+      <UniqueIdentifier>{3a1e38cb-b008-4847-90a2-85b375813fa4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="program\library\tnl_font_texture.cpp">
@@ -316,6 +319,12 @@
     </ClCompile>
     <ClCompile Include="program\atlib\MeshObject\Skybox.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneSystemManager.cpp">
+      <Filter>program\[002] atlib\MagicRuneSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\MagicRuneSystem\MagicRune.cpp">
+      <Filter>program</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -635,8 +644,14 @@
     <ClInclude Include="program\atlib\MeshObject\Skybox.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\Object\MagicRuneSlot.h">
-      <Filter>program\[002] atlib\Object</Filter>
+    <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneSystemManager.h">
+      <Filter>program\[002] atlib\MagicRuneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\MagicRuneSystem\Base_MagicRune.h">
+      <Filter>program\[002] atlib\MagicRuneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\MagicRuneSystem\MagicRune.h">
+      <Filter>program\[002] atlib\MagicRuneSystem</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

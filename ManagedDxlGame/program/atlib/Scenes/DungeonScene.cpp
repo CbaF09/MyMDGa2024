@@ -9,6 +9,8 @@
 #include "../Singletons/ResourceManager.h"
 #include "../Singletons/FadeInOutManager.h"
 #include "../Singletons/SceneManager.h"
+#include "../MagicRuneSystem/MagicRuneSystemManager.h"
+#include "../MagicRuneSystem/MagicRune.h"
 #include "../MeshObject/Wall.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/EnemyPawn.h"
@@ -202,7 +204,7 @@ namespace atl {
 				// 描画位置の計算
 				tnl::Vector2i drawPos = calcDrawMinimapPos(x, y);
 				// 描画
-				DrawBoxEx({ (float)drawPos.x,(float)drawPos.y ,0 }, MINIMAP_CELL_SIZE, MINIMAP_CELL_SIZE, true, drawColor);
+				DrawBoxEx({ static_cast<float>(drawPos.x),static_cast<float>(drawPos.y) ,0 }, static_cast<float>(MINIMAP_CELL_SIZE), static_cast<float>(MINIMAP_CELL_SIZE), true, drawColor);
 			}
 		}
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -216,7 +218,7 @@ namespace atl {
 				// 描画位置の計算
 				tnl::Vector2i drawPos = calcDrawMinimapPos(x, y);
 				// 描画
-				DrawBoxEx({ (float)drawPos.x,(float)drawPos.y ,0 }, MINIMAP_CELL_SIZE, MINIMAP_CELL_SIZE, true, GetColor(0,0,0));
+				DrawBoxEx({ (float)drawPos.x,(float)drawPos.y ,0 }, static_cast<float>(MINIMAP_CELL_SIZE), static_cast<float>(MINIMAP_CELL_SIZE), true, GetColor(0,0,0));
 			}
 		}
 
@@ -378,6 +380,8 @@ namespace atl {
 		// BGM再生
 		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg",DX_PLAYTYPE_LOOP);
 
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealBuffMagicRune>());
+
 		// 本シーケンスに遷移
 		seq_.change(&DungeonScene::seqToNextFloor);
 		return true;
@@ -388,6 +392,7 @@ namespace atl {
 		player_->offFlagIsAlreadyTurn();
 		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
 
+
 		// ターン開始時処理へ
 		seq_.change(&DungeonScene::seqTurnStart);
 		return true;
@@ -396,7 +401,10 @@ namespace atl {
 	// ターン開始時処理
 	bool DungeonScene::seqTurnStart(float deltaTime) {
 		// HP 自動回復
-		player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
+		turnHealHP();
+
+		// ターンスタート時のルーン効果発動
+		MagicRuneSystemManager::getMagicRuneSystemManager()->notifyOnEvent(e_EventType::TurnStart,*this);
 
 		// 敵のリスポーン判定
 		enemyResporn();
@@ -405,6 +413,11 @@ namespace atl {
 		seq_.change(&DungeonScene::seqKeyInput);
 		
 		return true;
+	}
+
+	void DungeonScene::turnHealHP() {
+		// HP 自動回復
+		player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
 	}
 
 	// キー入力待ち
