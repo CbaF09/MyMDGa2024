@@ -108,8 +108,7 @@ namespace atl {
 		// 操作説明の描画
 		drawInstruction();
 
-		// ルーン装備ウィンドウ描画
-		magicRuneWindow_.draw();
+
 
 		// メニューを開いている時はログ表示無し,レベル表示無し,満腹度表示無し
 		if (!player_->getIsMenuOpen()) { 
@@ -123,6 +122,9 @@ namespace atl {
 			menuWindow_->draw(deltaTime); 
 			drawMinimap(deltaTime);
 		}
+
+		// ルーン装備ウィンドウ描画
+		magicRuneWindow_.draw();
 
 		// セレクトウィンドウがある時は、描画する
 		if (isSelectWindow_) selectWindow_->draw(deltaTime);

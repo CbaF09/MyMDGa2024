@@ -35,9 +35,9 @@ void gameStart() {
     // マウスカーソルをウィンドウに固定
     LockCursorToWindow();
 
-    //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>()); 
+    atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>()); 
 
-	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
+	//atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
 }
 
 void gameMain(float delta_time) {

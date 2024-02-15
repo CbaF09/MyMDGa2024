@@ -34,9 +34,11 @@ namespace atl {
 
             camera->update();
 
-            magicRuneWindow_.draw();
 
             player_->render(deltaTime);
+
+            magicRuneWindow_.draw();
+
 
 //            DrawDefaultLightGuiController();
             DrawGridGround(player_->getPlayerCamera(), 50, 20);
@@ -51,6 +53,10 @@ namespace atl {
             player_ = std::make_shared<PlayerPawn>();
             player_->initialize();
             player_->playerSpawn2Dpos({ 0,0 });
+
+            MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>());
+            MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<FireRune>());
+            MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>());
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;

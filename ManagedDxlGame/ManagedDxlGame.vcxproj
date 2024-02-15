@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ManagedDxlGame.cpp" />
+    <ClCompile Include="program\atlib\MagicRuneSystem\Base_MagicRune.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRune.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneWindow.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Base_MeshObject.cpp" />

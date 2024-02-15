@@ -5,7 +5,9 @@ namespace atl {
     MagicRuneSystemManager* MagicRuneSystemManager::getMagicRuneSystemManager() {
         static MagicRuneSystemManager* p_instance_ = nullptr;
 
-        if (!p_instance_) p_instance_ = new MagicRuneSystemManager();
+        if (!p_instance_) { 
+            p_instance_ = new MagicRuneSystemManager();
+        }
         return p_instance_;
     }
 

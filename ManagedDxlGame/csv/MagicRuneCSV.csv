@@ -1,0 +1,3 @@
+ID,ルーン名,ルーン説明文,アイコン用ファイルパス
+1,癒しのルーン,ターンごとの自動HP回復量が増える,graphics/UI/MagicRune/MagicRuneGreen.png
+2,炎のルーン,攻撃力が少し増える,graphics/UI/MagicRune/MagicRuneRed.png

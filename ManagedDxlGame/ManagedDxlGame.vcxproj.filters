@@ -329,6 +329,9 @@
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneWindow.cpp">
       <Filter>program\[002] atlib\MagicRuneSystem</Filter>
     </ClCompile>
+    <ClCompile Include="program\atlib\MagicRuneSystem\Base_MagicRune.cpp">
+      <Filter>program\[002] atlib\MagicRuneSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">

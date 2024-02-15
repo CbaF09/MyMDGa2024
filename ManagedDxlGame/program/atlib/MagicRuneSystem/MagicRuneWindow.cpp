@@ -67,6 +67,27 @@ namespace atl {
 				SetDrawBright(255, 255, 255);
 			}
 		}
+		
+		drawSelectedModeRuneDesc();
+	}
+
+	// ƒ‹[ƒ“‚ð‘I‘ð’†‚Ì’Ç‰Á•`‰æ ( ƒ‹[ƒ“‚ÌŒø‰Êà–¾ )
+	void MagicRuneWindow::drawSelectedModeRuneDesc() {
+		DrawRotaGraph(DXE_WINDOW_WIDTH/2,DXE_WINDOW_HEIGHT/2,1,0, ResourceManager::getResourceManager()->getGraphRes("graphics/UI/MagicRune/RuneSelectWindowBack.png"),true);
+		auto& runes = MagicRuneSystemManager::getMagicRuneSystemManager()->getEquipmentMagicRunes();
+		
+		// ƒ‹[ƒ“‚Ì–¼‘O‚ð•`‰æ
+		auto& runeName = runes[currentSelectIndex_]->getRuneName();
+		DrawStringToHandleEx(RUNE_NAME_STRING_POSITION.x, RUNE_NAME_STRING_POSITION.y, -1, RUNE_NAME_FONT, "%s", runeName.c_str());
+		
+		// ƒ‹[ƒ“‚Ìà–¾•¶‚ð•`‰æ
+
+		// ’†‰›‘µ‚¦‚Ìˆ×‚ÌŒvŽZ
+		auto& runeDesc = runes[currentSelectIndex_]->getRuneDesc();
+		auto widthFix = GetDrawStringWidthToHandle(runeDesc.c_str(), strlen(runeDesc.c_str()), RUNE_DESC_FONT);
+		float drawPosX = static_cast<float>(DXE_WINDOW_WIDTH / 2) - widthFix / 2.0f;
+		
+		DrawStringToHandleEx(drawPosX, RUNE_DESC_STRING_POSITION_Y, -1, RUNE_DESC_FONT, "%s", runeDesc.c_str());
 	}
 
 }
