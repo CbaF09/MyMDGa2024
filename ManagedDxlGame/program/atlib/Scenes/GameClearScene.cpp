@@ -19,7 +19,6 @@ namespace atl {
 
 	GameClearScene::~GameClearScene() {
 		{// リソース解放
-
 			// 解放するリソースのファイルパスの一時的配列を作成
 			std::vector<std::string> tempDeleteRes = {
 				"graphics/BackgroundIllust/ClearSceneBack.jpg",
@@ -104,9 +103,9 @@ namespace atl {
 		}
 
 		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
+			ResourceManager::getResourceManager()->stopSoundRes("sound/BGM/GameClearBGM.ogg");
 			SceneManager::getSceneManager()->changeScene(std::make_shared<TitleScene>());
 		}
 		return true;
 	}
-
 }

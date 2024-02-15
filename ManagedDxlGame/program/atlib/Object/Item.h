@@ -25,6 +25,8 @@ namespace atl {
 			ThunderStone,
 			ThunderScroll,
 			MagicInc,
+			HealRune,
+			FireRune,
 			ITEM_MAX,
 		};
 
@@ -64,6 +66,12 @@ namespace atl {
 		// µ‘Òó‚Ìó‘Ô‚ğ‰ñ•œ‚·‚é ( –• “x‚ğ‰ñ•œ‚·‚é )
 		const int32_t MAGIC_INC_HEAL_VALUE = 1000;
 		void magicIncAction();
+
+		// –ü‚µ‚Ìƒ‹[ƒ“‘•”õ
+		void healRuneAction();
+
+		// ‰Š‚Ìƒ‹[ƒ“‘•”õ
+		void fireRuneAction();
 	};
 
 }

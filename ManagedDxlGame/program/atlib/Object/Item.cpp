@@ -5,6 +5,8 @@
 #include "../MeshObject/PlayerPawn.h"
 #include "../MeshObject/EnemyPawn.h"
 #include "../Utilities/AtlString.h"
+#include "../MagicRuneSystem/MagicRuneSystemManager.h"
+#include "../MagicRuneSystem/MagicRune.h"
 #include "PlayerData.h"
 
 namespace atl {
@@ -40,6 +42,8 @@ namespace atl {
 		case e_itemList::ThunderStone: thunderStoneAction(); break;
 		case e_itemList::ThunderScroll: thunderScrollAction(); break;
 		case e_itemList::MagicInc: magicIncAction(); break;
+		case e_itemList::HealRune: healRuneAction(); break;
+		case e_itemList::FireRune: fireRuneAction(); break;
 		default : break;
 		}
 	}
@@ -97,6 +101,7 @@ namespace atl {
 		}
 	}
 
+	// 招待状の期限 ( 満腹度 ) を伸ばす
 	void Item::magicIncAction() {
 		auto lock = weakDungeonScene_.lock();
 		if (lock) {
@@ -104,5 +109,17 @@ namespace atl {
 			addTextItemUse("招待状の期限が伸びた");
 		}
 
+	}
+
+	// 癒しのルーン装備
+	void Item::healRuneAction() {
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>());
+		addTextItemUse("癒しのルーンを装備した");
+	}
+
+	// 炎のルーン装備
+	void Item::fireRuneAction() {
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<FireRune>());
+		addTextItemUse("炎のルーンを装備した");
 	}
 }

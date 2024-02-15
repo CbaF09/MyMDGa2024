@@ -38,7 +38,6 @@ namespace atl {
 
             player_->render(deltaTime);
 
-
 //            DrawDefaultLightGuiController();
             DrawGridGround(player_->getPlayerCamera(), 50, 20);
             DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
@@ -59,21 +58,12 @@ namespace atl {
 
         bool seqProcess(float deltaTime) {
             
-            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_1)) {
-                MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealBuffMagicRune>());
+            if (magicRuneWindow_.IsOpenMagicRuneWindow()) {
+                magicRuneWindow_.process();
             }
 
-            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_2)) {
-                MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(2);
-            }
-
-            {// デバッグ用。ESCキーでウィンドウ落とす。
-                if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
-                    ResourceManager::getResourceManager()->playSoundRes("sound/explosion.ogg",DX_PLAYTYPE_BACK);
-                }
-                if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN)) {
-
-                }
+            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
+                magicRuneWindow_.switchOpenMagicRuneWindow();
             }
 
             return true;

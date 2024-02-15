@@ -14,7 +14,7 @@ namespace atl {
 		static void deleteMagicRuneSystemManager() { delete getMagicRuneSystemManager(); };
 	private:
 		MagicRuneSystemManager() {};
-		~MagicRuneSystemManager() {};
+		~MagicRuneSystemManager() { equipmentMagicRunes_.clear(); };
 	//------------------------------------------
 
 	public:

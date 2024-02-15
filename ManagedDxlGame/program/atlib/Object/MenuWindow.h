@@ -21,7 +21,7 @@ namespace atl {
 			Item4,
 			Item5,
 			Item6,
-			Setting,
+			EraseMagicRune,
 			CloseMenu,
 			ReturnToTitle,
 			NONE,
@@ -59,7 +59,7 @@ namespace atl {
 
 		// システム系の選択肢と説明文。pair でまとめている。 first->選択肢名。second->説明文
 		std::array<std::pair<std::string, std::string>, 3> systemWindows_{
-			std::pair{("設定"),("各種設定")},
+			std::pair{("ルーンの確認"),("装備中のルーンを確認します")},
 			std::pair{("メニューを閉じる"),("メニューを閉じる。右クリックでも閉じられる")},
 			std::pair{("タイトル画面"),("タイトル画面に戻る。進捗保存はありません")},
 		};

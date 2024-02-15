@@ -239,6 +239,7 @@ namespace atl {
 
 		// フェードが終わったら、ダンジョンシーンに切り替える
 		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
+			ResourceManager::getResourceManager()->stopSoundRes("sound/SE/TitleSceneCursorChange.ogg");
 			SceneManager::getSceneManager()->changeScene(std::make_shared<DungeonScene>());
 		}
 

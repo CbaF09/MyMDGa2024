@@ -5,6 +5,7 @@
 #include "../MeshObject/Skybox.h"
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Wall.h"
+#include "../MagicRuneSystem/MagicRuneWindow.h"
 
 namespace atl {
 
@@ -116,6 +117,9 @@ namespace atl {
         Shared<MenuWindow> menuWindow_ = nullptr;
         MenuWindow::e_SelectedMenuWindow selectedMenu = MenuWindow::e_SelectedMenuWindow::Item1;
 
+        // ルーンウィンドウ関連
+        MagicRuneWindow magicRuneWindow_;
+
         // スカイボックス用 ----------------------------
         // Skyboxは引数無しコンストラクタ一つのみを持っている
         Skybox skybox_;
@@ -223,6 +227,8 @@ namespace atl {
 
         // メニューウィンドウ開いている間の処理
         bool seqMenuWindow(float deltaTime);
+        // マジックルーンウィンドウに対してアクションしている間の処理
+        bool seqEraseMagicRuneWindow(float deltaTime);
         // アイテムを使う処理
         bool seqReallyUseItem(float deltaTime);
         // メニューからタイトルに戻るを選択した時 ( 確認画面 )

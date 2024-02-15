@@ -108,6 +108,9 @@ namespace atl {
 		// 操作説明の描画
 		drawInstruction();
 
+		// ルーン装備ウィンドウ描画
+		magicRuneWindow_.draw();
+
 		// メニューを開いている時はログ表示無し,レベル表示無し,満腹度表示無し
 		if (!player_->getIsMenuOpen()) { 
 			TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); 
@@ -584,6 +587,7 @@ namespace atl {
 		}
 
 		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
+			ResourceManager::getResourceManager()->stopSoundRes("sound/BGM/DungeonSceneBGM.ogg");
 			SceneManager::getSceneManager()->changeScene(std::make_shared<GameOverScene>());
 		}
 		return true;
@@ -628,23 +632,57 @@ namespace atl {
 		case MenuWindow::e_SelectedMenuWindow::Item4: // ブレイクスルー
 		case MenuWindow::e_SelectedMenuWindow::Item5: // ブレイクスルー
 		case MenuWindow::e_SelectedMenuWindow::Item6: 
-			// 範囲外アクセスチェックをしてから、本当に使うかの確認シーケンスに遷移
+			// nullptrチェックをしてから、本当に使うかの確認シーケンスに遷移
 			if (player_->getPlayerData()->getInventory()->getItem(static_cast<int>(selectedMenu)) != nullptr) { seq_.change(&DungeonScene::seqReallyUseItem); } break;
-		case MenuWindow::e_SelectedMenuWindow::Setting: break; // 現状何も無し
-		case MenuWindow::e_SelectedMenuWindow::CloseMenu: // メニューを閉じる
-		{
+		case MenuWindow::e_SelectedMenuWindow::EraseMagicRune: { // 装備中のルーンを確認する
+			// 装備中のルーンがあれば
+			if (!MagicRuneSystemManager::getMagicRuneSystemManager()->getEquipmentMagicRunes().empty()) {
+				// シーケンス遷移
+				seq_.change(&DungeonScene::seqEraseMagicRuneWindow);
+			}
+			// なければ
+			else {
+				// TODO : 処理記述
+			}
+			break;
+		}
+		case MenuWindow::e_SelectedMenuWindow::CloseMenu: {// メニューを閉じる
 			closeMenu();
 			seq_.change(&DungeonScene::seqKeyInput);
 			break;
 		}
-		case MenuWindow::e_SelectedMenuWindow::ReturnToTitle: // タイトルに戻る
-		{
+		case MenuWindow::e_SelectedMenuWindow::ReturnToTitle: {// タイトルに戻る
 			seq_.change(&DungeonScene::seqReallyReturnToTitle);
 			break;
 		}
 		}
 
 		return true;
+	}
+
+	bool DungeonScene::seqEraseMagicRuneWindow(float deltaTime) {
+		if (seq_.isStart()) {
+			// ウィンドウをオープン状態に
+			magicRuneWindow_.switchOpenMagicRuneWindow();
+		}
+		
+		// A,Dで選択肢切り替え
+		magicRuneWindow_.process();
+
+		// 左クリック で、選んだルーンを削除する
+		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
+			auto selectRune = magicRuneWindow_.getCurrentSelectIndex_();
+			MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(selectRune);
+			magicRuneWindow_.switchOpenMagicRuneWindow();
+			seq_.change(&DungeonScene::seqMenuWindow);
+		}
+		// 右クリック で、キャンセルしてメニューに戻る
+		else if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {
+			magicRuneWindow_.switchOpenMagicRuneWindow();
+			seq_.change(&DungeonScene::seqMenuWindow);
+		}
+
+		return false;
 	}
 
 	// 本当にアイテムを使うか確認
@@ -696,11 +734,10 @@ namespace atl {
 		}
 
 		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
-			ResourceManager::getResourceManager()->stopSoundRes("sound/BGM/DungeonSceneBGM.ogg");
-
 			// 1秒 待機
-			SEQ_CO_YIELD_RETURN_TIME(1, deltaTime, [&] {})
+			SEQ_CO_YIELD_RETURN_TIME(1, deltaTime, [&] {});
 
+			ResourceManager::getResourceManager()->stopSoundRes("sound/BGM/DungeonSceneBGM.ogg");
 			SceneManager::getSceneManager()->changeScene(std::make_shared<TitleScene>());
 		}
 
@@ -742,23 +779,26 @@ namespace atl {
 			// フロア数をインクリメント
 			++currentFloor_;
 		}
+
+		// フェード中は処理しない
 		if (!FadeInOutManager::getFadeInOutManager()->isFading()) {
 			// 次階層に遷移中フラグを立てる
 			isNextFloorTransition = true;
 
 			// 待機 
-			SEQ_CO_YIELD_RETURN_TIME(nextFloorTransitionTime, deltaTime, [&] {})
+			SEQ_CO_YIELD_RETURN_TIME(nextFloorTransitionTime, deltaTime, [&] {});
 
-				// 最大階層に到達したら、クリアシーンに遷移
-				if (currentFloor_ >= MAX_FLOOR) {
-					SceneManager::getSceneManager()->changeScene(std::make_shared<GameClearScene>());
-				}
-				else {
-					// ダンジョンを生成し、フェードインし画面を表示させる
-					generateDungeon();
-					FadeInOutManager::getFadeInOutManager()->startFadeIn();
-					seq_.change(&DungeonScene::seqTurnInit);
-				}
+			// 最大階層に到達したら、クリアシーンに遷移
+			if (currentFloor_ >= MAX_FLOOR) {
+				ResourceManager::getResourceManager()->stopSoundRes("sound/BGM/DungeonSceneBGM.ogg");
+				SceneManager::getSceneManager()->changeScene(std::make_shared<GameClearScene>());
+			}
+			else {
+				// ダンジョンを生成し、フェードインし画面を表示させる
+				generateDungeon();
+				FadeInOutManager::getFadeInOutManager()->startFadeIn();
+				seq_.change(&DungeonScene::seqTurnInit);
+			}
 
 			// 次階層へ遷移中フラグをオフに
 			isNextFloorTransition = false;

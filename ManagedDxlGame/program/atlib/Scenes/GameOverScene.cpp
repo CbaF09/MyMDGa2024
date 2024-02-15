@@ -41,7 +41,7 @@ namespace atl {
 		// エンターかスペースが押されたら、タイトルシーンに遷移
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)) {
 			ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/SE/GameOverContinue.ogg", 150);
-			ResourceManager::getResourceManager()->playSoundRes("sound/SE/GameOverContinue.ogg", DX_PLAYTYPE_NORMAL);
+			ResourceManager::getResourceManager()->stopSoundRes("sound/SE/GameOverContinue.ogg");
 			SceneManager::getSceneManager()->changeScene(std::make_shared<TitleScene>());
 		}
 		return false;
