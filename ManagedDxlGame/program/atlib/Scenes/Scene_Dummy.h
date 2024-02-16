@@ -3,6 +3,7 @@
 #include "../../dxlib_ext/dxlib_ext.h"
 #include "Base_Scene.h"
 #include "../Singletons/ResourceManager.h"
+#include "../Singletons/DungeonCreater.h"
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/PlayerPawn.h"
@@ -20,8 +21,6 @@ namespace atl {
     public:
 
     private:
-        Shared<PlayerPawn> player_ = nullptr;
-        MagicRuneWindow magicRuneWindow_;
 
         void sceneUpdate(float deltaTime) override {
             seq_.update(deltaTime);
@@ -30,46 +29,27 @@ namespace atl {
 
         void render(float deltaTime) {
             
-            auto camera = player_->getPlayerCamera();
-
-            camera->update();
-
-
-            player_->render(deltaTime);
-
-            magicRuneWindow_.draw();
-
-
-//            DrawDefaultLightGuiController();
-            DrawGridGround(player_->getPlayerCamera(), 50, 20);
-            DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
         }
 
         // シーケンス
         SEQUENCE(Scene_Dummy, &Scene_Dummy::seqInit);
 
         bool seqInit(float deltaTime) {
-
-            player_ = std::make_shared<PlayerPawn>();
-            player_->initialize();
-            player_->playerSpawn2Dpos({ 0,0 });
-
-            MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>());
-            MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<FireRune>());
-            MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>());
+            DungeonCreater::getDungeonCreater()->createDungeon();
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
         }
 
         bool seqProcess(float deltaTime) {
-            
-            if (magicRuneWindow_.IsOpenMagicRuneWindow()) {
-                magicRuneWindow_.process();
-            }
+            DungeonCreater::getDungeonCreater()->debag_DisplayFieldData();
+            DungeonCreater::getDungeonCreater()->debag_DisplayFieldCells(600);
 
             if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
-                magicRuneWindow_.switchOpenMagicRuneWindow();
+                DungeonCreater::getDungeonCreater()->createDungeon();
+            }
+            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) {
+                exit(0);
             }
 
             return true;

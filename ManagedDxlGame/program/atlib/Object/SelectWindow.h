@@ -37,7 +37,7 @@ namespace atl {
 		const float YES_NO_UI_SIZE = 0.4f;		// YES・NO のUIサイズ ( 1 で画像元サイズ )
 		const float KEYBOARD_UI_SIZE = 0.5f;	// A,DのキーボードUIサイズ ( 1で画像元サイズ )
 
-		const int QUESTION_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
-		const int YES_NO_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
+		const int QUESTION_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
+		const int YES_NO_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
 	};
 }

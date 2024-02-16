@@ -32,10 +32,7 @@ namespace atl {
 		eraseNonMeanWall();
 
 		// 各種スポーン
-		choicePlayerSpawnPos();
-		choiceStairsSpawnPos();
-		choiceEnemySpawnPos();
-		choiceItemSpawnPos();
+		choiceInitSpawnPos();
 	}
 
 	//------------------------------
@@ -44,8 +41,9 @@ namespace atl {
 	// 
 	//------------------------------
 
-
 	void DungeonCreater::fieldCellsInit() {
+		// 全てを壁に設定する
+		// 何かがスポーンしているかフラグをオフに
 		for (auto& row : fieldCells_) {
 			for (auto& cell : row) {
 				cell.cellType_ = e_FieldCellType::CELL_TYPE_WALL;
@@ -114,9 +112,14 @@ namespace atl {
 		}
 		// ---------------
 
-		areaSprit(areaID);		// 分割元だったエリアに対し再帰実行
+		// 新しく増えたエリアにエリアIDを設定
 		areas_[newAreaID].areaID_ = newAreaID;
-		areaSprit(newAreaID);	// 分割後、増えたエリアに対し再帰実行
+
+		// 分割元だったエリアに対し再帰実行
+		areaSprit(areaID);
+
+		// 分割後、増えたエリアに対し再帰実行
+		areaSprit(newAreaID);	
 	};
 
 	void DungeonCreater::roomCreate() {
@@ -148,74 +151,62 @@ namespace atl {
 		}
 	}
 
-	void DungeonCreater::createPathwayToRight(const Area& area) {
-		int32_t randomY = mtRandomRangeInt(area.room_.posY_ + 1, area.room_.posY_ + area.room_.height_ - 2);
-		for (int x = area.room_.posX_ + area.room_.width_; x < area.posX_ + area.width_; ++x) {
-			fieldCells_[x][randomY].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
-		}
-	}
 
-	void DungeonCreater::createPathwayToLeft(const Area& area) {
-		int32_t randomY = mtRandomRangeInt(area.room_.posY_ + 1, area.room_.posY_ + area.room_.height_ - 2);
-		for (int x = area.posX_; x < area.room_.posX_; ++x) {
-			fieldCells_[x][randomY].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
-		}
-	}
-	void DungeonCreater::createPathwayToTop(const Area& area) {
-		int32_t randomX = mtRandomRangeInt(area.room_.posX_ + 1, area.room_.posX_ + area.room_.width_ - 2);
-		for (int y = area.posY_; y < area.room_.posY_; ++y) {
-			fieldCells_[randomX][y].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
-		}
-	}
-	void DungeonCreater::createPathwayToBottom(const Area& area) {
-		int32_t randomX = mtRandomRangeInt(area.room_.posX_ + 1, area.room_.posX_ + area.room_.width_ - 2);
-		for (int y = area.room_.posY_ + area.room_.height_; y < area.posY_ + area.height_; ++y) {
-			fieldCells_[randomX][y].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
-		}
-	}
 
 	void DungeonCreater::pathwayCreate() {
 		// 各エリアの右端と下端を CELL_TYPE_PATH に
 		for (const Area& area : areas_) {
-			for (int x = area.posX_; x < area.posX_ + area.width_; ++x) { // 下端
+			// 下端
+			for (int x = area.posX_; x < area.posX_ + area.width_; ++x) { 
 				fieldCells_[x][area.posY_ + area.height_ - 1].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
 			}
-			for (int y = area.posY_; y < area.posY_ + area.height_; ++y) { // 右端
+			// 右端
+			for (int y = area.posY_; y < area.posY_ + area.height_; ++y) { 
 				fieldCells_[area.posX_ + area.width_ - 1][y].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
 			}
 		}
 		
-		// ルームから上下左右に通路を伸ばす
+		// ルームから上下左右に通路を伸ばす。
 		for (const Area& area : areas_) {
+			// 出来る通路候補の関数ポインタ配列 ( 上下左右 )
 			std::vector<std::function<void()>> possiblePathwayFuncs;
 
-			// 
-			int32_t needPathwayCount = 4;
+			// もしエリアが左端でないなら、左に向かう通路を作る関数を候補に
+			if (area.posX_ != 0) {
+				possiblePathwayFuncs.emplace_back(
+					[this, &area]() { createPathDirection(area, e_PathDirection::PATH_DIR_LEFT); }); }
 
-			if (area.posX_ == 0) --needPathwayCount;
-			else possiblePathwayFuncs.emplace_back([this, &area]() { createPathwayToLeft(area);});
+			// もしエリアが上端でないなら
+			if (area.posY_ != 0) {
+				possiblePathwayFuncs.emplace_back(
+					[this, &area]() { createPathDirection(area, e_PathDirection::PATH_DIR_TOP); });
+			}
 
-			if (area.posY_ == 0) --needPathwayCount;
-			else possiblePathwayFuncs.emplace_back([this, &area]() { createPathwayToTop(area); });
+			// もしエリアが右端でないなら
+			if ((area.posX_ + area.width_) != FIELD_WIDTH) {
+				possiblePathwayFuncs.emplace_back(
+					[this, &area]() { createPathDirection(area, e_PathDirection::PATH_DIR_RIGHT); });
+			}
 
-			if (area.posX_ + area.width_ == FIELD_WIDTH) --needPathwayCount;
-			else possiblePathwayFuncs.emplace_back([this, &area]() { createPathwayToRight(area); });
+			// もしエリアが下端でないなら
+			if ((area.posY_ + area.height_) != FIELD_HEIGHT) {
+				possiblePathwayFuncs.emplace_back(
+					[this, &area]() { createPathDirection(area, e_PathDirection::PATH_DIR_BOTTOM); });
+			}
 
-			if (area.posY_ + area.height_ == FIELD_HEIGHT) --needPathwayCount;
-			else possiblePathwayFuncs.emplace_back([this, &area]() { createPathwayToBottom(area); });
-
-			// 作れる通路が 1 or 2 の場合、そのまま作って終了
-			if (needPathwayCount == 1 || needPathwayCount == 2) {
-				for (auto& pathwayFunc : possiblePathwayFuncs) {
-					pathwayFunc();
-				}
+			// 作れる通路の本数が2本しかない場合、それを作らないと、到達不能な部屋が出来てしまう可能性があるので、先に処理する
+			if (possiblePathwayFuncs.size() == 2) {
+				possiblePathwayFuncs[0]();
+				possiblePathwayFuncs[1]();
 				continue;
 			}
 
-			// 1 ~ 作成可能な通路の数、をランダムに指定
-			needPathwayCount = mtRandomRangeInt(1, needPathwayCount);
+			// 関数ポインタ配列をシャッフル
 			std::shuffle(possiblePathwayFuncs.begin(), possiblePathwayFuncs.end(), mtRandom);
-			for (int i = 0; i < needPathwayCount; ++i) {
+
+			// 1 ~ 最大で作れる通路の方向、で乱数を取り、その数だけ通路を作る ( 最低一本は通路を作る )
+			int pathwaysToCreate = mtRandomRangeInt(1, possiblePathwayFuncs.size()); 
+			for (int i = 0; i < pathwaysToCreate; ++i) {
 				possiblePathwayFuncs[i]();
 			}
 		}
@@ -236,10 +227,10 @@ namespace atl {
 				if (fieldCells_[x][y].cellType_ == e_FieldCellType::CELL_TYPE_WALL) continue;
 
 				uint16_t wallCount = 0;
-				if (fieldCells_[x - 1][y].cellType_ == e_FieldCellType::CELL_TYPE_WALL) ++wallCount;
-				if (fieldCells_[x + 1][y].cellType_ == e_FieldCellType::CELL_TYPE_WALL) ++wallCount;
-				if (fieldCells_[x][y - 1].cellType_ == e_FieldCellType::CELL_TYPE_WALL) ++wallCount;
-				if (fieldCells_[x][y + 1].cellType_ == e_FieldCellType::CELL_TYPE_WALL) ++wallCount;
+				if (isWall(x - 1, y)) ++wallCount;
+				if (isWall(x + 1, y)) ++wallCount;
+				if (isWall(x, y - 1)) ++wallCount;
+				if (isWall(x, y + 1)) ++wallCount;
 
 				if (wallCount == 3) {
 					fieldCells_[x][y].cellType_ = e_FieldCellType::CELL_TYPE_WALL;
@@ -253,10 +244,10 @@ namespace atl {
 				if (fieldCells_[x][y].cellType_ == e_FieldCellType::CELL_TYPE_WALL) continue;
 				
 				uint16_t wallCount = 0;
-				if (fieldCells_[x - 1][y].cellType_ == e_FieldCellType::CELL_TYPE_WALL) ++wallCount;
-				if (fieldCells_[x + 1][y].cellType_ == e_FieldCellType::CELL_TYPE_WALL) ++wallCount;
-				if (fieldCells_[x][y - 1].cellType_ == e_FieldCellType::CELL_TYPE_WALL) ++wallCount;
-				if (fieldCells_[x][y + 1].cellType_ == e_FieldCellType::CELL_TYPE_WALL) ++wallCount;
+				if (isWall(x - 1, y)) ++wallCount;
+				if (isWall(x + 1, y)) ++wallCount;
+				if (isWall(x, y - 1)) ++wallCount;
+				if (isWall(x, y + 1)) ++wallCount;
 
 				if (wallCount == 3) {
 					fieldCells_[x][y].cellType_ = e_FieldCellType::CELL_TYPE_WALL;
@@ -265,6 +256,45 @@ namespace atl {
 		}
 	}
 
+	void DungeonCreater::createPathDirection(const Area& area, e_PathDirection pathDir) {
+		int randomX = 0, randomY = 0;
+		
+		switch (pathDir) {
+		
+		// 上向き
+		case e_PathDirection::PATH_DIR_TOP:
+			randomX = mtRandomRangeInt(area.room_.posX_ + 1, area.room_.posX_ + area.room_.width_ - 2);
+			for (int y = area.posY_; y < area.room_.posY_; ++y) {
+				fieldCells_[randomX][y].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
+			}
+			break;
+
+		// 下向き
+		case e_PathDirection::PATH_DIR_BOTTOM:
+			randomX = mtRandomRangeInt(area.room_.posX_ + 1, area.room_.posX_ + area.room_.width_ - 2);
+			for (int y = area.room_.posY_ + area.room_.height_; y < area.posY_ + area.height_; ++y) {
+				fieldCells_[randomX][y].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
+			}
+			break;
+		
+		// 右向き
+		case e_PathDirection::PATH_DIR_RIGHT: 
+			randomY = mtRandomRangeInt(area.room_.posY_ + 1, area.room_.posY_ + area.room_.height_ - 2);
+			for (int x = area.room_.posX_ + area.room_.width_; x < area.posX_ + area.width_; ++x) {
+				fieldCells_[x][randomY].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
+			}
+			break;
+
+		// 下向き
+		case e_PathDirection::PATH_DIR_LEFT:
+			randomY = mtRandomRangeInt(area.room_.posY_ + 1, area.room_.posY_ + area.room_.height_ - 2);
+			for (int x = area.posX_; x < area.room_.posX_; ++x) {
+				fieldCells_[x][randomY].cellType_ = e_FieldCellType::CELL_TYPE_PATH;
+			}
+			break;
+		}
+	}
+	
 	void DungeonCreater::eraseNonMeanWall() {
 		// NONEになる壁のインデックスが入る一時配列
 		std::vector<std::pair<int,int>> eraseCellIndex;
@@ -347,28 +377,25 @@ namespace atl {
 		else return true;
 	}
 
-	void DungeonCreater::choicePlayerSpawnPos() {
+	void DungeonCreater::choiceInitSpawnPos() {
+		
+		// プレイヤースポーン
 		playerSpawnPos_ = randomChoiceCanFirstSpawnFieldCellPos();
-	}
-
-	void DungeonCreater::choiceStairsSpawnPos() {
+		// 階段スポーン
 		stairsSpawnPos_ = randomChoiceCanFirstSpawnFieldCellPos();
-	}
 
-	void DungeonCreater::choiceEnemySpawnPos() {
+		// エネミースポーン
 		enemySpawnPosArray_.clear();
 		for (int i = 0;i < ENEMY_SPAWN_NUM;++i) {
 			enemySpawnPosArray_.emplace_back(randomChoiceCanFirstSpawnFieldCellPos());
 		}
-	}
 
-	void DungeonCreater::choiceItemSpawnPos() {
+		// アイテムスポーン
 		itemSpawnPosArray_.clear();
 		for (int i = 0; i < ITEM_SPAWN_NUM;++i) {
 			itemSpawnPosArray_.emplace_back(randomChoiceCanFirstSpawnFieldCellPos());
 		}
 	}
-
 
 	//------------------------------
 	// 
@@ -401,7 +428,7 @@ namespace atl {
 					DrawStringEx((x * 15) + offsetDisplayPosX, (y * 15) + offsetDisplayPosY, -1, " ");
 				}
 				if (fieldCells_[x][y].cellType_ == e_FieldCellType::CELL_TYPE_PATH) {
-					DrawStringEx((x * 15) + offsetDisplayPosX, (y * 15) + offsetDisplayPosY, -1, "-");
+					DrawStringEx((x * 15) + offsetDisplayPosX, (y * 15) + offsetDisplayPosY, -1, "+");
 				}
 				if (fieldCells_[x][y].cellType_ == e_FieldCellType::CELL_TYPE_WALL) {
 					DrawStringEx((x * 15) + offsetDisplayPosX, (y * 15) + offsetDisplayPosY, -1, "*");

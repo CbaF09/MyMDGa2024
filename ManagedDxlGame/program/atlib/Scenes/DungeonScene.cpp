@@ -124,7 +124,6 @@ namespace atl {
 		if (isSelectWindow_) selectWindow_.draw(deltaTime);
 	}
 
-
 	void DungeonScene::drawHPbar() {
 		// ”wŒi ( ˜g ) ‚Ì•`‰æ
 		auto HPbarBackGround = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/HPbarBackGround.png");

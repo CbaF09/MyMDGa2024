@@ -17,7 +17,7 @@ namespace atl {
 		// 変数
 
 		// プロローグ関連
-		const int EPILOGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
+		const int EPILOGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
 
 		const int32_t EPILOGUE_BACKGROUND_BRIGHT = 126;	// 背景の明るさ ( 0 で元と同じ、255 で真っ黒 )
 		const tnl::Vector2i CAN_BACK_TEXT_POSITION{ 10,10 }; // 「スペースキーでタイトルに戻れます」を表示する位置

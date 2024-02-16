@@ -40,8 +40,7 @@ namespace atl {
 			float drawPosX = static_cast<float>(QUESTION_UI_POSITION.x - textWidth / 2);
 			float drawPosY = static_cast<float>(QUESTION_UI_POSITION.y - GetFontSizeToHandle(QUESTION_FONT) / 2);
 
-			// çïï∂éöÇ≈ï`âÊ
-			DrawStringToHandleEx(drawPosX, drawPosY, GetColor(0,0,0),QUESTION_FONT,questionText_.c_str());
+			DrawStringToHandleEx(drawPosX, drawPosY, -1,QUESTION_FONT,questionText_.c_str());
 		}
 
 		{// ÇÕÇ¢ÅAÇ¢Ç¢Ç¶Çï`âÊ

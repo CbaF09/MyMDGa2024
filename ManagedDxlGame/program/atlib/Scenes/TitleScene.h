@@ -22,7 +22,7 @@ namespace atl {
 		// UI関連
 		
 		// ボタン上に表示する文字用フォント
-		const int BUTTON_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
+		const int BUTTON_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
 
 		// 現在選択中のボタンを表現する enum
 		enum class e_SelectTitleButton {
@@ -43,17 +43,16 @@ namespace atl {
 		const tnl::Vector2i CURSOR_KEYBOARD_SPACE_OFFSET{ -100,0 };	// カーソルとキーボードアイコンの距離
 		const float BUTTON_CURSOR_SIZE = 0.15f;						// カーソルのサイズ ( 1 で画像元サイズ )
 		const float KEYBOARD_WS_SIZE = 0.5;						// キーボードアイコンのサイズ ( 1 で画像元サイズ )
-		const float KEYBOARD_SPACE_SIZE = 0.5;						// キーボードアイコンのサイズ ( 1 で画像元サイズ )
 		const float BUTTON_SIZE = 0.5f;						// ボタンのサイズ ( 1 で画像元サイズ )
 		const tnl::Vector2i SPACE_IS_ENTER_POSITION{ 800,200 };	// 文字列の背景になるボックスの位置
 		const tnl::Vector2i SPACE_IS_ENTER_BACK_LEFTUP_POINT{ 780,180 };	// 文字列の背景になるボックスの位置
-		const tnl::Vector2i SPACE_IS_ENTER_BACK_RIGHTDOWN_POINT{ 1125,250 };	// 文字列の背景になるボックスの大きさ
+		const tnl::Vector2i SPACE_IS_ENTER_BACK_RIGHTDOWN_POINT{ 1160,250 };	// 文字列の背景になるボックスの大きさ
 
 		bool isDisplayButton = false;	// ボタンを表示するか否かのフラグ
 		bool isGameEnd = false;			// ゲーム終了状態かのフラグ
 
 		// プロローグ関連
-		const int PROROGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
+		const int PROROGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
 
 		std::vector<std::string> prorogueText{};
 		const int32_t PROROGUE_BACKGROUND_BRIGHT = 126;	// プロローグ中の背景の明るさ ( 0 で元と同じ、255 で真っ黒 )

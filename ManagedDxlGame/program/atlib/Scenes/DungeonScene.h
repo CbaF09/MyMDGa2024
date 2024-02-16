@@ -100,7 +100,7 @@ namespace atl {
         const tnl::Vector2i TEXT_LOG_POSITION{ 20,550 };   // テキストログを描画する位置 ( 一番上の行 )
 
         // フォント-------------------------------------
-        const int LEVEL_STRING_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
+        const int LEVEL_STRING_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
         const int NEXT_FLOOR_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
 
         // ミニマップ関連-------------------------------

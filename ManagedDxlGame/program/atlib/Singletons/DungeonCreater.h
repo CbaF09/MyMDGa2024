@@ -55,9 +55,7 @@ namespace atl {
 		// ダンジョンを生成。fieldCells_ に保存される
 		void createDungeon();
 
-		// ゲッター関数
-		inline static const int32_t getFieldWidth() { return FIELD_WIDTH; }
-		inline static const int32_t getFieldHeight() { return FIELD_HEIGHT; }
+		// ゲッター
 		inline const std::vector<std::vector<FieldCell>>& getFieldCells() const { return fieldCells_; }
 		inline const tnl::Vector2i& getPlayerSpawnPos() const { return playerSpawnPos_; }
 		inline const tnl::Vector2i& getStairsSpawnPos() const { return stairsSpawnPos_; }
@@ -98,15 +96,7 @@ namespace atl {
 		void debag_OutputLogGeneratedAreaRoomData() const;
 
 	private:
-
-		// 定数 ,Enum
-		static const int32_t FIELD_WIDTH = 32;		// フィールド全体の横幅
-		static const int32_t FIELD_HEIGHT = 32;		// フィールド全体の縦幅
-		const int32_t AREA_MAX = 8;			// 区域の最大数 , 部屋の最大数と等しくなる
-		const int32_t AREA_SIZE_MIN = 8;		// 区域の縦横最小サイズ
-		const int32_t ROOM_SIZE_MIN = 4;		// 部屋の縦横最小サイズ
-
-		// 通路がどっち向きに伸びるかを表現するenum
+		// 通路がどっち向きに伸びるかを表現する enum
 		enum class e_PathDirection {
 			PATH_DIR_TOP = 0,
 			PATH_DIR_BOTTOM,
@@ -116,57 +106,73 @@ namespace atl {
 		};
 
 		//----------------------- 
-		// メンバ変数
-		const int32_t ENEMY_SPAWN_NUM = 3; // 敵の数
-		const int32_t ITEM_SPAWN_NUM = 5; // アイテムの数
+		// 変数
 
-		tnl::Vector2i playerSpawnPos_{ 0,0 };	// プレイヤーがスポーンする位置
-		tnl::Vector2i stairsSpawnPos_{ 0,0 };	// 階段がスポーンする位置
-		std::vector<tnl::Vector2i> enemySpawnPosArray_;	// 敵がスポーンする位置配列
-		std::vector<tnl::Vector2i> itemSpawnPosArray_;	// アイテムがスポーンする位置配列
+		// フィールド全体の横幅
+		const int32_t FIELD_WIDTH = 32;
+		// フィールド全体の縦幅
+		const int32_t FIELD_HEIGHT = 32;
+		// 区域の最大数 , 部屋の最大数と等しくなる
+		const int32_t AREA_MAX = 8;
+		// 区域の縦横最小サイズ
+		const int32_t AREA_SIZE_MIN = 8;
+		// 部屋の縦横最小サイズ
+		const int32_t ROOM_SIZE_MIN = 4;
 
-		std::vector<Area> areas_;	// 区域分割用エリア配列
+		// 敵の数
+		const int32_t ENEMY_SPAWN_NUM = 3;
+		// アイテムの数
+		const int32_t ITEM_SPAWN_NUM = 5;
 
+		// プレイヤーがスポーンする位置
+		tnl::Vector2i playerSpawnPos_{ 0,0 };	
+		// 階段がスポーンする位置
+		tnl::Vector2i stairsSpawnPos_{ 0,0 };	
+		// 敵がスポーンする位置配列
+		std::vector<tnl::Vector2i> enemySpawnPosArray_{};
+		// アイテムがスポーンする位置配列
+		std::vector<tnl::Vector2i> itemSpawnPosArray_{};
+
+		// 区域分割用エリア配列
+		std::vector<Area> areas_;	
+
+		// 二次元フィールドデータ
 		std::vector<std::vector<FieldCell>> fieldCells_ =
-			std::vector<std::vector<FieldCell>>(FIELD_HEIGHT, std::vector<FieldCell>(FIELD_WIDTH)); // 二次元フィールドデータ
+			std::vector<std::vector<FieldCell>>(FIELD_HEIGHT, std::vector<FieldCell>(FIELD_WIDTH)); 
 
 		//----------------------- 
 		// メソッド
 
-		// 初期化
+		// 二次元フィールドデータの初期化
 		void fieldCellsInit();
+		// 区域分割用 Area の初期化
 		void areaInit();
 
-		// 区域分割 ( 再帰処理の為に引数があるが、最初に呼び出す時は引数 0 で呼び出される前提なのでデフォルト引数 )
+		// 区域分割 ( 再帰処理の為に引数があるが、呼び出す時は引数 0 で呼び出される前提なのでデフォルト引数 )
 		void areaSprit(int32_t areaID = 0);
+
 		// 部屋生成
 		void roomCreate();
+		
 		// fieldCells_ の parentArea を設定
 		void setFieldCellsID();
+		
 		// 通路設定
 		void pathwayCreate();
-		// 通路を生成する為の関数群
-		// TODO : 時間があったら一個にまとめてみるのに挑戦
-		void createPathwayToTop(const Area& area);
-		void createPathwayToBottom(const Area& area);
-		void createPathwayToLeft(const Area& area);
-		void createPathwayToRight(const Area& area);
-
+		// pathwayCreate のヘルパー。pathDirの方向に通路を伸ばす
+		void createPathDirection(const Area& area, e_PathDirection pathDir);
 
 		// 四方を壁で囲まれている壁は除去する
 		void eraseNonMeanWall();
-		// eraseNonMeamWall のヘルパー関数。配列境界チェックしながら、指定座標のセルが壁かどうかを判定する
+		
+		// ヘルパー関数。配列境界チェックしながら、指定座標のセルが壁かどうかを判定する
 		// 配列外は壁として扱う
 		// ret ... 壁 => true , 壁でない = false
 		// arg ... 指定座標
 		bool isWall(int x, int y);
 
-		// スポーン候補地点を設定する関数群
-		// TODO : 時間があったら一個にまとめてみるのに挑戦
-		void choicePlayerSpawnPos();
-		void choiceStairsSpawnPos();
-		void choiceEnemySpawnPos();
-		void choiceItemSpawnPos();
+		// 各オブジェクトの初期スポーン候補地点を設定する関数群
+		void choiceInitSpawnPos();
 
 	};
 
