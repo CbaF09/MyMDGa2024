@@ -36,8 +36,8 @@ namespace atl {
 
 
 	private:
-		const int MENU_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);	// フォント
-		const int DESC_FONT = CreateFontToHandle(NULL, 18, -1, DX_FONTTYPE_ANTIALIASING);
+		const int MENU_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING_EDGE);	// フォント
+		const int DESC_FONT = CreateFontToHandle(NULL, 18, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
 
 		const tnl::Vector2i TOP_STRINGS_POSITION{ 50,130 }; // 一番上の行の描画位置
 		const int32_t STRINGS_OFFSET = 40;		// 行間

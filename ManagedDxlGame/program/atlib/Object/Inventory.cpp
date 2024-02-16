@@ -1,6 +1,7 @@
 #include "Inventory.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/ResourceManager.h"
+#include "../MagicRuneSystem/MagicRuneSystemManager.h"
 
 namespace atl {
 

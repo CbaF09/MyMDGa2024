@@ -1,7 +1,8 @@
 #pragma once
 #include "../../dxlib_ext/dxlib_ext.h"
-#include "../Object/MenuWindow.h"
 #include "Base_Scene.h"
+#include "../Object/MenuWindow.h"
+#include "../Object/SelectWindow.h"
 #include "../MeshObject/Skybox.h"
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Wall.h"
@@ -15,7 +16,6 @@ namespace atl {
     class ItemPawn;
     class DungeonCreater;
     class Atl3DCamera;
-    class SelectWindow;
 
     // ダンジョンシーン
     // 役割 ... ダンジョン探索シーン
@@ -110,7 +110,7 @@ namespace atl {
         const int32_t MINIMAP_PLAYER_SIZE = MINIMAP_CELL_SIZE / 3;    // ミニマップの1マスの大きさ
 
         // 選択肢ウィンドウ関連 ------------------------
-        Shared<SelectWindow> selectWindow_ = nullptr;
+        SelectWindow selectWindow_;
         bool isSelectWindow_ = false;
 
         // メニュー関連 --------------------------------

@@ -3,7 +3,16 @@
 #include "../Singletons/ResourceManager.h"
 
 namespace atl {
-	
+	MagicRuneWindow::~MagicRuneWindow() {
+		// リソース解放
+		auto rManager = ResourceManager::getResourceManager();
+		rManager->deleteResource("graphics/UI/MagicRune/MagicRuneBack.png");
+		rManager->deleteResource("graphics/UI/MagicRune/RuneSelectWindowBack.png");
+		
+		// フォントハンドル解放
+		DeleteFontToHandle(RUNE_NAME_FONT);
+		DeleteFontToHandle(RUNE_DESC_FONT);
+	}
 	void MagicRuneWindow::process() {
 		auto& runes = MagicRuneSystemManager::getMagicRuneSystemManager()->getEquipmentMagicRunes();
 		// 装備中のルーンが無い場合、早期リターン
@@ -56,6 +65,11 @@ namespace atl {
 
 	// ウィンドウを操作している間の描画
 	void MagicRuneWindow::drawSelectedMode() {
+		// 画面全体を薄暗くするためのオーバーレイ描画
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, RUNE_OVERLAY_ALPHA); // 半透明設定
+		DrawBox(0, 0, DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT, GetColor(0, 0, 0), TRUE);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0); // 描画モードを通常に戻す
+
 		auto& runes = MagicRuneSystemManager::getMagicRuneSystemManager()->getEquipmentMagicRunes();
 		for (int i = 0; i < runes.size(); ++i) {
 			if (i != currentSelectIndex_) { // 選択中でないものは暗く描画

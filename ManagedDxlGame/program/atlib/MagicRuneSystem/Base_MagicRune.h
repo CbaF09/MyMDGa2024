@@ -6,20 +6,23 @@ namespace atl {
 
 	// イベント列挙子 MagicRuneが発動するタイミングを表現
 	enum class e_EventType {
-		Debug,
-		TurnStart
+		Debug,			// デバッグ用
+		TurnStart,		// ターン開始時
+		EquipMoment,	// 装備した瞬間
+		RemoveMoment,	// 外した瞬間
 	};
 
 	// 名前とCSV上のIDを分かりやすくさせる為の enum
 	enum class e_RuneID {
-		NONE = 0,
-		HealRune = 1,
-		FireRune = 2,
+		NONE,
+		HealRune,
+		FireRune,
 	};
 
 	class Base_MagicRune {
 	public:
 		virtual ~Base_MagicRune() {};
+		
 		// イベントタイプに対して発動する処理 ( 純粋仮想関数 )
 		virtual void onNotify(e_EventType eventType,DungeonScene& dungeonScene) = 0;
 
@@ -29,7 +32,6 @@ namespace atl {
 		const std::string& getRuneName() { return runeName_; }
 		// ゲッター ( ルーンの説明文を取得 )
 		const std::string& getRuneDesc() { return runeDesc_; }
-		
 
 		// ルーンの情報をCSVから読み込んだデータに基づいてまとめて設定
 		// arg ... アイテムID ( CSV の A列 に記載 )

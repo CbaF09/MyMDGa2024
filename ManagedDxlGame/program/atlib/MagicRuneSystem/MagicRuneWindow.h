@@ -6,6 +6,7 @@ namespace atl {
 	class MagicRuneWindow final {
 
 	public:
+		~MagicRuneWindow();
 
 		// A,Dで currentSelectIndex_ を操作する
 		void process();
@@ -34,9 +35,13 @@ namespace atl {
 		const tnl::Vector2i RUNE_NAME_STRING_POSITION{ 200 ,250 };
 		// ルーンの説明文を描画するY位置 ( X は文字列の大きさに合わせて中央揃えするので必要無し )
 		const float RUNE_DESC_STRING_POSITION_Y = 300;
+		// ルーンを選択中の背景を暗くするオーバーレイの透明度
+		const int32_t RUNE_OVERLAY_ALPHA = 128;
+		// ルーンを選択中
 		
-		
+		// 現在選択中のルーン
 		int32_t currentSelectIndex_ = 0;
+		// 現在、ウィンドウが開かれているか
 		bool isOpen_ = false;
 		
 		// 背景ルーンを描画

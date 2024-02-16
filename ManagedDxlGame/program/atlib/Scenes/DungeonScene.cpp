@@ -29,32 +29,28 @@ namespace atl {
 
 		player_ = std::make_shared<PlayerPawn>();
 		menuWindow_ = std::make_shared<MenuWindow>(player_->getPlayerData()->getInventory());
-		selectWindow_ = std::make_shared<SelectWindow>();
 	}
 
 	DungeonScene::~DungeonScene() {
-		{// ダンジョンシーンで使っているリソースを解放
+		// 解放するリソースのファイルパスの一時的配列を作成
+		std::vector<std::string> tempDeleteRes = {
+			"graphics/UI/HPbarBackGround.png",
+			"graphics/UI/HPbarRed.bmp",
+			"graphics/UI/HPbarGreen.bmp",
+			"graphics/UI/Instruction.png"
+			"sound/BGM/DungeonSceneBGM.ogg",
+			"sound/SE/DungeonSceneCloseMenu.ogg",
+			"sound/SE/DungeonSceneOpenMenu.ogg",
+		};
 
-			// 解放するリソースのファイルパスの一時的配列を作成
-			std::vector<std::string> tempDeleteRes = {
-				"graphics/UI/HPbarBackGround.png",
-				"graphics/UI/HPbarRed.bmp",
-				"graphics/UI/HPbarGreen.bmp",
-				"graphics/UI/Instruction.png"
-				"sound/BGM/DungeonSceneBGM.ogg",
-				"sound/SE/DungeonSceneCloseMenu.ogg",
-				"sound/SE/DungeonSceneOpenMenu.ogg",
-			};
-
-			// リソース解放
-			for (const auto& res : tempDeleteRes) {
-				ResourceManager::getResourceManager()->deleteResource(res);
-			}
-
-			// フォントデータの解放
-			DeleteFontToHandle(NEXT_FLOOR_FONT);
-			DeleteFontToHandle(LEVEL_STRING_FONT);
+		// リソース解放
+		for (const auto& res : tempDeleteRes) {
+			ResourceManager::getResourceManager()->deleteResource(res);
 		}
+		
+		// フォントデータの解放
+		DeleteFontToHandle(NEXT_FLOOR_FONT);
+		DeleteFontToHandle(LEVEL_STRING_FONT);
 	}
 
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
@@ -108,8 +104,6 @@ namespace atl {
 		// 操作説明の描画
 		drawInstruction();
 
-
-
 		// メニューを開いている時はログ表示無し,レベル表示無し,満腹度表示無し
 		if (!player_->getIsMenuOpen()) { 
 			TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); 
@@ -127,7 +121,7 @@ namespace atl {
 		magicRuneWindow_.draw();
 
 		// セレクトウィンドウがある時は、描画する
-		if (isSelectWindow_) selectWindow_->draw(deltaTime);
+		if (isSelectWindow_) selectWindow_.draw(deltaTime);
 	}
 
 
@@ -279,7 +273,7 @@ namespace atl {
 	}
 
 	void DungeonScene::openSelectWindow(const std::string& question) {
-		selectWindow_->openSelectWindow(question);
+		selectWindow_.openSelectWindow(question);
 		isSelectWindow_ = true;
 	}
 
@@ -694,7 +688,7 @@ namespace atl {
 			openSelectWindow(item->getItemName() + "\nを使いますか？");
 		}
 		if (isSelectWindow_) {
-			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
+			if (selectWindow_.windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
 				// アイテム使用してメニューウィンドウを閉じる。エネミーが行動する
 				player_->getPlayerData()->getInventory()->useItem(static_cast<int32_t>(selectedMenu));
 				closeMenu();
@@ -702,7 +696,7 @@ namespace atl {
 				player_->onFlagIsAlreadyTurn();
 				seq_.change(&DungeonScene::seqPlayerActionTurn);
 			}
-			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
+			else if (selectWindow_.windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
 				closeSelectWindow();
 				seq_.change(&DungeonScene::seqMenuWindow);
 			}
@@ -717,10 +711,10 @@ namespace atl {
 		}
 
 		if (isSelectWindow_) {
-			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
+			if (selectWindow_.windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
 				seq_.change(&DungeonScene::seqReturnToTitle);
 			}
-			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
+			else if (selectWindow_.windowChoice() == SelectWindow::e_SelectChoice::NO) {	// いいえ、の時の処理
 				closeSelectWindow();
 				seq_.change(&DungeonScene::seqMenuWindow);
 			}
@@ -756,13 +750,13 @@ namespace atl {
 
 		if (isSelectWindow_) {
 			// はい、の時の処理
-			if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::YES) {
+			if (selectWindow_.windowChoice() == SelectWindow::e_SelectChoice::YES) {
 				closeSelectWindow();
 				seq_.change(&DungeonScene::seqToNextFloor);
 
 			}
 			// いいえ、の時
-			else if (selectWindow_->windowChoice() == SelectWindow::e_SelectChoice::NO) {
+			else if (selectWindow_.windowChoice() == SelectWindow::e_SelectChoice::NO) {
 				closeSelectWindow();
 				seq_.change(&DungeonScene::seqTurnInit);
 			}
