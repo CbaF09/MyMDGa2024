@@ -3,6 +3,7 @@
 #include "../Singletons/ResourceManager.h"
 
 namespace atl {
+	
 	MagicRuneWindow::~MagicRuneWindow() {
 		// ƒŠƒ\[ƒX‰ð•ú
 		auto rManager = ResourceManager::getResourceManager();
@@ -13,6 +14,7 @@ namespace atl {
 		DeleteFontToHandle(RUNE_NAME_FONT);
 		DeleteFontToHandle(RUNE_DESC_FONT);
 	}
+
 	void MagicRuneWindow::process() {
 		auto& runes = MagicRuneSystemManager::getMagicRuneSystemManager()->getEquipmentMagicRunes();
 		// ‘•”õ’†‚Ìƒ‹[ƒ“‚ª–³‚¢ê‡A‘ŠúƒŠƒ^[ƒ“
@@ -32,11 +34,14 @@ namespace atl {
 	}
 	
 	void MagicRuneWindow::draw() {
+		// ”wŒi‚Ì‹óƒ‹[ƒ“‚ð•`‰æ
 		drawRuneBack();
 
+		// ‚à‚µAƒ‹[ƒ“‘I‘ð‰æ–Ê‚Å‚È‚¢‚È‚çA•W€ó‘Ô‚Å•`‰æ
 		if (!isOpen_) {
 			drawDefaultMode();
 		}
+		// ƒ‹[ƒ“‘I‘ð‰æ–Ê‚È‚çA‘I‘ð‰æ–Êó‘Ô‚Å•`‰æ
 		else {
 			drawSelectedMode();
 		}
@@ -72,29 +77,37 @@ namespace atl {
 
 		auto& runes = MagicRuneSystemManager::getMagicRuneSystemManager()->getEquipmentMagicRunes();
 		for (int i = 0; i < runes.size(); ++i) {
-			if (i != currentSelectIndex_) { // ‘I‘ð’†‚Å‚È‚¢‚à‚Ì‚ÍˆÃ‚­•`‰æ
+			// ‘I‘ð’†‚Å‚È‚¢‚à‚Ì‚ÍˆÃ‚­•`‰æ
+			if (i != currentSelectIndex_) { 
 				SetDrawBright(128, 128, 128);
 			}
+
 			auto runeGraph = runes[i]->getRuneGraph();
 			DrawRotaGraph(RUNE_BACKGRAPH_POSITION.x + i * RUNE_BACKGRAPH_OFFSET, RUNE_BACKGRAPH_POSITION.y, 1, 0, runeGraph, true);
+			
+			// ‘I‘ð’†‚Å‚È‚¢‚à‚Ì‚ÍˆÃ‚­•`‰æ‚µ‚Ä‚¢‚½‚Ì‚ðŒ³‚É–ß‚·
 			if (i != currentSelectIndex_) {
 				SetDrawBright(255, 255, 255);
 			}
 		}
 		
+		// ‘I‘ð’†‚Ìƒ‹[ƒ“‚ÌŒø‰Êà–¾‚ð•`‰æ
 		drawSelectedModeRuneDesc();
 	}
 
-	// ƒ‹[ƒ“‚ð‘I‘ð’†‚Ì’Ç‰Á•`‰æ ( ƒ‹[ƒ“‚ÌŒø‰Êà–¾ )
+	// ‘I‘ð’†ƒ‹[ƒ“‚ÌŒø‰Êà–¾
 	void MagicRuneWindow::drawSelectedModeRuneDesc() {
+		// Œø‰Êà–¾—p‚Ì”wŒi‚ð•`‰æ
 		DrawRotaGraph(DXE_WINDOW_WIDTH/2,DXE_WINDOW_HEIGHT/2,1,0, ResourceManager::getResourceManager()->getGraphRes("graphics/UI/MagicRune/RuneSelectWindowBack.png"),true);
+		
+		// ƒ‹[ƒ“‚Ìî•ñ‚ðŽæ“¾
 		auto& runes = MagicRuneSystemManager::getMagicRuneSystemManager()->getEquipmentMagicRunes();
-		
-		// ƒ‹[ƒ“‚Ì–¼‘O‚ð•`‰æ
 		auto& runeName = runes[currentSelectIndex_]->getRuneName();
+
+		// ƒ‹[ƒ“‚Ì–¼‘O‚ð•`‰æ
 		DrawStringToHandleEx(RUNE_NAME_STRING_POSITION.x, RUNE_NAME_STRING_POSITION.y, -1, RUNE_NAME_FONT, "%s", runeName.c_str());
-		
-		// ƒ‹[ƒ“‚Ìà–¾•¶‚ð•`‰æ
+
+		// ƒ‹[ƒ“‚Ìà–¾•¶‚ð•`‰æ ( ’†‰›‘µ‚¦ )
 
 		// ’†‰›‘µ‚¦‚Ìˆ×‚ÌŒvŽZ
 		auto& runeDesc = runes[currentSelectIndex_]->getRuneDesc();

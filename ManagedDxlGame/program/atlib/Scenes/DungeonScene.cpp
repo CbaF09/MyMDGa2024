@@ -62,7 +62,7 @@ namespace atl {
 		for (const auto& wall : walls_) { wall->renderObject(camera); }
 		for (const auto& enemy : enemies_) { enemy->renderObjects(camera, deltaTime); }
 		if (originStairs_) originStairs_->renderObjects(camera,deltaTime);
-		for (const auto& item : items_) { item->renderObjects(camera,deltaTime); }
+		for (const auto& item : items_) { item->renderObject(camera,deltaTime); }
 		if (player_)player_->render(deltaTime);
 
 		// 透明なもの描画
@@ -666,7 +666,7 @@ namespace atl {
 
 		// 左クリック で、選んだルーンを削除する
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
-			auto selectRune = magicRuneWindow_.getCurrentSelectIndex_();
+			auto selectRune = magicRuneWindow_.getCurrentSelectRune_();
 			MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(selectRune);
 			magicRuneWindow_.switchOpenMagicRuneWindow();
 			seq_.change(&DungeonScene::seqMenuWindow);
@@ -859,7 +859,7 @@ namespace atl {
 			auto& itemSpawnPos = DungeonCreater::getDungeonCreater()->getItemSpawnPos();
 			for (int i = 0; i < DungeonCreater::getDungeonCreater()->getItemSpawnNum(); ++i) {
 				auto item = std::make_shared<ItemPawn>(itemSpawnPos[i]);
-				item->assignWeakDungeonScene(shared_from_this());
+				item->initialize(shared_from_this());
 				items_.emplace_back(item);
 			}
 		}
@@ -873,7 +873,6 @@ namespace atl {
 		newWall->getMesh()->pos_.x = static_cast<float>(generatePosX * CELL_FULL_LENGTH);
 		newWall->getMesh()->pos_.y = static_cast<float>(CELL_FULL_LENGTH);
 		newWall->getMesh()->pos_.z = static_cast<float>(generatePosZ * CELL_FULL_LENGTH);
-		newWall->setMeshSizeVector3(tnl::Vector3{ CELL_FULL_LENGTH, CELL_FULL_LENGTH, CELL_FULL_LENGTH });
 		walls_.emplace_back(newWall);
 	}
 

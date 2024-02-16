@@ -9,7 +9,6 @@ namespace atl {
 	/// <summary>
 	/// 癒しのルーン
 	/// </summary>
-
 	void HealRune::onNotify(e_EventType eventType,DungeonScene& dungeonScene) {
 		if (eventType == e_EventType::TurnStart) {
 			dungeonScene.turnHealHP();
@@ -19,4 +18,5 @@ namespace atl {
 	/// <summary>
 	/// 炎のルーン
 	/// </summary>
+	/// 未記述
 }

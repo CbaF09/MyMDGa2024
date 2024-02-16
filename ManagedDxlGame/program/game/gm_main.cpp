@@ -20,6 +20,7 @@
 #include "../atlib/Scenes/GameOverScene.h"
 #include "gm_main.h"
 
+// 最初に一回呼ばれる関数
 void gameStart() {
 	atl::mtRandomInit();
 
@@ -27,7 +28,10 @@ void gameStart() {
 	SetFogColor(32, 32, 32);
 	SetFogStartEnd(4000.0f, 5000.0f);
 
+    // 直射光を設定
 	ChangeLightTypeDir(VGet(0.0f, -1.0f, 0.0f));
+
+    // 背景色設定
 	SetBackgroundColor(32, 32, 32);
     
     // マウスカーソルを非表示に
@@ -35,15 +39,19 @@ void gameStart() {
     // マウスカーソルをウィンドウに固定
     LockCursorToWindow();
 
+    // デバッグ用ダミーシーン
     //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>()); 
 
-	atl::SceneManager::getSceneManager(std::make_shared<atl::TitleScene>());
+    // 本編の初期シーン設定
+	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
 }
 
+// ゲームメインループ
 void gameMain(float delta_time) {
 	atl::SceneManager::getSceneManager()->nowSceneUpdate(delta_time);
 }
 
+// 終了時に一回呼ばれる関数
 void gameEnd() {
     // シングルトン群を解放
     atl::SceneManager::deleteSceneManager();

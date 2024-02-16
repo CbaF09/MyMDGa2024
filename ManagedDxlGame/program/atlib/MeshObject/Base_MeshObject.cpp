@@ -13,10 +13,6 @@ namespace atl {
 		mesh_->setTexture(texture);
 	}
 
-	void Base_MeshObject::setMaterial(const std::string& filePath) {
-		mesh_->loadMaterial(filePath);
-	}
-
 	void Base_MeshObject::renderObject(const Shared<Atl3DCamera> camera, float deltaTime) {
 		mesh_->render(camera);
 	}

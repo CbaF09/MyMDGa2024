@@ -2,6 +2,15 @@
 
 namespace atl {
 
+
+	/// <summary>
+	/// 
+	/// MagicRune の基底クラス。
+	/// オブザーバーパターンのサブジェクトにあたる。
+	/// オブザーバーにあたる存在は、MagicRuneSystemManager
+	/// 
+	/// </summary>
+	
 	class DungeonScene;
 
 	// イベント列挙子 MagicRuneが発動するタイミングを表現
@@ -34,7 +43,7 @@ namespace atl {
 		const std::string& getRuneDesc() { return runeDesc_; }
 
 		// ルーンの情報をCSVから読み込んだデータに基づいてまとめて設定
-		// arg ... アイテムID ( CSV の A列 に記載 )
+		// arg ... アイテムID ( CSV の A列 に記載 ) を enum で入力
 		void setRuneData(e_RuneID itemID);
 
 	private:

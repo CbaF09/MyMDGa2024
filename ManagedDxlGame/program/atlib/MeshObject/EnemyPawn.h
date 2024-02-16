@@ -5,6 +5,13 @@
 
 namespace atl {
 
+	/// <summary>
+	/// 
+	/// 3D上でのエネミー
+	/// 見た目と動きを制御
+	/// 
+	/// </summary>
+
 	class PlayerPawn;
 
 	class EnemyPawn : public Base_MultiMeshObject {
@@ -13,28 +20,35 @@ namespace atl {
 		EnemyPawn(const tnl::Vector2i& enemyPos);
 		~EnemyPawn();
 
-		// ゲッター
+		// ゲッター ( 既に移動を終えたか )
 		inline const bool getIsAlreadyMove() const { return isAlreadyMove_; }
+		// ゲッター ( 既に行動を終えたか )
 		inline const bool getIsAlreadyAction() const { return isAlreadyAction_; }
+		// ゲッター ( 死亡演出が終わり、死亡したか )
 		inline const bool getIsDead() const{ return isDead_; }
+		// ゲッター ( エネミーポーンが持つエネミーデータ )
 		inline const Shared<EnemyData> getEnemyData() const { return enemyData_; }
 
-		// セッター
-		inline void offFlagIsAlreadyTurn() { isAlreadyAction_ = false; isAlreadyMove_ = false; }
+		// 行動フラグをオフに
+		inline void offFlagIsAlreadyTurn() { 
+			isAlreadyAction_ = false; 
+			isAlreadyMove_ = false; 
+		}
 		
-		// エネミーの毎フレームの行動
-		bool enemyUpdate(float deltaTime) {
+		// エネミーのシーケンスアップデート
+		inline bool enemyUpdate(float deltaTime) {
 			seq_.update(deltaTime);
 			return true;
 		}
 
+		// 親メッシュが透明なので、親メッシュの描画と子メッシュの描画を分ける
 		// 不透明な物体の描画
 		void renderObjects(const Shared<Atl3DCamera> camera, float deltaTime) override;
 		// 透明な物体の描画と位置補正
 		void renderTransparentObject(const Shared<Atl3DCamera> camera, float deltaTime) override;
 
-		// プレイヤーへの弱参照を設定
-		void assignWeakDungeonScene(std::weak_ptr<DungeonScene> player);
+		// ダンジョンシーンへの弱参照を設定
+		void assignWeakDungeonScene(std::weak_ptr<DungeonScene> dungeonScene);
 
 	private:
 		//-----------------------
@@ -44,25 +58,34 @@ namespace atl {
 		// エネミーの大きさ
 		const float ENEMY_SIZE_RADIUS = 200;
 		// エネミーのYの高さ
-		const float ENEMY_POS_Y = 400; // 
+		const float ENEMY_POS_Y = 400;
 
 		// 移動用
+		// 移動先
 		tnl::Vector3 moveTarget_{ 0,0,0 };
-		const float MOVE_TIME = 0.3f; // 移動にかかる時間 ( 値が大きいほど移動に時間がかかる ) 
-		const float MOVE_END_BORDER = 0.1f; // 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
-		float moveLerpTimeCount_ = 0; // lerp移動用タイムカウンター
-		float hoverSinTimer_ = 0; // sin関数で上下にふわふわさせる為のタイムカウンター
-		float hoverSinAmplitude_ = 100.0f; // 上下運動の振幅
+		// 移動にかかる時間 ( 値が大きいほど移動に時間がかかる ) 
+		const float MOVE_TIME = 0.3f; 
+		// 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
+		const float MOVE_END_BORDER = 0.1f; 
+		// lerp移動用タイムカウンター
+		float moveLerpTimeCount_ = 0; 
+		// sin関数で上下にふわふわさせる為のタイムカウンター
+		float hoverSinTimer_ = 0; 
+		// 上下運動の振幅
+		float hoverSinAmplitude_ = 100.0f; 
 
 		// ターン制御用
+		// 既に移動を終えたか
 		bool isAlreadyMove_ = false;
+		// 既に行動を終えたか ( 攻撃など )
 		bool isAlreadyAction_ = false;
+		// 死亡演出が終わって、死亡したか
 		bool isDead_ = false;
 
 		// ダンジョンシーンへの弱参照
 		std::weak_ptr<DungeonScene> weakDungeonScene_;
 
-		// データ保持
+		// エネミーはエネミーデータを一つ保持する
 		Shared<EnemyData> enemyData_ = std::make_shared<EnemyData>();
 
 		//----------------------
@@ -75,11 +98,16 @@ namespace atl {
 		// ret ... 移動できる => true , 移動できない => false
 		// arg ... 現在位置からの移動先
 		bool isCanMove(const tnl::Vector2i& moveToPos);
+
 		// 移動先の設定 ( シーケンスのseqMoveToTargetで移動する )
 		void setMoveTarget(const tnl::Vector2i& moveToPos);
+		
 		// プレイヤーと前後左右で隣接しているか
+		// ret ... 隣接している => true, 隣接していない => false
 		bool isNeighborPlayer();
+		
 		// プレイヤーと同じエリアにいるか
+		// ret ... プレイヤーと同じエリアにいる => true, いない => false
 		bool isSameAreaPlayer();
 
 		//-----------------------

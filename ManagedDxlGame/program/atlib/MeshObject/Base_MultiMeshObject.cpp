@@ -7,13 +7,8 @@ namespace atl {
 		childMeshes_.emplace_back(childMesh);
 	}
 
-	void Base_MultiMeshObject::set2DposAnd3Dpos(const tnl::Vector2i& mesh2Dpos) {
-		auto cellLength = DungeonScene::getCellLength();
-		mesh2Dpos_ = mesh2Dpos;
-		rootMesh_->pos_ = { static_cast<float>(mesh2Dpos_.x * cellLength),static_cast<float>(rootMesh_->pos_.y),static_cast<float>(mesh2Dpos_.y * cellLength) };
-	}
-
 	void Base_MultiMeshObject::renderObjects(const Shared<Atl3DCamera> camera,float deltaTime){
+		// 子メッシュ補正関数が走る。具象クラスで定義
 		adjustChildsMeshes(deltaTime);
 
 		for (const auto& mesh : childMeshes_) {

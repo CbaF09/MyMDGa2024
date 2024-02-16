@@ -3,6 +3,12 @@
 
 namespace atl {
 
+	/// <summary>
+	/// 
+	/// 装備中の MagicRune を 画面に描画したり、選択したりする時のUI用クラス
+	/// 
+	/// </summary>
+
 	class MagicRuneWindow final {
 
 	public:
@@ -12,15 +18,16 @@ namespace atl {
 		void process();
 		
 		// ウィンドウを描画
+		// isOpenの状態に応じて、どう描画されるか変わる
 		void draw();
 
-		// マジックルーンウィンドウを開く閉じるをスイッチ
+		// ルーン選択画面を開く閉じるをスイッチ
 		void switchOpenMagicRuneWindow() { isOpen_ = !isOpen_; }
 		
-		// ゲッター
-		int32_t getCurrentSelectIndex_() { return currentSelectIndex_; }
+		// ゲッター ( 現在選択中のルーン )
+		int32_t getCurrentSelectRune_() { return currentSelectIndex_; }
+		// ゲッター ( 現在、ルーン選択画面かどうか )
 		bool IsOpenMagicRuneWindow() { return isOpen_; }
-
 
 	private:
 		// フォント
@@ -44,6 +51,7 @@ namespace atl {
 		// 現在、ウィンドウが開かれているか
 		bool isOpen_ = false;
 		
+		// draw 関数のヘルパー関数群
 		// 背景ルーンを描画
 		void drawRuneBack();
 		// 常時表示中の処理

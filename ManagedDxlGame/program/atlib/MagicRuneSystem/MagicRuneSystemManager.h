@@ -3,7 +3,16 @@
 #include "Base_MagicRune.h"
 
 namespace atl {
-
+	
+	/// <summary>
+	/// 
+	/// ルーンに関するマネージャークラス。
+	/// オブザーバーパターンのオブザーバーにあたる。
+	/// Base_MagicRuneの配列を保持。
+	/// notifyOnEvent で、Base_MagicRuneの具象クラスで定義されるonNotifyを発火させる。
+	/// 
+	/// </summary>
+	
 	class Base_MagicRune;
 
 	class MagicRuneSystemManager final {
@@ -39,6 +48,7 @@ namespace atl {
 	private:
 		// 最大装備数は5個まで
 		int32_t MAX_EQUIPMENT_RUNE = 5;
+
 		// 装備中のルーンの配列
 		std::vector<Shared<Base_MagicRune>> equipmentMagicRunes_{};
 		

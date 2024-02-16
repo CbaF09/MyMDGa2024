@@ -24,7 +24,6 @@ namespace atl {
 		mesh->rot_ *= tnl::Quaternion::RotationAxis({ 1,0,0 }, tnl::ToRadian(15));
 		initRot_ = mesh->rot_;
 		setMesh(mesh);
-		setMeshSizeVector3(size);
 	}
 
 	void MenuBook::renderObject(const Shared<Atl3DCamera> camera,float deltaTime) {

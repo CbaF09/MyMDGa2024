@@ -12,7 +12,6 @@ namespace atl {
 			dxe::Texture::CreateFromFile("graphics/Texture/WallBrickBlue.png")
 		);
 		setMesh(mesh);
-		setMeshSizeVector3(initSize);
 	}
 
 	Wall::Wall(const Shared<dxe::Mesh> originMesh) : Base_MeshObject(originMesh) {

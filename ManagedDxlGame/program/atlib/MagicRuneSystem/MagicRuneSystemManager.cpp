@@ -12,6 +12,7 @@ namespace atl {
     }
 
     bool MagicRuneSystemManager::equipRune(Shared<Base_MagicRune> newRune) {
+        // ‚à‚µ‘•”õ‰Â”\Å‘å”‚ğ’´‚¦‚Ä‚¢‚È‚¯‚ê‚ÎA’Ç‰Á
         if (equipmentMagicRunes_.size() < MAX_EQUIPMENT_RUNE) {
             equipmentMagicRunes_.emplace_back(newRune);
             return true;

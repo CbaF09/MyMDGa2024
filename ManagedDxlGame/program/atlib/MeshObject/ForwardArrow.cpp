@@ -4,20 +4,21 @@
 namespace atl {
 	
 	ForwardArrow::ForwardArrow(std::weak_ptr<const PlayerPawn> player): weakPlayerPawn(player) {
-		auto mesh = dxe::Mesh::CreateHollowOutDiskPlaneMV(250);
+		auto mesh = dxe::Mesh::CreateHollowOutDiskPlaneMV(FORWARD_ARROW_SIZE);
 		mesh->rot_ *= tnl::Quaternion::RotationAxis({ 1,0,0 }, tnl::ToRadian(90));
 		setMesh(mesh);
-		setTexture(dxe::Texture::CreateFromFile("graphics/Texture/Red.bmp"));
-
+		setTexture(dxe::Texture::CreateFromFile("graphics/Texture/Green.bmp"));
 	}
 
 	void ForwardArrow::renderObject(const Shared<Atl3DCamera> camera,float deltaTime) {
 		auto player = weakPlayerPawn.lock();
 		if (player) {
+			
 			// カメラの向いている向きに、セット
 			auto& forward = player->getPlayerCamera()->getCurrentForwardDir();
 			auto& cameraPos = player->getPlayerCamera()->pos_;
-			getMesh()->pos_ = cameraPos + tnl::Vector3{static_cast<float>(forward.x * 1000), FORWARD_ARROW_Y, static_cast<float>(forward.z * 1000)};
+			auto cellLength = DungeonScene::getCellLength();
+			getMesh()->pos_ = cameraPos + tnl::Vector3{static_cast<float>(forward.x * cellLength), FORWARD_ARROW_Y, static_cast<float>(forward.z * cellLength)};
 
 		}
 		getMesh()->render(camera);
