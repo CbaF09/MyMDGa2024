@@ -13,7 +13,7 @@ namespace atl {
 
 	class Item final {
 	public:
-		explicit Item(std::weak_ptr<DungeonScene> dungeonScene);
+		Item();
 
 		// ゲッター ( アイテムのイラスト )
 		const Shared<dxe::Texture> getItemIllust() { return itemIllust_; }
@@ -51,9 +51,6 @@ namespace atl {
 		std::string descString_ = "";
 		// アイテムの見た目用テクスチャ
 		Shared<dxe::Texture> itemIllust_ = nullptr;
-
-		// ダンジョンシーンへの弱参照
-		std::weak_ptr<DungeonScene> weakDungeonScene_;
 
 		//------------------------------------------
 		// 関数

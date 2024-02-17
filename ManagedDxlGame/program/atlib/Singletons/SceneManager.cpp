@@ -22,6 +22,5 @@ namespace atl {
         else {
             // TODO: エラーハンドリング
         };
-    };
-
+    }
 };

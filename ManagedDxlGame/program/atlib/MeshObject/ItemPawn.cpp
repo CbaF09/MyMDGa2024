@@ -28,7 +28,7 @@ namespace atl {
 		weakDungeonScene_ = dungeonScene;
 
 		// 保持するアイテムのデータを生成
-		item_ = std::make_shared<Item>(weakDungeonScene_);
+		item_ = std::make_shared<Item>();
 
 		// 立方体を生成
 		auto& spawnPos = get2Dpos();
