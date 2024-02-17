@@ -39,6 +39,7 @@ namespace atl {
 			MagicInc,
 			HealRune,
 			FireRune,
+			StoneRune,
 			ITEM_MAX,
 		};
 
@@ -87,6 +88,9 @@ namespace atl {
 
 		// ‰Š‚Ìƒ‹[ƒ“‘•”õ
 		void fireRuneAction();
+
+		// Šâ‚Ìƒ‹[ƒ“‘•”õ
+		void stoneRuneAction();
 	};
 
 }

@@ -36,10 +36,10 @@ namespace atl {
 		inline std::vector<std::vector<tnl::CsvCell>>& getMagicRuneCSV() { return magicRuneCSV_; }
 
 		// ルーンを追加する
-		bool equipRune(Shared<Base_MagicRune> newRune);
+		bool equipRune(Shared<Base_MagicRune> newRune,DungeonScene& dungeonScene);
 		
 		// ルーンを削除する
-		void removeRune(int index);
+		void removeRune(int index,DungeonScene& dungeonScene);
 
 		// ルーンを発動させる
 		// arg ... 発火させるイベント。Base_MagicRune で定義

@@ -13,6 +13,8 @@ namespace atl {
 	/// 3. 具象クラスを作り、コンストラクタに setRuneData を記述する。
 	/// 4. onNotifyに、処理を記述
 	/// 
+	/// ルーンを装備するアイテムは、別で追加が必要
+	/// 
 	/// </summary>
 
 	/// <summary>
@@ -30,8 +32,24 @@ namespace atl {
 	class FireRune : public Base_MagicRune {
 	public:
 		FireRune() { setRuneData(e_RuneID::FireRune); }
-		// 処理未記述
-		void onNotify(e_EventType eventType, DungeonScene& dungeonScene) override {};
+		inline void onNotify(e_EventType eventType, DungeonScene& dungeonScene) override { /*未記述*/ };
+		void onEquipMomentNotify(DungeonScene& dungeonScene) override;
+		void onRemoveMomentNotify(DungeonScene& dungeonScene) override;
+	private:
+		const int32_t ATTACK_UP_VALUE = 3;
+	};
+
+	/// <summary>
+	/// 岩のルーン
+	/// </summary>
+	class StoneRune : public Base_MagicRune {
+	public:
+		StoneRune() { setRuneData(e_RuneID::StoneRune); }
+		inline void onNotify(e_EventType eventType, DungeonScene& dungeonScene) override { /*未記述*/ };
+		void onEquipMomentNotify(DungeonScene& dungeonScene) override;
+		void onRemoveMomentNotify(DungeonScene& dungeonScene) override;
+	private:
+		const int32_t DEFENCE_UP_VALUE = 5;
 	};
 
 }

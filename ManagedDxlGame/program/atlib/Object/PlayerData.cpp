@@ -6,6 +6,7 @@ namespace atl {
     PlayerData::PlayerData() {
         // デバッグ用で仮設定
         setAttackPower(10);
+        setDefencePower(2);
         setMaxHP(30);
         setCurrentHP(30);
     }
@@ -30,9 +31,8 @@ namespace atl {
     }
 
     void PlayerData::debug_playerDataParam(int x, int y) {
-        DrawStringEx(x, y, -1, "currentLevel ... [ %d ]", currentLevel_);
-        DrawStringEx(x, y + 16, -1, "currentExp_ ... [ %d ]", currentExp_);
-        DrawStringEx(x, y + 32, -1, "needExp_ ... [ %d ]", needExp_);
+        DrawStringEx(x, y, -1, "AttackPower ... [ %d ]", getAttackPower());
+        DrawStringEx(x, y + 16, -1, "DefencePower ... [ %d ]", getDefencePower());
     }
 
 }

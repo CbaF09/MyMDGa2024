@@ -3,20 +3,44 @@
 #include "MagicRuneSystemManager.h"
 #include "../Scenes/DungeonScene.h"
 #include "../Singletons/ResourceManager.h"
+#include "../MeshObject/PlayerPawn.h"
+#include "../Object/PlayerData.h"
 
 namespace atl {
 
 	/// <summary>
 	/// 癒しのルーン
 	/// </summary>
-	void HealRune::onNotify(e_EventType eventType,DungeonScene& dungeonScene) {
+	void HealRune::onNotify(e_EventType eventType, DungeonScene& dungeonScene) {
 		if (eventType == e_EventType::TurnStart) {
 			dungeonScene.turnHealHP();
 		}
 	}
-	
+
 	/// <summary>
 	/// 炎のルーン
 	/// </summary>
-	/// 未記述
+	void FireRune::onEquipMomentNotify(DungeonScene& dungeonScene) {
+		auto& playerStats = dungeonScene.getPlayerPawn()->getPlayerData();
+		playerStats->setAttackPower(playerStats->getAttackPower() + ATTACK_UP_VALUE);
+	}
+
+	void FireRune::onRemoveMomentNotify(DungeonScene& dungeonScene) {
+		auto& playerStats = dungeonScene.getPlayerPawn()->getPlayerData();
+		playerStats->setAttackPower(playerStats->getAttackPower() - ATTACK_UP_VALUE);
+	}
+
+	/// <summary>
+	/// 岩のルーン
+	/// </summary>
+	void StoneRune::onEquipMomentNotify(DungeonScene& dungeonScene) {
+		auto& playerStats = dungeonScene.getPlayerPawn()->getPlayerData();
+		playerStats->setDefencePower(playerStats->getDefencePower() + DEFENCE_UP_VALUE);
+	}
+
+	void StoneRune::onRemoveMomentNotify(DungeonScene& dungeonScene) {
+		auto& playerStats = dungeonScene.getPlayerPawn()->getPlayerData();
+		playerStats->setDefencePower(playerStats->getDefencePower() - DEFENCE_UP_VALUE);
+	}
+
 }

@@ -51,6 +51,11 @@ namespace atl {
 		auto runeBack = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/MagicRune/MagicRuneBack.png");
 		auto maxEquipment = MagicRuneSystemManager::getMagicRuneSystemManager()->getMaxEquipmentRune();
 
+		// 空ルーンの背景になるオーバーレイを描画
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, RUNE_BACK_OVERLAY_ALPHA);
+		DrawOvalAA(RUNE_BACK_OVERLAY_POSITION.x, RUNE_BACK_OVERLAY_POSITION.y, RUNE_BACK_OVERLAY_SIZE.x, RUNE_BACK_OVERLAY_SIZE.y, 10,GetColor(128, 128, 200),true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
 		// 空ルーンを描画
 		for (int i = 0; i < maxEquipment; ++i) {
 			DrawRotaGraph(RUNE_BACKGRAPH_POSITION.x + i * RUNE_BACKGRAPH_OFFSET, RUNE_BACKGRAPH_POSITION.y, 1, 0, runeBack, true);

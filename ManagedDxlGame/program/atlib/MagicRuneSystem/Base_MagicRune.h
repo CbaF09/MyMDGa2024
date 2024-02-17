@@ -17,8 +17,6 @@ namespace atl {
 	enum class e_EventType {
 		Debug,			// デバッグ用
 		TurnStart,		// ターン開始時
-		EquipMoment,	// 装備した瞬間
-		RemoveMoment,	// 外した瞬間
 	};
 
 	// 名前とCSV上のIDを分かりやすくさせる為の enum
@@ -26,6 +24,7 @@ namespace atl {
 		NONE,
 		HealRune,
 		FireRune,
+		StoneRune,
 	};
 
 	class Base_MagicRune {
@@ -34,6 +33,9 @@ namespace atl {
 		
 		// イベントタイプに対して発動する処理 ( 純粋仮想関数 )
 		virtual void onNotify(e_EventType eventType,DungeonScene& dungeonScene) = 0;
+		// 装備した時に発動する処理
+		virtual void onEquipMomentNotify(DungeonScene& dungeonScene) {};
+		virtual void onRemoveMomentNotify(DungeonScene& dungeonScene) {};
 
 		// ゲッター ( ルーン用2Dアイコン画像を取得 )
 		const int getRuneGraph() { return graphHandle_; }

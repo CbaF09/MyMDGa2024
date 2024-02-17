@@ -45,6 +45,7 @@ namespace atl {
 		case e_itemList::MagicInc: magicIncAction(); break;
 		case e_itemList::HealRune: healRuneAction(); break;
 		case e_itemList::FireRune: fireRuneAction(); break;
+		case e_itemList::StoneRune: stoneRuneAction(); break;
 		default: break;
 		}
 	}
@@ -114,13 +115,19 @@ namespace atl {
 
 	// 癒しのルーン装備
 	void Item::healRuneAction() {
-		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>());
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>(),*weakDungeonScene_.lock());
 		addTextItemUse("癒しのルーンを装備した");
 	}
 
 	// 炎のルーン装備
 	void Item::fireRuneAction() {
-		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<FireRune>());
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<FireRune>(),*weakDungeonScene_.lock());
 		addTextItemUse("炎のルーンを装備した");
+	}
+
+	// 岩のルーン装備
+	void Item::stoneRuneAction() {
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<StoneRune>(),*weakDungeonScene_.lock());
+		addTextItemUse("岩のルーンを装備した");
 	}
 }

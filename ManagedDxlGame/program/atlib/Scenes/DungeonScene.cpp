@@ -84,7 +84,6 @@ namespace atl {
 		if (isDebug) {
 			debug_displayMap(deltaTime);
 			debug_displayDungeonParam(deltaTime);
-			player_->getPlayerData()->debug_playerDataParam(600, 500);
 		}
 	}
 
@@ -672,7 +671,7 @@ namespace atl {
 		// 左クリック で、選んだルーンを削除する
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 			auto selectRune = magicRuneWindow_.getCurrentSelectRune_();
-			MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(selectRune);
+			MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(selectRune,*shared_from_this());
 			magicRuneWindow_.switchOpenMagicRuneWindow();
 			seq_.change(&DungeonScene::seqMenuWindow);
 		}
@@ -902,6 +901,8 @@ namespace atl {
 		}
 
 		player_->debug_displayPlayerParam(600, 100);
+		player_->getPlayerData()->debug_playerDataParam(600, 300);
+
 
 	}
 
