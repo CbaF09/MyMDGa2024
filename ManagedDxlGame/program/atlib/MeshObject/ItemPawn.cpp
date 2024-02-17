@@ -23,10 +23,7 @@ namespace atl {
 		dxe::DirectXRenderEnd();
 	}
 
-	void ItemPawn::initialize(std::weak_ptr<DungeonScene> dungeonScene) {
-		// ダンジョンシーンへの弱参照を設定
-		weakDungeonScene_ = dungeonScene;
-
+	void ItemPawn::initialize() {
 		// 保持するアイテムのデータを生成
 		item_ = std::make_shared<Item>();
 

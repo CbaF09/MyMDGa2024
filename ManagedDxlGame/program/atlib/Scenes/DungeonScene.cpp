@@ -191,7 +191,8 @@ namespace atl {
 			for (int y = 0; y < field[x].size(); ++y) {
 				// 何もない場合、早期continue
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_NONE) { continue; }
-
+				// 未発見の場合、早期continue
+				if (field[x][y].isDiscoverByPlayer == false) { continue; }
 
 				// cellType に応じて色を変える
 				int drawColor = 0;
@@ -216,6 +217,8 @@ namespace atl {
 			for (int y = 0; y < field[x].size();++y) {
 				// 壁以外は早期リターン
 				if (field[x][y].cellType_ != DungeonCreater::e_FieldCellType::CELL_TYPE_WALL) { continue; }
+				// 未発見の場合、早期continue
+				if (field[x][y].isDiscoverByPlayer == false) { continue; }
 
 				// 描画位置の計算
 				tnl::Vector2i drawPos = calcDrawMinimapPos(x, y);
@@ -411,10 +414,26 @@ namespace atl {
 		// 敵のリスポーン判定
 		enemyResporn();
 
+		// ミニマップ更新用
+		minimapUpdate(player_->getPlayer2Dpos());
+
 		// キー入力待ちへ
 		seq_.change(&DungeonScene::seqKeyInput);
 		
 		return true;
+	}
+
+	void DungeonScene::minimapUpdate(const tnl::Vector2i& openCellPos) {
+		auto dCreater = DungeonCreater::getDungeonCreater();
+		auto& cells = dCreater->getFieldCells();
+		for (int x = -2; x < 3; ++x) {
+			for (int y = -2; y < 3; ++y) {
+				auto newOpenPos = openCellPos + tnl::Vector2i{ x,y };
+				// 範囲外アクセスチェック
+				if (newOpenPos.x < 0 || newOpenPos.y < 0 || newOpenPos.x > cells.size() || newOpenPos.y > cells.size()) { continue; }
+				dCreater->discoverFieldCell(newOpenPos);
+			}
+		}
 	}
 
 	// キー入力待ち
@@ -862,7 +881,7 @@ namespace atl {
 			auto& itemSpawnPos = DungeonCreater::getDungeonCreater()->getItemSpawnPos();
 			for (int i = 0; i < DungeonCreater::getDungeonCreater()->getItemSpawnNum(); ++i) {
 				auto item = std::make_shared<ItemPawn>(itemSpawnPos[i]);
-				item->initialize(shared_from_this());
+				item->initialize();
 				items_.emplace_back(item);
 			}
 		}

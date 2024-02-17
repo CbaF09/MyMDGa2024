@@ -326,6 +326,9 @@
     <ClCompile Include="program\atlib\MagicRuneSystem\Base_MagicRune.cpp">
       <Filter>program\[002] atlib\MagicRuneSystem</Filter>
     </ClCompile>
+    <ClCompile Include="CsvManager.cpp">
+      <Filter>program\[002] atlib\Singletons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ManagedDxlGame.rc">
@@ -646,6 +649,9 @@
     </ClInclude>
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneWindow.h">
       <Filter>program\[002] atlib\MagicRuneSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="CsvManager.h">
+      <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

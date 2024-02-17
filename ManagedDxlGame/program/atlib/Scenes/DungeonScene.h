@@ -210,6 +210,9 @@ namespace atl {
         // arg ... 2D座標位置
         void generateGround(int generatePosX, int generatePosZ);
 
+        // ミニマップの情報を更新
+        void minimapUpdate(const tnl::Vector2i& openCellPos);
+
         // メニューを開く
         void openMenu();
         // メニューを閉じる
@@ -245,6 +248,7 @@ namespace atl {
         bool seqTurnInit(float deltaTime);
         // ターン開始時処理
         bool seqTurnStart(float deltaTime);
+
 
         // キー入力待ち
         bool seqKeyInput(float deltaTime);

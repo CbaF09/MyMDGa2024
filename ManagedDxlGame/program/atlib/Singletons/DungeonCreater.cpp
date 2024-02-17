@@ -47,7 +47,9 @@ namespace atl {
 		for (auto& row : fieldCells_) {
 			for (auto& cell : row) {
 				cell.cellType_ = e_FieldCellType::CELL_TYPE_WALL;
+				cell.regionAreaID_ = 0;
 				cell.isAlreadySpawnSomething = false;
+				cell.isDiscoverByPlayer = false;
 			}
 		}
 	}

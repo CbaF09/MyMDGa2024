@@ -16,6 +16,7 @@ namespace atl {
 		DungeonCreater() {};
 		~DungeonCreater() {};
 	//------------------------------------------
+
 	public:
 		// セルの状態用 enum
 		enum class e_FieldCellType {
@@ -46,10 +47,12 @@ namespace atl {
 		public:
 			// セルのタイプ
 			e_FieldCellType cellType_ = e_FieldCellType::CELL_TYPE_NONE;
-			// 既に何かがスポーンしているマスか
-			bool isAlreadySpawnSomething = false;
 			// どのエリアのマスなのか
 			int32_t regionAreaID_ = 0;
+			// 既に何かがスポーンしているマスか
+			bool isAlreadySpawnSomething = false;
+			// プレイヤーに発見されたか ( ミニマップに表示されるか )
+			bool isDiscoverByPlayer = false;
 		};
 
 		// ダンジョンを生成。fieldCells_ に保存される
@@ -64,8 +67,17 @@ namespace atl {
 		inline const std::vector<tnl::Vector2i>& getEnemySpawnPos() const { return enemySpawnPosArray_; }
 		inline const std::vector<tnl::Vector2i>& getItemSpawnPos() const { return itemSpawnPosArray_; }
 
-		// 引数に渡した座標のフィールドセルのIDを取得
-		inline const int32_t getFieldCellID(tnl::Vector2i pos) const { return fieldCells_[pos.x][pos.y].regionAreaID_; }
+		// ゲッター ( 引数に渡した座標のフィールドセルのIDを取得 )
+		inline const int32_t getFieldCellID(const tnl::Vector2i& pos) const { return fieldCells_[pos.x][pos.y].regionAreaID_; }
+
+		// ゲッター ( 引数に渡した座標のフィールドセルが、発見済み => true , 発見されていない => false )
+		inline bool isDiscoverFieldCell(const tnl::Vector2i& pos) { return fieldCells_[pos.x][pos.y].isDiscoverByPlayer; }
+
+		// ゲッター ( 引数に渡した座標のフィールドセルのcellTypeを取得する )
+		inline e_FieldCellType getFieldCellType(const tnl::Vector2i pos) const { return fieldCells_[pos.x][pos.y].cellType_; }
+
+		// 引数に渡した座標のフィールドセルを、発見された判定した判定にする
+		inline void discoverFieldCell(const tnl::Vector2i& pos) { fieldCells_[pos.x][pos.y].isDiscoverByPlayer = true; }
 
 		// fieldCells_ から、スポーン可能状態の空セルを抽出してリストにし、その中からランダムに一つ選び、そのXY座標を返す
 		// 選ばれた XY地点の fieldCell は、スポーン不可状態に切り替わる
@@ -119,9 +131,9 @@ namespace atl {
 		// 部屋の縦横最小サイズ
 		const int32_t ROOM_SIZE_MIN = 4;
 
-		// 敵の数
+		// 敵の初期スポーン数
 		const int32_t ENEMY_SPAWN_NUM = 3;
-		// アイテムの数
+		// アイテムの初期スポーン数
 		const int32_t ITEM_SPAWN_NUM = 5;
 
 		// プレイヤーがスポーンする位置

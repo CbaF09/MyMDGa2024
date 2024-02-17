@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CsvManager.cpp" />
     <ClCompile Include="ManagedDxlGame.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\Base_MagicRune.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRune.cpp" />
@@ -357,6 +358,7 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CsvManager.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\Base_MagicRune.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRune.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneWindow.h" />
