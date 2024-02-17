@@ -6,6 +6,12 @@
 
 namespace atl {
 
+	/// <summary>
+	/// 
+	/// ダンジョンシーンで右クリックした時に開けるメニューUI
+	/// 
+	/// </summary>
+
 	class Inventory;
 
 	class MenuWindow final {

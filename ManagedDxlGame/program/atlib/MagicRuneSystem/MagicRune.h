@@ -21,7 +21,7 @@ namespace atl {
 	class HealRune : public Base_MagicRune {
 	public:
 		HealRune() { setRuneData(e_RuneID::HealRune); }
-		void onNotify(e_EventType eventType,DungeonScene& dungeonScene) override;
+		void onNotify(e_EventType eventType, DungeonScene& dungeonScene) override;
 	};
 
 	/// <summary>

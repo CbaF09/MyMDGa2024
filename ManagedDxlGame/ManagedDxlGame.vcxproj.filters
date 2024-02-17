@@ -54,9 +54,6 @@
     <Filter Include="program\[002] atlib\Singletons">
       <UniqueIdentifier>{2e6e1c9c-ab7e-41ee-a21d-cef3de10b67c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="program\[002] atlib\Templetes">
-      <UniqueIdentifier>{551610a1-c34f-46d2-858f-ac839766b4af}</UniqueIdentifier>
-    </Filter>
     <Filter Include="program\[002] atlib\Utilities">
       <UniqueIdentifier>{4b83cbea-da4d-4825-9efa-6aae39adf278}</UniqueIdentifier>
     </Filter>
@@ -252,9 +249,6 @@
       <Filter>program\[002] atlib\Utilities</Filter>
     </ClCompile>
     <ClCompile Include="program\atlib\Utilities\AtlRandom.cpp">
-      <Filter>program\[002] atlib\Utilities</Filter>
-    </ClCompile>
-    <ClCompile Include="program\atlib\Utilities\AtlAstar.cpp">
       <Filter>program\[002] atlib\Utilities</Filter>
     </ClCompile>
     <ClCompile Include="ManagedDxlGame.cpp">
@@ -578,19 +572,10 @@
     <ClInclude Include="program\atlib\Singletons\SceneManager.h">
       <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\Templates\make_shared_withInitFunc.h">
-      <Filter>program\[002] atlib\Templetes</Filter>
-    </ClInclude>
     <ClInclude Include="program\atlib\Utilities\Atl3DCamera.h">
       <Filter>program\[002] atlib\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\Utilities\AtlRandom.h">
-      <Filter>program\[002] atlib\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="program\atlib\Utilities\InputSystem.h">
-      <Filter>program\[002] atlib\Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="program\atlib\Utilities\AtlAstar.h">
       <Filter>program\[002] atlib\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\Singletons\ResourceManager.h">

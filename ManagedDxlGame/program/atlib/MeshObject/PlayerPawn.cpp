@@ -24,11 +24,6 @@ namespace atl {
 		ResourceManager::getResourceManager()->deleteResource("sound/SE/DungeonScenePlayerAttack.ogg");
 	}
 
-	void PlayerPawn::setPlayerAndCamera3Dpos(const tnl::Vector3& newPos) {
-		player3Dpos_ = newPos;
-		playerCamera_->pos_ = newPos;
-	}
-
 	void PlayerPawn::openMenuBook() {
 		playerHaveMenuBook_->openMenu();
 	}
@@ -44,7 +39,8 @@ namespace atl {
 		tnl::Vector3 initPos = { spawn2Dpos.x * cellLength, PLAYER_HEAD_LINE, spawn2Dpos.y * cellLength };
 		moveTarget_ = initPos;
 
-		setPlayerAndCamera3Dpos(initPos);
+		player3Dpos_ = initPos;
+		playerCamera_->pos_ = initPos;
 	}
 
 	bool PlayerPawn::isCanMovePos(const tnl::Vector2i& moveToPos) {

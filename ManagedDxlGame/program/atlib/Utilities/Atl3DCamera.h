@@ -37,12 +37,17 @@ namespace atl {
 		void calcCurrentFowardNormalDir();
 
 	private:
+		// マウス感度
 		const float MOUSE_SENSITIVITY = 0.3f;
+		// 縦振りの限度 ( MIN )
 		const float MIN_PITCH = 40.0f;
+		// 縦振りの限度 ( MAX )
 		const float MAX_PITCH = 150.0f;
 
+		// カメラのクォータニオン
 		tnl::Quaternion cameraRot_;
-		tnl::Vector3 currentForwardNormalDir_{ 0,0,1 }; // 現在の正面方向
+		// 現在の正面方向
+		tnl::Vector3 currentForwardNormalDir_{ 0,0,1 }; 
 
 	};
 

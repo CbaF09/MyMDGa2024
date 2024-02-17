@@ -30,12 +30,13 @@ namespace atl {
 		}
 	}
 
-	// ログ出力のための関数。いちいちgetTextLogManager書くのがめんどいので。
+	// ログ出力のためのヘルパー関数。いちいちgetTextLogManager書くのがめんどいので。
 	void Item::addTextItemUse(std::string text) {
 		TextLogManager::getTextLogManager()->addTextLog(text);
 	}
 
 	void Item::executeItemPerformAction() {
+		// itemID に応じて、効果を発動
 		switch (itemID_) {
 		case e_itemList::HealHerb: healHerbAction(); break;
 		case e_itemList::HealPotion: healPotionAction(); break;
@@ -44,7 +45,7 @@ namespace atl {
 		case e_itemList::MagicInc: magicIncAction(); break;
 		case e_itemList::HealRune: healRuneAction(); break;
 		case e_itemList::FireRune: fireRuneAction(); break;
-		default : break;
+		default: break;
 		}
 	}
 
@@ -59,13 +60,13 @@ namespace atl {
 	}
 
 	// 回復薬　... 体力中回復
-	void Item::healPotionAction(){
+	void Item::healPotionAction() {
 		auto lock = weakDungeonScene_.lock();
 		if (lock) {
 			lock->getPlayerPawn()->getPlayerData()->changeCurrentHP(POTION_HEAL_VALUE);
 		}
 		addTextItemUse("回復薬を飲んだ");
-		addTextItemUse("体力が"+ convertFullWidthNumber(POTION_HEAL_VALUE) + "回復した");
+		addTextItemUse("体力が" + convertFullWidthNumber(POTION_HEAL_VALUE) + "回復した");
 
 	}
 

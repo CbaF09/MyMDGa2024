@@ -66,20 +66,32 @@ namespace atl {
 		// graphResourceMap_ を走査
 		if (auto it = graphResourceMap_.find(filepath); it != graphResourceMap_.end()) {
 			// 発見した場合、解放
-			DeleteGraph(it->second);
-			graphResourceMap_.erase(filepath);
-			return true;
+			// 解放に失敗すると -1 が返ってくる
+			if (DeleteGraph(it->second) != -1) {
+				graphResourceMap_.erase(filepath);
+				return true;
+			}
+			// 解放に失敗した場合
+			else {
+				tnl::DebugTrace("\n ResourceManagerリソース解放 => %s のメモリ解放に失敗しました \n", filepath.c_str());
+				return false;
+			}
 		}
 
 		// soundResourceMap_ を走査
 		if (auto it = soundResouceMap_.find(filepath); it != soundResouceMap_.end()) {
-			DeleteSoundMem(it->second);
-			soundResouceMap_.erase(filepath);
-			return true;
+			if (DeleteSoundMem(it->second) != -1) {
+				soundResouceMap_.erase(filepath);
+				return true;
+			}
+			else {
+				tnl::DebugTrace("\ ResourceManagerリソース解放 => %s のメモリ解放に失敗しました \n", filepath.c_str());
+				return false;
+			}
 		}
 		
 		// 発見できなかった場合
-		tnl::DebugTrace("\n----------------------------------\n %s のデータ解放が正常に成功していません \n----------------------------------\n",filepath.c_str());
+		tnl::DebugTrace("\n ResourceManagerリソース解放 => %s が見つかりませんでした \n",filepath.c_str());
 		return false;
 	}
 

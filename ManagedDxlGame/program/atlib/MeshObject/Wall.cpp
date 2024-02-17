@@ -3,13 +3,16 @@
 namespace atl {
 
 	Wall::Wall(const tnl::Vector3& initSize) {
+
+		auto texture = dxe::Texture::CreateFromFile("graphics/Texture/WallBrickBlue.png");
+		
 		auto mesh = dxe::Mesh::CreateBoxMV(initSize,
-			dxe::Texture::CreateFromFile("graphics/Texture/WallBrickBlue.png"),
-			dxe::Texture::CreateFromFile("graphics/Texture/WallBrickBlue.png"),
-			dxe::Texture::CreateFromFile("graphics/Texture/WallBrickBlue.png"),
-			dxe::Texture::CreateFromFile("graphics/Texture/Blue.bmp"),
-			dxe::Texture::CreateFromFile("graphics/Texture/WallBrickBlue.png"),
-			dxe::Texture::CreateFromFile("graphics/Texture/WallBrickBlue.png")
+			texture,
+			texture,
+			texture,
+			texture,
+			texture,
+			texture
 		);
 		setMesh(mesh);
 	}

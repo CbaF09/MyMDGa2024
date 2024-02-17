@@ -16,6 +16,7 @@ namespace atl {
 	class Base_MagicRune;
 
 	class MagicRuneSystemManager final {
+
 	//------------------------------------------
 	// シングルトン設計
 	public:
@@ -27,7 +28,6 @@ namespace atl {
 	//------------------------------------------
 
 	public:
-
 		// ゲッター ( 最大装備数 )
 		inline const int32_t getMaxEquipmentRune() const { return MAX_EQUIPMENT_RUNE; }
 		// ゲッター ( 装備中のルーン配列 )

@@ -53,7 +53,8 @@ namespace atl {
 				actualyPos.y += STRINGS_OFFSET;
 			}
 
-			actualyPos.y += ITEM_SYSTEM_OFFSET; // システム文字列の位置に描画位置を移動
+			// システム文字列の位置に描画位置を移動
+			actualyPos.y += ITEM_SYSTEM_OFFSET;
 
 			// システム文字列の描画
 			for (int i = 0; i < systemWindows_.size(); ++i) {

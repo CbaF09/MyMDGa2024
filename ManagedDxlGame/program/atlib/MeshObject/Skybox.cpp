@@ -3,16 +3,19 @@
 
 namespace atl {
 
-	Skybox::Skybox() {
-		skybox_ = dxe::Mesh::CreateCubeMV(50000, 30, 30);
-		skybox_->setTexture(dxe::Texture::CreateFromFile("graphics/skybox/Skybox.jpg"));
+	Skysphere::Skysphere() {
+		skysphere_ = dxe::Mesh::CreateSphereMV(50000, 30, 30);
+		skysphere_->setTexture(dxe::Texture::CreateFromFile("graphics/skybox/Skybox.jpg"));
 	}
 
-	void Skybox::update(const Shared<Atl3DCamera> camera) {
+	void Skysphere::update(const Shared<Atl3DCamera> camera) {
+		// ゆっくり回転
+		skysphere_->rot_ *= tnl::Quaternion::RotationAxis({ 0, 1, 0 }, tnl::ToRadian(0.1f));
+		skysphere_->pos_ = camera->pos_;
+
+		// フォグを切ってレンダーしてから、再度フォグを有効にする
 		SetFogEnable(false);
-		skybox_->rot_ *= tnl::Quaternion::RotationAxis({ 0, 1, 0 }, tnl::ToRadian(0.1f));
-		skybox_->pos_ = camera->pos_;
-		skybox_->render(camera);
+		skysphere_->render(camera);
 		SetFogEnable(true);
 	}
 }

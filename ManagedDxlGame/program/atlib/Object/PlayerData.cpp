@@ -18,12 +18,6 @@ namespace atl {
         }
     }
 
-    void PlayerData::debug_playerDataParam(int x, int y) {
-        DrawStringEx(x, y, -1, "currentLevel ... [ %d ]", currentLevel_);
-        DrawStringEx(x, y + 16, -1, "currentExp_ ... [ %d ]", currentExp_);
-        DrawStringEx(x, y + 32, -1, "needExp_ ... [ %d ]", needExp_);
-    }
-
     void PlayerData::levelUp() {
         // ƒŒƒxƒ‹‚ªˆê‚Âã‚ª‚é
         ++currentLevel_;
@@ -33,6 +27,12 @@ namespace atl {
         setMaxHP(getMaxHP() + LEVEL_UP_HP_UP_VALUE);
         TextLogManager::getTextLogManager()->addTextLog("ƒŒƒxƒ‹‚ªã‚ª‚Á‚½I");
 
+    }
+
+    void PlayerData::debug_playerDataParam(int x, int y) {
+        DrawStringEx(x, y, -1, "currentLevel ... [ %d ]", currentLevel_);
+        DrawStringEx(x, y + 16, -1, "currentExp_ ... [ %d ]", currentExp_);
+        DrawStringEx(x, y + 32, -1, "needExp_ ... [ %d ]", needExp_);
     }
 
 }

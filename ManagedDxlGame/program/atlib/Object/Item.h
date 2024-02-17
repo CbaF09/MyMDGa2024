@@ -4,19 +4,31 @@
 
 namespace atl {
 
+	/// <summary>
+	/// 
+	/// アイテムの情報と処理を持つ
+	/// ItemPawn や Inventory から利用される
+	/// 
+	/// </summary>
 
 	class Item final {
 	public:
 		explicit Item(std::weak_ptr<DungeonScene> dungeonScene);
 
+		// ゲッター ( アイテムのイラスト )
 		const Shared<dxe::Texture> getItemIllust() { return itemIllust_; }
+		// ゲッター ( アイテム名 )
 		const std::string& getItemName() const { return itemName_; }
+		// ゲッター ( アイテム説明文 )
 		const std::string& getItemDescString() const { return descString_; }
 
 		// 使用時処理を実行する関数。Inventoryクラス の useItem() から呼び出される
 		void executeItemPerformAction();
 
 	private:
+		//------------------------------------------
+		// 変数
+
 		// アイテム名とIDを一致させるためのenum
 		enum class e_itemList {
 			NONE = 0,
@@ -42,7 +54,10 @@ namespace atl {
 		// ダンジョンシーンへの弱参照
 		std::weak_ptr<DungeonScene> weakDungeonScene_;
 
-		// アイテムを使った時に出力するログ。いちいちgetTextLogManager書くのがめんどいので。
+		//------------------------------------------
+		// 関数
+
+		// アイテムを使った時にログ出力するヘルパー関数。いちいちgetTextLogManager書くのがめんどいので。
 		void addTextItemUse(std::string text);
 
 		// 以下、各アイテムに対応する処理。ダンジョンシーンへの弱参照があるので色々できるはず

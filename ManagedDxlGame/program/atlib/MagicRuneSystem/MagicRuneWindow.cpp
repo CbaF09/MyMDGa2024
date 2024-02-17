@@ -6,9 +6,8 @@ namespace atl {
 	
 	MagicRuneWindow::~MagicRuneWindow() {
 		// リソース解放
-		auto rManager = ResourceManager::getResourceManager();
-		rManager->deleteResource("graphics/UI/MagicRune/MagicRuneBack.png");
-		rManager->deleteResource("graphics/UI/MagicRune/RuneSelectWindowBack.png");
+		ResourceManager::getResourceManager()->deleteResource("graphics/UI/MagicRune/MagicRuneBack.png");
+		ResourceManager::getResourceManager()->deleteResource("graphics/UI/MagicRune/RuneSelectWindowBack.png");
 		
 		// フォントハンドル解放
 		DeleteFontToHandle(RUNE_NAME_FONT);

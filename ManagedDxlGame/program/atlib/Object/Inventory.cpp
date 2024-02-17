@@ -20,12 +20,14 @@ namespace atl {
 	}
 
 	bool Inventory::pushbackItemToInventory(const Shared<Item> newItemData) {
+		// Š‚Å‚«‚éÅ‘å”‚ğ’´‚¦‚Ä‚¢‚È‚¢ê‡
 		if (itemList_.size() < INVENTORY_MAX) {
 			itemList_.emplace_back(newItemData);
 			ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneItemGet.ogg",DX_PLAYTYPE_BACK);
 			return true;
 		}
 		else {
+		// Å‘å”‚ğ’´‚¦‚Ä‚¢‚éê‡
 			return false;
 		}
 	}

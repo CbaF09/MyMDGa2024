@@ -3,6 +3,12 @@
 
 namespace atl {
 
+	/// <summary>
+	/// 
+	/// ƒ_ƒ“ƒWƒ‡ƒ“‚Ì•Ç
+	/// 
+	/// </summary>
+
 	class Wall final : public Base_MeshObject{
 	public:
 		explicit Wall(const tnl::Vector3& initSize);

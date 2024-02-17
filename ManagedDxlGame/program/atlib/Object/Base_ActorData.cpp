@@ -19,6 +19,7 @@ namespace atl {
 		int32_t actualyDamage = calcDecideActualyDamage(attackingActor, defencingActor);
 
 		defencingActor.changeCurrentHP(-actualyDamage);
+
 		return actualyDamage;
 	}
 

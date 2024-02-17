@@ -184,7 +184,6 @@
     <ClCompile Include="program\atlib\Singletons\SceneManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\TextLogManager.cpp" />
     <ClCompile Include="program\atlib\Utilities\Atl3DCamera.cpp" />
-    <ClCompile Include="program\atlib\Utilities\AtlAstar.cpp" />
     <ClCompile Include="program\atlib\Utilities\AtlRandom.cpp" />
     <ClCompile Include="program\atlib\Utilities\AtlString.cpp" />
     <ClCompile Include="program\dxlib_ext\create_mesh\dxlib_ext_mesh_barrel.cpp">
@@ -393,12 +392,9 @@
     <ClInclude Include="program\atlib\Singletons\ResourceManager.h" />
     <ClInclude Include="program\atlib\Singletons\SceneManager.h" />
     <ClInclude Include="program\atlib\Singletons\TextLogManager.h" />
-    <ClInclude Include="program\atlib\Templates\make_shared_withInitFunc.h" />
     <ClInclude Include="program\atlib\Utilities\Atl3DCamera.h" />
-    <ClInclude Include="program\atlib\Utilities\AtlAstar.h" />
     <ClInclude Include="program\atlib\Utilities\AtlRandom.h" />
     <ClInclude Include="program\atlib\Utilities\AtlString.h" />
-    <ClInclude Include="program\atlib\Utilities\InputSystem.h" />
     <ClInclude Include="program\dxlib_ext\dxlib_ext.h" />
     <ClInclude Include="program\dxlib_ext\dxlib_ext_camera.h" />
     <ClInclude Include="program\dxlib_ext\dxlib_ext_data.h" />

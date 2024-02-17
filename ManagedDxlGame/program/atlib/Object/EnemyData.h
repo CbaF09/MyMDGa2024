@@ -4,6 +4,12 @@
 
 namespace atl {
 
+	/// <summary>
+	/// 
+	/// エネミーのステータスとデータを保持
+	/// 
+	/// </summary>
+
 	class EnemyData final : public Base_ActorData {
 	public:
 		EnemyData();

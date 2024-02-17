@@ -3,8 +3,12 @@
 
 namespace atl {
 
-	// プレイヤー ・ エネミーに共通するデータと関数を保持
-	// EnemyData, PlayerData などに継承
+	/// <summary>
+	///
+	///  プレイヤー ・ エネミーに共通するデータと関数を保持
+	/// 
+	/// </summary>
+
 	class Base_ActorData {
 	public:
 		virtual ~Base_ActorData() {};
@@ -33,7 +37,7 @@ namespace atl {
 		// arg2 ... 攻撃された側
 		static int32_t damaged(const Base_ActorData& attackingActor, Base_ActorData& defencingActor);
 
-		// damaged のヘルパー関数。
+		// damaged のヘルパー関数
 		// 計算式に基づき、実際のダメージを算出する。中で乱数使ってます
 		// ret ... 実ダメージ
 		// arg1 ... 攻撃した側

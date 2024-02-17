@@ -4,7 +4,13 @@
 
 namespace atl {
 
-	class PlayerData final: public Base_ActorData {
+	/// <summary>
+	/// 
+	/// プレイヤーのステータス、レベル、インベントリを管理するクラス
+	/// 
+	/// </summary>
+
+	class PlayerData final : public Base_ActorData {
 	public:
 		PlayerData();
 
@@ -12,7 +18,7 @@ namespace atl {
 		inline const Shared<Inventory> getInventory() { return playerInventory_; }
 		inline const int32_t getCurrentLevel() { return currentLevel_; }
 
-		// セッター
+		// 経験値を得る処理。必要経験値を超えるとレベルアップする ( levelUp 関数が走る )
 		void changeCurrentEXP(int32_t getExp);
 
 		// デバッグ用

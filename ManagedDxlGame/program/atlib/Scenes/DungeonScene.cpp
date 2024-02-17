@@ -21,6 +21,7 @@
 #include "../Utilities/Atl3DCamera.h"
 
 namespace atl {
+
 	DungeonScene::DungeonScene() {
 		walls_.clear();
 		groundTiles_.clear();
@@ -37,10 +38,11 @@ namespace atl {
 			"graphics/UI/HPbarBackGround.png",
 			"graphics/UI/HPbarRed.bmp",
 			"graphics/UI/HPbarGreen.bmp",
-			"graphics/UI/Instruction.png"
+			"graphics/UI/Instruction.png",
 			"sound/BGM/DungeonSceneBGM.ogg",
 			"sound/SE/DungeonSceneCloseMenu.ogg",
 			"sound/SE/DungeonSceneOpenMenu.ogg",
+			"sound/SE/DungeonSceneOpenSelectMenu.ogg",
 		};
 
 		// リソース解放
@@ -54,16 +56,16 @@ namespace atl {
 	}
 
 	void DungeonScene::render(float deltaTime, const Shared<Atl3DCamera> camera) {
-		// スカイボックスのアップデート
-		skybox_.update(camera);
+		// スカイスフィアのアップデート
+		skysphere_.update(camera);
 
 		// 不透明なもの描画
 		for (const auto& ground : groundTiles_) { ground->renderObject(camera); }
 		for (const auto& wall : walls_) { wall->renderObject(camera); }
+		if (stairs_) { stairs_->renderObjects(camera, deltaTime); }
+		if (player_) { player_->render(deltaTime); };
 		for (const auto& enemy : enemies_) { enemy->renderObjects(camera, deltaTime); }
-		if (originStairs_) originStairs_->renderObjects(camera,deltaTime);
-		for (const auto& item : items_) { item->renderObject(camera,deltaTime); }
-		if (player_)player_->render(deltaTime);
+		for (const auto& item : items_) { item->renderObject(camera, deltaTime); }
 
 		// 透明なもの描画
 		for (const auto& enemy : enemies_) { enemy->renderTransparentObject(camera, deltaTime); }
@@ -155,8 +157,7 @@ namespace atl {
 	}
 
 	void DungeonScene::drawLevel() {
-		auto playerData = player_->getPlayerData();
-		DrawStringToHandleEx(static_cast<float>(LEVEL_STRING_POSITION.x), static_cast<float>(LEVEL_STRING_POSITION.y), -1, LEVEL_STRING_FONT, "レベル ... [ %d ]", playerData->getCurrentLevel());
+		DrawStringToHandleEx(static_cast<float>(LEVEL_STRING_POSITION.x), static_cast<float>(LEVEL_STRING_POSITION.y), -1, LEVEL_STRING_FONT, "レベル ... [ %d ]", player_->getPlayerData()->getCurrentLevel());
 	}
 
 	void DungeonScene::drawInstruction() {
@@ -164,6 +165,7 @@ namespace atl {
 		SetDrawBlendMode(DX_BLENDGRAPHTYPE_ALPHA, 125);
 		DrawBoxEx({static_cast<float>(INSTRUCTION_POSITION.x),static_cast<float>(INSTRUCTION_POSITION.y),0}, static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.x), static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.y),true,GetColor(0,0,255));
 		SetDrawBlendMode(DX_BLENDGRAPHTYPE_NORMAL, 0);
+
 		// 操作説明の画像描画
 		DrawRotaGraph(INSTRUCTION_POSITION.x, INSTRUCTION_POSITION.y, INSTRUCTION_SIZE, 0, ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Instruction.png"), true);
 	}
@@ -171,10 +173,9 @@ namespace atl {
 
 	void DungeonScene::drawInvatation() {
 		// 招待状 UI を描画
-		auto invatation = ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Invatation.png");
-		// 空腹度は、最大2550なので、現在空腹度の10分の1を輝度に
+		// 現在空腹度の10分の1を輝度に
 		SetDrawBright(currentSatiety_/10, currentSatiety_/10, currentSatiety_/10);
-		DrawRotaGraph(INVATATION_POSITION.x, INVATATION_POSITION.y, INVATATION_SIZE, tnl::ToRadian(INVATATION_ANGLE), invatation, true);
+		DrawRotaGraph(INVATATION_POSITION.x, INVATATION_POSITION.y, INVATATION_SIZE, tnl::ToRadian(INVATATION_ANGLE), ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Invatation.png"), true);
 		// 描画輝度を元に戻す
 		SetDrawBright(255,255,255);
 
@@ -184,19 +185,23 @@ namespace atl {
 
 	void DungeonScene::drawMinimap(float deltaTime) {
 		auto& field = DungeonCreater::getDungeonCreater()->getFieldCells();
+		
 		// フィールド情報の描画
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, MINIMAP_ALPHA);
 		for (int x = 0; x < field.size(); ++x) {
 			for (int y = 0; y < field[x].size(); ++y) {
-				// 何もない場合、早期リターン
+				// 何もない場合、早期continue
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_NONE) { continue; }
 
-				int drawColor = 0;
+
 				// cellType に応じて色を変える
+				int drawColor = 0;
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM) {
+					// 白
 					drawColor = GetColor(255,255,255);
 				}
 				else if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_PATH) {
+					// 青
 					drawColor = GetColor(0, 0, 255);
 				}
 				// 描画位置の計算
@@ -207,7 +212,7 @@ namespace atl {
 		}
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-		// 壁は真っ黒で描画
+		// 壁は透明度無しの黒で描画
 		for (int x = 0; x < field.size(); ++x) {
 			for (int y = 0; y < field[x].size();++y) {
 				// 壁以外は早期リターン
@@ -215,7 +220,7 @@ namespace atl {
 
 				// 描画位置の計算
 				tnl::Vector2i drawPos = calcDrawMinimapPos(x, y);
-				// 描画
+				// 描画 ( 黒 )
 				DrawBoxEx({ (float)drawPos.x,(float)drawPos.y ,0 }, static_cast<float>(MINIMAP_CELL_SIZE), static_cast<float>(MINIMAP_CELL_SIZE), true, GetColor(0,0,0));
 			}
 		}
@@ -235,8 +240,6 @@ namespace atl {
 	};
 
 	void DungeonScene::sceneUpdate(float deltaTime) {
-		// デバッグモードへの切り替え
-		if (tnl::Input::IsKeyDown(eKeys::KB_O) && tnl::Input::IsKeyDownTrigger(eKeys::KB_P)) isDebug = !isDebug;
 
 		// シーケンスアップデート
 		seq_.update(deltaTime);
@@ -250,7 +253,10 @@ namespace atl {
 		// 2D系の描画
 		draw2D(deltaTime);
 
-		{// デバッグモード中に可能な操作
+		{// デバッグモード関連
+			// O + P キーで、デバッグモードに切り替え ( OverPower )
+			if (tnl::Input::IsKeyDown(eKeys::KB_O) && tnl::Input::IsKeyDownTrigger(eKeys::KB_P)) { isDebug = !isDebug; }
+			// デバッグモード中にスペースを押すと、ダンジョン再生成する
 			if (isDebug) {
 				if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) 	generateDungeon();;
 			}
@@ -258,7 +264,6 @@ namespace atl {
 	}
 
 	void DungeonScene::openMenu() {
-		// メニューを開く
 		player_->openMenuBook();
 		// アイテム一覧の表示を更新する
 		menuWindow_->itemWindowsUpdate();
@@ -266,13 +271,13 @@ namespace atl {
 	}
 
 	void DungeonScene::closeMenu() {
-		// メニューウィンドウを閉じる
 		player_->closeMenuBook();
 		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneCloseMenu.ogg", DX_PLAYTYPE_BACK);
 	}
 
 	void DungeonScene::openSelectWindow(const std::string& question) {
-		selectWindow_.openSelectWindow(question);
+		selectWindow_.setSelectWindowQuestionText(question);
+		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneOpenSelectMenu.ogg", DX_PLAYTYPE_BACK);
 		isSelectWindow_ = true;
 	}
 
@@ -293,7 +298,7 @@ namespace atl {
 		++respornTurnTimer_;
 
 		// スポーン条件を満たしていないなら早期リターン
-		if (!(respornTurnTimer_ > RESPORN_TURN_COUNT)) return;
+		if (!(respornTurnTimer_ > RESPORN_TURN_COUNT)) { return; }
 
 		// プレイヤーと違うエリアにスポーン
 		auto spawnPos = DungeonCreater::getDungeonCreater()->randomChoiceEnemyRespawnPos(player_->getPlayer2Dpos());
@@ -349,6 +354,7 @@ namespace atl {
 				// アイテムを削除
 				it = items_.erase(it);
 				// １マスにアイテムが二つある事はないので、一個拾ったらbreak
+				break;
 			}
 			else
 			{
@@ -356,6 +362,11 @@ namespace atl {
 				break;
 			}
 		}
+	}
+
+	void DungeonScene::turnHealHP() {
+		// HP 自動回復
+		player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
 	}
 
 	//---------------------
@@ -384,9 +395,9 @@ namespace atl {
 
 	// 毎ターン初期化処理
 	bool DungeonScene::seqTurnInit(float deltaTime) {
+		// プレイヤーとエネミーの行動フラグをオフに
 		player_->offFlagIsAlreadyTurn();
 		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
-
 
 		// ターン開始時処理へ
 		seq_.change(&DungeonScene::seqTurnStart);
@@ -405,11 +416,6 @@ namespace atl {
 		seq_.change(&DungeonScene::seqKeyInput);
 		
 		return true;
-	}
-
-	void DungeonScene::turnHealHP() {
-		// HP 自動回復
-		player_->getPlayerData()->changeCurrentHP(EVERY_TURN_HEAL);
 	}
 
 	// キー入力待ち
@@ -444,24 +450,23 @@ namespace atl {
 	
 	bool DungeonScene::seqPlayerMoveTurn(float deltaTime) {
 		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
+
 			player_->playerUpdate(deltaTime);
 
 			enemyMove(deltaTime);
 
-			// 全てのエネミーの移動が完了しているか
+			// 全エネミー移動完了フラグ
 			bool allEnemyMoved = true;
 			for (auto& enemy : enemies_) {
-				// もし移動が完了していたら、スルー
+				// もし移動が完了していなければ、全エネミー移動完了フラグをオフに
 				if (!enemy->getIsAlreadyMove()) {
 					allEnemyMoved = false;
 				}
 			}
 
 			// プレイヤーと全てのエネミーの移動が完了していたら、遷移
-			if (player_->getIsAlreadyTurn() && allEnemyMoved) {
-				SEQ_CO_BREAK;
-			}
-			});
+			if (player_->getIsAlreadyTurn() && allEnemyMoved) {	SEQ_CO_BREAK; }
+		});
 
 		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
 			// 未行動エネミーの行動
@@ -479,7 +484,7 @@ namespace atl {
 				// ターンエンド処理へ
 				seq_.change(&DungeonScene::seqTurnEnd);
 			}
-			});
+		});
 
 		SEQ_CO_END;
 	}
@@ -561,7 +566,7 @@ namespace atl {
 
 		// 階段に乗った時、階段に乗っているフラグが立っていない場合、階段シーケンスに遷移
 		auto& player2Dpos = player_->getPlayer2Dpos();
-		auto& stairs2Dpos = originStairs_->get2Dpos();
+		auto& stairs2Dpos = stairs_->get2Dpos();
 		if (stairs2Dpos.x == player2Dpos.x && stairs2Dpos.y == player2Dpos.y && !isPlayerOnStairs_) {
 			seq_.change(&DungeonScene::seqOnStairs);
 			return true;
@@ -616,10 +621,10 @@ namespace atl {
 			seq_.change(&DungeonScene::seqKeyInput);
 		}
 
-		selectedMenu = menuWindow_->process(deltaTime);
+		selectedMenu_ = menuWindow_->process(deltaTime);
 
 		// MenuWindowクラスから、何を選択中かのインデックスがenum型に変換されて返ってくるので、それに応じて処理
-		switch (selectedMenu) {
+		switch (selectedMenu_) {
 		case MenuWindow::e_SelectedMenuWindow::NONE: break; // 何も選択されなかったフレームは何もしない
 		case MenuWindow::e_SelectedMenuWindow::Item1: // ブレイクスルー
 		case MenuWindow::e_SelectedMenuWindow::Item2: // ブレイクスルー
@@ -628,7 +633,7 @@ namespace atl {
 		case MenuWindow::e_SelectedMenuWindow::Item5: // ブレイクスルー
 		case MenuWindow::e_SelectedMenuWindow::Item6: 
 			// nullptrチェックをしてから、本当に使うかの確認シーケンスに遷移
-			if (player_->getPlayerData()->getInventory()->getItem(static_cast<int>(selectedMenu)) != nullptr) { seq_.change(&DungeonScene::seqReallyUseItem); } break;
+			if (player_->getPlayerData()->getInventory()->getItem(static_cast<int>(selectedMenu_)) != nullptr) { seq_.change(&DungeonScene::seqReallyUseItem); } break;
 		case MenuWindow::e_SelectedMenuWindow::EraseMagicRune: { // 装備中のルーンを確認する
 			// 装備中のルーンがあれば
 			if (!MagicRuneSystemManager::getMagicRuneSystemManager()->getEquipmentMagicRunes().empty()) {
@@ -682,14 +687,14 @@ namespace atl {
 
 	// 本当にアイテムを使うか確認
 	bool DungeonScene::seqReallyUseItem(float deltaTime) {
-		auto& item = player_->getPlayerData()->getInventory()->getItem(static_cast<int>(selectedMenu));
+		auto& item = player_->getPlayerData()->getInventory()->getItem(static_cast<int>(selectedMenu_));
 		if (seq_.isStart()) {
 			openSelectWindow(item->getItemName() + "\nを使いますか？");
 		}
 		if (isSelectWindow_) {
 			if (selectWindow_.windowChoice() == SelectWindow::e_SelectChoice::YES) { // はい、の時の処理
 				// アイテム使用してメニューウィンドウを閉じる。エネミーが行動する
-				player_->getPlayerData()->getInventory()->useItem(static_cast<int32_t>(selectedMenu));
+				player_->getPlayerData()->getInventory()->useItem(static_cast<int32_t>(selectedMenu_));
 				closeMenu();
 				closeSelectWindow();
 				player_->onFlagIsAlreadyTurn();
@@ -844,8 +849,7 @@ namespace atl {
 
 			// 階段
 			auto& stairsSpawnPos = DungeonCreater::getDungeonCreater()->getStairsSpawnPos();
-			// セル全長の半分の大きさで生成
-			originStairs_ = std::make_shared<Stairs>(stairsSpawnPos, tnl::Vector3{ CELL_FULL_LENGTH / 3,CELL_FULL_LENGTH / 3,CELL_FULL_LENGTH / 3 });
+			stairs_ = std::make_shared<Stairs>(stairsSpawnPos);
 
 			// エネミー
 			auto& enemySpawnPos = DungeonCreater::getDungeonCreater()->getEnemySpawnPos();
@@ -892,8 +896,8 @@ namespace atl {
 		DrawFpsIndicator({ 10, DXE_WINDOW_HEIGHT - 10, 0 }, deltaTime);
 
 		// 階段の位置
-		if (originStairs_) {
-			auto& stairsPos = originStairs_->get2Dpos();
+		if (stairs_) {
+			auto& stairsPos = stairs_->get2Dpos();
 			DrawStringEx(600, 25, -1, "stairsPos ... [ %d, %d ]", stairsPos.x, stairsPos.y);
 		}
 
@@ -935,8 +939,8 @@ namespace atl {
 		auto& player2Dpos = player_->getPlayer2Dpos();
 		DrawStringEx(player2Dpos.y * 15, player2Dpos.x * 15, GetColor(0, 0, 255), "P");
 
-		if (originStairs_) {
-			auto& stairs2Dpos = originStairs_->get2Dpos();
+		if (stairs_) {
+			auto& stairs2Dpos = stairs_->get2Dpos();
 			DrawStringEx(stairs2Dpos.y * 15, stairs2Dpos.x * 15, GetColor(200, 200, 200), "S");
 		}
 	}

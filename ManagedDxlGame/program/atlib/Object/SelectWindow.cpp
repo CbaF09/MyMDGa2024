@@ -7,15 +7,12 @@ namespace atl {
 	}
 
 	SelectWindow::~SelectWindow(){
-		auto resourceManager = ResourceManager::getResourceManager();
-
 		// リソース解放
 		std::vector<std::string> tempDeleteRes = {
 		"graphics/UI/SelectWindowQuestionText.png",
 		"graphics/UI/SelectWindowYesNo.png",
 		"graphics/UI/KeyboardA.png",
 		"graphics/UI/KeyboardD.png",
-		"sound/SE/DungeonSceneOpenSelectMenu.ogg",
 		};
 
 		for (const auto& res : tempDeleteRes) {
@@ -35,7 +32,7 @@ namespace atl {
 			auto questionTextUI = resourceManager->getGraphRes("graphics/UI/SelectWindowQuestionText.png");
 			DrawRotaGraph(QUESTION_UI_POSITION.x, QUESTION_UI_POSITION.y, QUESTION_UI_SIZE, 0, questionTextUI, true);
 			
-			// 中央揃えする為の計算
+			// 中央揃えで質問文を描画
 			int textWidth = static_cast<int>(GetDrawStringWidthToHandle(questionText_.c_str(), strlen(questionText_.c_str()),QUESTION_FONT));
 			float drawPosX = static_cast<float>(QUESTION_UI_POSITION.x - textWidth / 2);
 			float drawPosY = static_cast<float>(QUESTION_UI_POSITION.y - GetFontSizeToHandle(QUESTION_FONT) / 2);
@@ -73,22 +70,21 @@ namespace atl {
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_A)) {
 			currentSelectedChoice_ = e_SelectChoice::YES;
 		}
-		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_D)) {
+		else if (tnl::Input::IsKeyDownTrigger(eKeys::KB_D)) {
 			currentSelectedChoice_ = e_SelectChoice::NO;
 		}
 	}
 
-	void SelectWindow::openSelectWindow(const std::string& questionText) {
+	void SelectWindow::setSelectWindowQuestionText(const std::string& questionText) {
 		questionText_ = questionText;
-		ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneOpenSelectMenu.ogg", DX_PLAYTYPE_BACK);
 	}
 
-	// エンター or スペース or 左クリックを押した時、currentSelectedChoice == YES なら YES を返す。NO なら NO を返す。
-	// 右クリックを押した時は、いいえを選んだ判定
+	// 左クリックを押した時、currentSelectedChoice == YES なら YES を返す。NO なら NO を返す。
+	// 右クリックを押した時は、NOを選んだ判定
 	const SelectWindow::e_SelectChoice SelectWindow::windowChoice() {
-		// エンター or スペース or 左クリックを押した時
-		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)||
-			tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
+		
+		// 左クリックを押した時
+		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 			return currentSelectedChoice_;
 		}
 		// 右クリックを押した時、いいえを選んだ判定
