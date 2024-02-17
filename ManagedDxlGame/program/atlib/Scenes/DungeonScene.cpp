@@ -49,7 +49,7 @@ namespace atl {
 		for (const auto& res : tempDeleteRes) {
 			ResourceManager::getResourceManager()->deleteResource(res);
 		}
-		
+
 		// フォントデータの解放
 		DeleteFontToHandle(NEXT_FLOOR_FONT);
 		DeleteFontToHandle(LEVEL_STRING_FONT);
@@ -94,27 +94,27 @@ namespace atl {
 			DrawStringToHandleEx(DXE_WINDOW_WIDTH >> 1, DXE_WINDOW_HEIGHT >> 1, -1, NEXT_FLOOR_FONT, "ワイズマンの修練塔 [%d / %d]", currentFloor_, MAX_FLOOR);
 		}
 		else { // クリア階の場合の描画
-			DrawStringToHandleEx(DXE_WINDOW_WIDTH >> 1, DXE_WINDOW_HEIGHT >> 1, -1, NEXT_FLOOR_FONT, "ワイズマンの修練塔 [ 最上階 ]",  currentFloor_);
+			DrawStringToHandleEx(DXE_WINDOW_WIDTH >> 1, DXE_WINDOW_HEIGHT >> 1, -1, NEXT_FLOOR_FONT, "ワイズマンの修練塔 [ 最上階 ]", currentFloor_);
 		}
 	}
 
 	void DungeonScene::drawUI(float deltaTime) {
 		// HP バー 表示
 		drawHPbar();
-		
+
 		// 操作説明の描画
 		drawInstruction();
 
 		// メニューを開いている時はログ表示無し,レベル表示無し,満腹度表示無し
-		if (!player_->getIsMenuOpen()) { 
-			TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime); 
+		if (!player_->getIsMenuOpen()) {
+			TextLogManager::getTextLogManager()->displayTextLog(TEXT_LOG_POSITION.x, TEXT_LOG_POSITION.y, deltaTime);
 			drawLevel();
 			drawInvatation();
 		}
 
 		// メニューを開いている間の描画
 		if (player_->getIsMenuOpen()) {
-			menuWindow_->draw(deltaTime); 
+			menuWindow_->draw(deltaTime);
 			drawMinimap(deltaTime);
 		}
 
@@ -162,7 +162,7 @@ namespace atl {
 	void DungeonScene::drawInstruction() {
 		// 操作説明の背景描画
 		SetDrawBlendMode(DX_BLENDGRAPHTYPE_ALPHA, 125);
-		DrawBoxEx({static_cast<float>(INSTRUCTION_POSITION.x),static_cast<float>(INSTRUCTION_POSITION.y),0}, static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.x), static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.y),true,GetColor(0,0,255));
+		DrawBoxEx({ static_cast<float>(INSTRUCTION_POSITION.x),static_cast<float>(INSTRUCTION_POSITION.y),0 }, static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.x), static_cast<float>(INSTRUCTION_BACK_BOX_SIZE.y), true, GetColor(0, 0, 255));
 		SetDrawBlendMode(DX_BLENDGRAPHTYPE_NORMAL, 0);
 
 		// 操作説明の画像描画
@@ -173,10 +173,10 @@ namespace atl {
 	void DungeonScene::drawInvatation() {
 		// 招待状 UI を描画
 		// 現在空腹度の10分の1を輝度に
-		SetDrawBright(currentSatiety_/10, currentSatiety_/10, currentSatiety_/10);
+		SetDrawBright(currentSatiety_ / 10, currentSatiety_ / 10, currentSatiety_ / 10);
 		DrawRotaGraph(INVATATION_POSITION.x, INVATATION_POSITION.y, INVATATION_SIZE, tnl::ToRadian(INVATATION_ANGLE), ResourceManager::getResourceManager()->getGraphRes("graphics/UI/Invatation.png"), true);
 		// 描画輝度を元に戻す
-		SetDrawBright(255,255,255);
+		SetDrawBright(255, 255, 255);
 
 		// 文字列「招待状」を描画。レベルを表示しているフォントを流用。
 		DrawStringToHandleEx(static_cast<float>(INVATATION_STRING_POSITION.x), static_cast<float>(INVATATION_STRING_POSITION.y), -1, LEVEL_STRING_FONT, "招待状");
@@ -184,7 +184,7 @@ namespace atl {
 
 	void DungeonScene::drawMinimap(float deltaTime) {
 		auto& field = DungeonCreater::getDungeonCreater()->getFieldCells();
-		
+
 		// フィールド情報の描画
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, MINIMAP_ALPHA);
 		for (int x = 0; x < field.size(); ++x) {
@@ -198,7 +198,7 @@ namespace atl {
 				int drawColor = 0;
 				if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM) {
 					// 白
-					drawColor = GetColor(255,255,255);
+					drawColor = GetColor(255, 255, 255);
 				}
 				else if (field[x][y].cellType_ == DungeonCreater::e_FieldCellType::CELL_TYPE_PATH) {
 					// 青
@@ -223,18 +223,18 @@ namespace atl {
 				// 描画位置の計算
 				tnl::Vector2i drawPos = calcDrawMinimapPos(x, y);
 				// 描画 ( 黒 )
-				DrawBoxEx({ (float)drawPos.x,(float)drawPos.y ,0 }, static_cast<float>(MINIMAP_CELL_SIZE), static_cast<float>(MINIMAP_CELL_SIZE), true, GetColor(0,0,0));
+				DrawBoxEx({ (float)drawPos.x,(float)drawPos.y ,0 }, static_cast<float>(MINIMAP_CELL_SIZE), static_cast<float>(MINIMAP_CELL_SIZE), true, GetColor(0, 0, 0));
 			}
 		}
 
 		{// プレイヤーの位置描画
 			auto& player2Dpos = player_->getPlayer2Dpos();
 			tnl::Vector2i playerDrawPos = calcDrawMinimapPos(player2Dpos.x, player2Dpos.y);
-			DrawCircle(playerDrawPos.x, playerDrawPos.y,MINIMAP_PLAYER_SIZE, GetColor(255, 255, 0));
+			DrawCircle(playerDrawPos.x, playerDrawPos.y, MINIMAP_PLAYER_SIZE, GetColor(255, 255, 0));
 		}
 	}
 
-	const tnl::Vector2i DungeonScene::calcDrawMinimapPos(int32_t x, int32_t y){
+	const tnl::Vector2i DungeonScene::calcDrawMinimapPos(int32_t x, int32_t y) {
 		// Y と X が逆になっているのは、三次元空間との整合性を取る為なので、問題ないです。
 		int32_t drawPosX = (y * MINIMAP_CELL_SIZE) + MINIMAP_LEFTUP_POSITION.x;
 		int32_t drawPosY = (x * MINIMAP_CELL_SIZE) + MINIMAP_LEFTUP_POSITION.y;
@@ -245,7 +245,7 @@ namespace atl {
 
 		// シーケンスアップデート
 		seq_.update(deltaTime);
-		
+
 		// カメラのアップデート
 		player_->getPlayerCamera()->update();
 
@@ -388,7 +388,7 @@ namespace atl {
 		// サウンド調整
 		soundVolumeFix();
 		// BGM再生
-		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg",DX_PLAYTYPE_LOOP);
+		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg", DX_PLAYTYPE_LOOP);
 
 		// 本シーケンスに遷移
 		seq_.change(&DungeonScene::seqToNextFloor);
@@ -419,20 +419,49 @@ namespace atl {
 
 		// キー入力待ちへ
 		seq_.change(&DungeonScene::seqKeyInput);
-		
+
 		return true;
 	}
 
 	void DungeonScene::minimapUpdate(const tnl::Vector2i& openCellPos) {
 		auto dCreater = DungeonCreater::getDungeonCreater();
-		auto& cells = dCreater->getFieldCells();
-		for (int x = -2; x < 3; ++x) {
-			for (int y = -2; y < 3; ++y) {
-				auto newOpenPos = openCellPos + tnl::Vector2i{ x,y };
-				// 範囲外アクセスチェック
-				if (newOpenPos.x < 0 || newOpenPos.y < 0 || newOpenPos.x > cells.size() || newOpenPos.y > cells.size()) { continue; }
-				dCreater->discoverFieldCell(newOpenPos);
+
+		// 開こうとしているセルのセルタイプを取得
+		auto openCellType = dCreater->getFieldCellType(openCellPos);
+
+		// セルタイプに応じて分岐
+		switch (openCellType) {
+		// 何も無いならブレーク
+		case DungeonCreater::e_FieldCellType::CELL_TYPE_NONE:
+			break;
+		// 壁なら、そこをオープンしてブレーク
+		case DungeonCreater::e_FieldCellType::CELL_TYPE_WALL:
+			dCreater->discoverFieldCell(openCellPos);
+			break;
+		// 通路なら、そこをオープンしてブレーク
+		case DungeonCreater::e_FieldCellType::CELL_TYPE_PATH:
+			dCreater->discoverFieldCell(openCellPos);
+			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ 0,1 });
+			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ 0,-1 });
+			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ 1,0 });
+			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ -1,0 });
+			break;
+		// 部屋なら、そこをオープンしてから、既に発見済みの場所でない事を確認してから再帰処理
+		case DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM:
+			dCreater->discoverFieldCell(openCellPos);
+			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ 0,1 })) {
+				minimapUpdate(openCellPos + tnl::Vector2i{ 0,1 });
 			}
+			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ 0,-1 })) {
+				minimapUpdate(openCellPos + tnl::Vector2i{ 0,-1 });
+			}
+			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ 1,0 })) {
+				minimapUpdate(openCellPos + tnl::Vector2i{ 1,0 });
+			}
+			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ -1,0 })) {
+				minimapUpdate(openCellPos + tnl::Vector2i{ -1,0 });
+			}
+			break;
 		}
 	}
 
@@ -465,7 +494,7 @@ namespace atl {
 
 		return true;
 	}
-	
+
 	bool DungeonScene::seqPlayerMoveTurn(float deltaTime) {
 		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
 
@@ -483,8 +512,8 @@ namespace atl {
 			}
 
 			// プレイヤーと全てのエネミーの移動が完了していたら、遷移
-			if (player_->getIsAlreadyTurn() && allEnemyMoved) {	SEQ_CO_BREAK; }
-		});
+			if (player_->getIsAlreadyTurn() && allEnemyMoved) { SEQ_CO_BREAK; }
+			});
 
 		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
 			// 未行動エネミーの行動
@@ -502,7 +531,7 @@ namespace atl {
 				// ターンエンド処理へ
 				seq_.change(&DungeonScene::seqTurnEnd);
 			}
-		});
+			});
 
 		SEQ_CO_END;
 	}
@@ -530,7 +559,7 @@ namespace atl {
 			if (allEnemyAction) {
 				SEQ_CO_BREAK;
 			}
-		});
+			});
 
 		// 行動の結果死んだエネミーがいた場合、削除する
 		deadEnemyErase();
@@ -552,7 +581,7 @@ namespace atl {
 			if (player_->getIsAlreadyTurn() && allEnemyMoved) {
 				SEQ_CO_BREAK;
 			}
-		});
+			});
 
 		// ターンエンド処理へ
 		seq_.change(&DungeonScene::seqTurnEnd);
@@ -649,7 +678,7 @@ namespace atl {
 		case MenuWindow::e_SelectedMenuWindow::Item3: // ブレイクスルー
 		case MenuWindow::e_SelectedMenuWindow::Item4: // ブレイクスルー
 		case MenuWindow::e_SelectedMenuWindow::Item5: // ブレイクスルー
-		case MenuWindow::e_SelectedMenuWindow::Item6: 
+		case MenuWindow::e_SelectedMenuWindow::Item6:
 			// nullptrチェックをしてから、本当に使うかの確認シーケンスに遷移
 			if (player_->getPlayerData()->getInventory()->getItem(static_cast<int>(selectedMenu_)) != nullptr) { seq_.change(&DungeonScene::seqReallyUseItem); } break;
 		case MenuWindow::e_SelectedMenuWindow::EraseMagicRune: { // 装備中のルーンを確認する
@@ -683,14 +712,14 @@ namespace atl {
 			// ウィンドウをオープン状態に
 			magicRuneWindow_.switchOpenMagicRuneWindow();
 		}
-		
+
 		// A,Dで選択肢切り替え
 		magicRuneWindow_.process();
 
 		// 左クリック で、選んだルーンを削除する
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 			auto selectRune = magicRuneWindow_.getCurrentSelectRune_();
-			MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(selectRune,*shared_from_this());
+			MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(selectRune, *shared_from_this());
 			magicRuneWindow_.switchOpenMagicRuneWindow();
 			seq_.change(&DungeonScene::seqMenuWindow);
 		}
@@ -765,9 +794,9 @@ namespace atl {
 	// 階段に乗った時の処理
 	bool DungeonScene::seqOnStairs(float deltaTime) {
 		// ウィンドウがまだ無い場合は生成する
-		if (seq_.isStart()) { 
+		if (seq_.isStart()) {
 			isPlayerOnStairs_ = true;
-			openSelectWindow("次の階層に進みますか？"); 
+			openSelectWindow("次の階層に進みますか？");
 		}
 
 		if (isSelectWindow_) {
@@ -833,7 +862,7 @@ namespace atl {
 		// 地形
 		walls_.clear();
 		groundTiles_.clear();
-		
+
 		// エネミー、アイテム
 		enemies_.clear();
 		items_.clear();

@@ -210,7 +210,7 @@ namespace atl {
         // arg ... 2D座標位置
         void generateGround(int generatePosX, int generatePosZ);
 
-        // ミニマップの情報を更新
+        // ミニマップの情報を更新 ( 四近傍を開く。ルーム内ならそのルーム全体を再帰処理で開く )
         void minimapUpdate(const tnl::Vector2i& openCellPos);
 
         // メニューを開く

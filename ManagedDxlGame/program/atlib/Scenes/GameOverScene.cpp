@@ -35,13 +35,13 @@ namespace atl {
 		FadeInOutManager::getFadeInOutManager()->drawFadeBlackRect(deltaTime);
 
 		// 文字列を描画
-		DrawStringToHandleEx(STRING_POSITION.x, STRING_POSITION.y, -1, GAMEOVER_FONT,
-			"塔から追い出されてしまった……\n( エンターキーかスペースキーを押すとタイトルに戻る )");
+		DrawStringToHandleEx(static_cast<float>(STRING_POSITION.x), static_cast<float>(STRING_POSITION.y), -1, GAMEOVER_FONT,
+			"塔から追い出されてしまった……\n( スペースキーでタイトルに戻る )");
 
-		// エンターかスペースが押されたら、タイトルシーンに遷移
-		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_RETURN, eKeys::KB_SPACE)) {
+		// スペースキーが押されたら、タイトルシーンに遷移
+		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
 			ResourceManager::getResourceManager()->changeVolumeSoundRes("sound/SE/GameOverContinue.ogg", 150);
-			ResourceManager::getResourceManager()->stopSoundRes("sound/SE/GameOverContinue.ogg");
+			ResourceManager::getResourceManager()->playSoundRes("sound/SE/GameOverContinue.ogg",DX_PLAYTYPE_NORMAL);
 			SceneManager::getSceneManager()->changeScene(std::make_shared<TitleScene>());
 		}
 		return false;

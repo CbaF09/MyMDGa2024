@@ -72,7 +72,7 @@ namespace atl {
 
 	bool GameClearScene::seqEpilogue(float deltaTime) {
 		// 常に表示する文字
-		DrawStringToHandleEx(CAN_BACK_TEXT_POSITION.x, CAN_BACK_TEXT_POSITION.y, GetColor(255, 255, 255), EPILOGUE_FONT, "スペースキー で タイトル画面に戻ります\nW,Sキーで上下にスクロールします");
+		DrawStringToHandleEx(static_cast<float>(CAN_BACK_TEXT_POSITION.x), static_cast<float>(CAN_BACK_TEXT_POSITION.y), GetColor(255, 255, 255), EPILOGUE_FONT, "スペースキー で タイトル画面に戻ります\nW,Sキーで上下にスクロールします");
 
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_W)) {
 			--currentTopLogIndex_;

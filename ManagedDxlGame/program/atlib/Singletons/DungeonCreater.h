@@ -74,7 +74,7 @@ namespace atl {
 		inline bool isDiscoverFieldCell(const tnl::Vector2i& pos) { return fieldCells_[pos.x][pos.y].isDiscoverByPlayer; }
 
 		// ゲッター ( 引数に渡した座標のフィールドセルのcellTypeを取得する )
-		inline e_FieldCellType getFieldCellType(const tnl::Vector2i pos) const { return fieldCells_[pos.x][pos.y].cellType_; }
+		inline e_FieldCellType getFieldCellType(const tnl::Vector2i& pos) const { return fieldCells_[pos.x][pos.y].cellType_; }
 
 		// 引数に渡した座標のフィールドセルを、発見された判定した判定にする
 		inline void discoverFieldCell(const tnl::Vector2i& pos) { fieldCells_[pos.x][pos.y].isDiscoverByPlayer = true; }
