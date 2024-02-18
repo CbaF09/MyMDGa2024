@@ -242,7 +242,6 @@ namespace atl {
 	};
 
 	void DungeonScene::sceneUpdate(float deltaTime) {
-
 		// シーケンスアップデート
 		seq_.update(deltaTime);
 
@@ -285,6 +284,48 @@ namespace atl {
 
 	void DungeonScene::closeSelectWindow() {
 		isSelectWindow_ = false;
+	}
+
+	void DungeonScene::minimapUpdate(const tnl::Vector2i& openCellPos) {
+		auto dCreater = DungeonCreater::getDungeonCreater();
+
+		// 開こうとしているセルのセルタイプを取得
+		auto openCellType = dCreater->getFieldCellType(openCellPos);
+
+		// セルタイプに応じて分岐
+		switch (openCellType) {
+			// 何も無いならブレーク
+		case DungeonCreater::e_FieldCellType::CELL_TYPE_NONE:
+			break;
+			// 壁なら、そこをオープンしてブレーク
+		case DungeonCreater::e_FieldCellType::CELL_TYPE_WALL:
+			dCreater->discoverFieldCell(openCellPos);
+			break;
+			// 通路なら、そこをオープンしてブレーク
+		case DungeonCreater::e_FieldCellType::CELL_TYPE_PATH:
+			dCreater->discoverFieldCell(openCellPos);
+			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ 0,1 });
+			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ 0,-1 });
+			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ 1,0 });
+			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ -1,0 });
+			break;
+			// 部屋なら、そこをオープンしてから、既に発見済みの場所でない事を確認してから再帰処理
+		case DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM:
+			dCreater->discoverFieldCell(openCellPos);
+			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ 0,1 })) {
+				minimapUpdate(openCellPos + tnl::Vector2i{ 0,1 });
+			}
+			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ 0,-1 })) {
+				minimapUpdate(openCellPos + tnl::Vector2i{ 0,-1 });
+			}
+			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ 1,0 })) {
+				minimapUpdate(openCellPos + tnl::Vector2i{ 1,0 });
+			}
+			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ -1,0 })) {
+				minimapUpdate(openCellPos + tnl::Vector2i{ -1,0 });
+			}
+			break;
+		}
 	}
 
 	void DungeonScene::soundVolumeFix() {
@@ -390,6 +431,12 @@ namespace atl {
 		// BGM再生
 		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg", DX_PLAYTYPE_LOOP);
 
+		/*発表用*/
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>(), *shared_from_this());
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<StoneRune>(), *shared_from_this());
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<FireRune>(), *shared_from_this());
+		/*発表用*/
+
 		// 本シーケンスに遷移
 		seq_.change(&DungeonScene::seqToNextFloor);
 		return true;
@@ -421,48 +468,6 @@ namespace atl {
 		seq_.change(&DungeonScene::seqKeyInput);
 
 		return true;
-	}
-
-	void DungeonScene::minimapUpdate(const tnl::Vector2i& openCellPos) {
-		auto dCreater = DungeonCreater::getDungeonCreater();
-
-		// 開こうとしているセルのセルタイプを取得
-		auto openCellType = dCreater->getFieldCellType(openCellPos);
-
-		// セルタイプに応じて分岐
-		switch (openCellType) {
-		// 何も無いならブレーク
-		case DungeonCreater::e_FieldCellType::CELL_TYPE_NONE:
-			break;
-		// 壁なら、そこをオープンしてブレーク
-		case DungeonCreater::e_FieldCellType::CELL_TYPE_WALL:
-			dCreater->discoverFieldCell(openCellPos);
-			break;
-		// 通路なら、そこをオープンしてブレーク
-		case DungeonCreater::e_FieldCellType::CELL_TYPE_PATH:
-			dCreater->discoverFieldCell(openCellPos);
-			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ 0,1 });
-			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ 0,-1 });
-			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ 1,0 });
-			dCreater->discoverFieldCell(openCellPos + tnl::Vector2i{ -1,0 });
-			break;
-		// 部屋なら、そこをオープンしてから、既に発見済みの場所でない事を確認してから再帰処理
-		case DungeonCreater::e_FieldCellType::CELL_TYPE_ROOM:
-			dCreater->discoverFieldCell(openCellPos);
-			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ 0,1 })) {
-				minimapUpdate(openCellPos + tnl::Vector2i{ 0,1 });
-			}
-			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ 0,-1 })) {
-				minimapUpdate(openCellPos + tnl::Vector2i{ 0,-1 });
-			}
-			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ 1,0 })) {
-				minimapUpdate(openCellPos + tnl::Vector2i{ 1,0 });
-			}
-			if (!dCreater->isDiscoverFieldCell(openCellPos + tnl::Vector2i{ -1,0 })) {
-				minimapUpdate(openCellPos + tnl::Vector2i{ -1,0 });
-			}
-			break;
-		}
 	}
 
 	// キー入力待ち
@@ -720,6 +725,7 @@ namespace atl {
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 			auto selectRune = magicRuneWindow_.getCurrentSelectRune_();
 			MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(selectRune, *shared_from_this());
+			magicRuneWindow_.resetIndex();
 			magicRuneWindow_.switchOpenMagicRuneWindow();
 			seq_.change(&DungeonScene::seqMenuWindow);
 		}

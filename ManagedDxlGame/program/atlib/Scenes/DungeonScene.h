@@ -199,20 +199,6 @@ namespace atl {
         // 次の階層に遷移中に、現在の階層を表示する
         void drawNextFloorTransition();
 
-        // ダンジョンの初期化
-        void initDungeon();
-        // ダンジョン生成
-        void generateDungeon();
-        // 壁を生成
-        // arg ... 2D座標位置
-        void generateWall(int generatePosX, int generatePosZ);
-        // 地面を生成
-        // arg ... 2D座標位置
-        void generateGround(int generatePosX, int generatePosZ);
-
-        // ミニマップの情報を更新 ( 四近傍を開く。ルーム内ならそのルーム全体を再帰処理で開く )
-        void minimapUpdate(const tnl::Vector2i& openCellPos);
-
         // メニューを開く
         void openMenu();
         // メニューを閉じる
@@ -222,6 +208,9 @@ namespace atl {
         void openSelectWindow(const std::string& question);
         // 選択肢ウィンドウを閉じる
         void closeSelectWindow();
+
+        // ミニマップの情報を更新 ( 四近傍を開く。ルーム内ならそのルーム全体を再帰処理で開く )
+        void minimapUpdate(const tnl::Vector2i& openCellPos);
 
         // シーンで使う音源データのヴォリュームをまとめて調整
         void soundVolumeFix();
@@ -236,6 +225,17 @@ namespace atl {
         void enemyAction(float deltaTime);
         // HP がゼロになり、死亡演出が終わった敵を削除
         void deadEnemyErase();
+
+        // ダンジョンの初期化
+        void initDungeon();
+        // ダンジョン生成
+        void generateDungeon();
+        // 壁を生成
+        // arg ... 2D座標位置
+        void generateWall(int generatePosX, int generatePosZ);
+        // 地面を生成
+        // arg ... 2D座標位置
+        void generateGround(int generatePosX, int generatePosZ);
 
         //----------------------------------------------
         // シーケンス

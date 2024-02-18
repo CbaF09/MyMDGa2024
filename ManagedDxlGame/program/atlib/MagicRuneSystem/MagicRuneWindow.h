@@ -29,6 +29,9 @@ namespace atl {
 		// ゲッター ( 現在、ルーン選択画面かどうか )
 		bool IsOpenMagicRuneWindow() { return isOpen_; }
 
+		// 現在選択中のルーン用インデックスを 0 に設定する
+		void resetIndex() { currentSelectIndex_ = 0; }
+
 	private:
 		// フォント
 		const int RUNE_NAME_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
