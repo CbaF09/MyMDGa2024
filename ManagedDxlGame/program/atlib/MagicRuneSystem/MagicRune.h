@@ -23,7 +23,7 @@ namespace atl {
 	class HealRune : public Base_MagicRune {
 	public:
 		HealRune() { setRuneData(e_RuneID::HealRune); }
-		void onNotify(e_EventType eventType, DungeonScene& dungeonScene) override;
+		void onNotify(e_EventType eventType) override;
 	};
 
 	/// <summary>
@@ -32,9 +32,9 @@ namespace atl {
 	class FireRune : public Base_MagicRune {
 	public:
 		FireRune() { setRuneData(e_RuneID::FireRune); }
-		inline void onNotify(e_EventType eventType, DungeonScene& dungeonScene) override { /*未記述*/ };
-		void onEquipMomentNotify(DungeonScene& dungeonScene) override;
-		void onRemoveMomentNotify(DungeonScene& dungeonScene) override;
+		inline void onNotify(e_EventType eventType) override { /*未記述*/ };
+		void onEquipMomentNotify() override;
+		void onRemoveMomentNotify() override;
 	private:
 		const int32_t ATTACK_UP_VALUE = 3;
 	};
@@ -45,9 +45,9 @@ namespace atl {
 	class StoneRune : public Base_MagicRune {
 	public:
 		StoneRune() { setRuneData(e_RuneID::StoneRune); }
-		inline void onNotify(e_EventType eventType, DungeonScene& dungeonScene) override { /*未記述*/ };
-		void onEquipMomentNotify(DungeonScene& dungeonScene) override;
-		void onRemoveMomentNotify(DungeonScene& dungeonScene) override;
+		inline void onNotify(e_EventType eventType) override { /*未記述*/ };
+		void onEquipMomentNotify() override;
+		void onRemoveMomentNotify() override;
 	private:
 		const int32_t DEFENCE_UP_VALUE = 5;
 	};

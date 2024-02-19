@@ -5,6 +5,7 @@
 #include <numbers>
 #include <functional>
 
+#include "gm_main.h"
 #include "../dxlib_ext/dxlib_ext.h"
 #include "../atlib/Utilities/Atl3DCamera.h"
 #include "../atlib/Utilities/AtlRandom.h"
@@ -13,12 +14,12 @@
 #include "../atlib/Singletons/DungeonCreater.h"
 #include "../atlib/Singletons/ResourceManager.h"
 #include "../atlib/Singletons/TextLogManager.h"
+#include "../atlib/Singletons/CsvManager.h"
 #include "../atlib/Scenes/DungeonScene.h"
 #include "../atlib/Scenes/TitleScene.h"
 #include "../atlib/Scenes/Scene_Dummy.h"
 #include "../atlib/Scenes/GameClearScene.h"
 #include "../atlib/Scenes/GameOverScene.h"
-#include "gm_main.h"
 
 // 最初に一回呼ばれる関数
 void gameStart() {
@@ -43,7 +44,7 @@ void gameStart() {
     //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>()); 
 
     // 本編の初期シーン設定
-	atl::SceneManager::getSceneManager(std::make_shared<atl::TitleScene>());
+	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
 }
 
 // ゲームメインループ
@@ -58,6 +59,9 @@ void gameEnd() {
     atl::DungeonCreater::deleteDungeonCreater();
     atl::TextLogManager::deleteTextLogManager();
     atl::FadeInOutManager::deleteFadeInOutManager();
+    atl::MagicRuneSystemManager::deleteMagicRuneSystemManager();
+    atl::CsvManager::deleteCsvManager();
+
     atl::ResourceManager::deleteResourceManager();
 
     // DXlib の関数でメモリをまとめて解放

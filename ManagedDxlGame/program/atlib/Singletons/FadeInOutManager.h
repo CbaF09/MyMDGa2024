@@ -13,6 +13,7 @@ namespace atl {
 		FadeInOutManager() {};
 		~FadeInOutManager() {};
 	//------------------------------------------
+
 	public:
 		// 現在、フェード中か否か
 		bool isFading();

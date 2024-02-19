@@ -32,10 +32,11 @@ namespace atl {
 		virtual ~Base_MagicRune() {};
 		
 		// イベントタイプに対して発動する処理 ( 純粋仮想関数 )
-		virtual void onNotify(e_EventType eventType,DungeonScene& dungeonScene) = 0;
+		virtual void onNotify(e_EventType eventType) = 0;
 		// 装備した時に発動する処理
-		virtual void onEquipMomentNotify(DungeonScene& dungeonScene) {};
-		virtual void onRemoveMomentNotify(DungeonScene& dungeonScene) {};
+		virtual void onEquipMomentNotify() {};
+		// 装備を外した時に発動する処理
+		virtual void onRemoveMomentNotify() {};
 
 		// ゲッター ( ルーン用2Dアイコン画像を取得 )
 		const int getRuneGraph() { return graphHandle_; }

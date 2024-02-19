@@ -149,7 +149,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CsvManager.cpp" />
     <ClCompile Include="ManagedDxlGame.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\Base_MagicRune.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRune.cpp" />
@@ -178,6 +177,7 @@
     <ClCompile Include="program\atlib\Scenes\GameOverScene.cpp" />
     <ClCompile Include="program\atlib\Scenes\Scene_Dummy.cpp" />
     <ClCompile Include="program\atlib\Scenes\TitleScene.cpp" />
+    <ClCompile Include="program\atlib\Singletons\CsvManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\DungeonCreater.cpp" />
     <ClCompile Include="program\atlib\Singletons\FadeInOutManager.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneSystemManager.cpp" />
@@ -358,7 +358,6 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CsvManager.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\Base_MagicRune.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRune.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneWindow.h" />
@@ -388,6 +387,7 @@
     <ClInclude Include="program\atlib\Scenes\IE_SceneUpdater.h" />
     <ClInclude Include="program\atlib\Scenes\Scene_Dummy.h" />
     <ClInclude Include="program\atlib\Scenes\TitleScene.h" />
+    <ClInclude Include="program\atlib\Singletons\CsvManager.h" />
     <ClInclude Include="program\atlib\Singletons\DungeonCreater.h" />
     <ClInclude Include="program\atlib\Singletons\FadeInOutManager.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneSystemManager.h" />

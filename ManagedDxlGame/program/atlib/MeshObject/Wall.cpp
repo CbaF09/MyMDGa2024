@@ -14,6 +14,7 @@ namespace atl {
 			texture,
 			texture
 		);
+		mesh->setCullingMode(DX_CULLING_RIGHT);
 		setMesh(mesh);
 	}
 

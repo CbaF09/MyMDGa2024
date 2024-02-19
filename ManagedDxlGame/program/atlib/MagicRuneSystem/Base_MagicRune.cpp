@@ -2,12 +2,13 @@
 #include "Base_MagicRune.h"
 #include "MagicRuneSystemManager.h"
 #include "../Singletons/ResourceManager.h"
+#include "../Singletons/CsvManager.h"
 
 namespace atl {
 
 	void Base_MagicRune::setRuneData(e_RuneID itemID) {
-		// MagicRuneSystemManager から、CSVデータを持ってくる
-		auto& csv = MagicRuneSystemManager::getMagicRuneSystemManager()->getMagicRuneCSV();
+		// CSVデータを持ってくる
+		auto& csv = CsvManager::getCsvManager()->getMagicRuneCSV();
 
 		int index = static_cast<int>(itemID);
 

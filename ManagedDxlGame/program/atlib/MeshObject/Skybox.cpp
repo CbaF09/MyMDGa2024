@@ -4,8 +4,9 @@
 namespace atl {
 
 	Skysphere::Skysphere() {
-		skysphere_ = dxe::Mesh::CreateSphereMV(50000, 30, 30);
+		skysphere_ = dxe::Mesh::CreateSphereMV(10000, 30, 30);
 		skysphere_->setTexture(dxe::Texture::CreateFromFile("graphics/skybox/Skybox.jpg"));
+		skysphere_->setCullingMode(DX_CULLING_LEFT);
 	}
 
 	void Skysphere::update(const Shared<Atl3DCamera> camera) {

@@ -326,7 +326,7 @@
     <ClCompile Include="program\atlib\MagicRuneSystem\Base_MagicRune.cpp">
       <Filter>program\[002] atlib\MagicRuneSystem</Filter>
     </ClCompile>
-    <ClCompile Include="CsvManager.cpp">
+    <ClCompile Include="program\atlib\Singletons\CsvManager.cpp">
       <Filter>program\[002] atlib\Singletons</Filter>
     </ClCompile>
   </ItemGroup>
@@ -650,7 +650,7 @@
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneWindow.h">
       <Filter>program\[002] atlib\MagicRuneSystem</Filter>
     </ClInclude>
-    <ClInclude Include="CsvManager.h">
+    <ClInclude Include="program\atlib\Singletons\CsvManager.h">
       <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
   </ItemGroup>

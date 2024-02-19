@@ -15,7 +15,7 @@ namespace atl {
 		// もし装備可能最大数を超えていなければ、追加
 		if (equipmentMagicRunes_.size() < MAX_EQUIPMENT_RUNE) {
 			equipmentMagicRunes_.emplace_back(newRune);
-			newRune->onEquipMomentNotify(dungeonScene);
+			newRune->onEquipMomentNotify();
 			return true;
 		}
 		else {
@@ -27,13 +27,13 @@ namespace atl {
 		// 範囲外アクセスチェック、早期リターン
 		if (index < 0 || index >= equipmentMagicRunes_.size()) return;
 
-		equipmentMagicRunes_[index]->onRemoveMomentNotify(dungeonScene);
+		equipmentMagicRunes_[index]->onRemoveMomentNotify();
 		equipmentMagicRunes_.erase(equipmentMagicRunes_.begin() + index);
 	}
 
-	void MagicRuneSystemManager::notifyOnEvent(e_EventType eventType, DungeonScene& dungeonScene) {
+	void MagicRuneSystemManager::notifyOnEvent(e_EventType eventType) {
 		for (auto& rune : equipmentMagicRunes_) {
-			rune->onNotify(eventType, dungeonScene);
+			rune->onNotify(eventType);
 		}
 	}
 }
