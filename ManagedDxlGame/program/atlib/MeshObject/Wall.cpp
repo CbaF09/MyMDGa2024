@@ -16,6 +16,7 @@ namespace atl {
 		);
 		mesh->setCullingMode(DX_CULLING_RIGHT);
 		setMesh(mesh);
+
 	}
 
 	Wall::Wall(const Shared<dxe::Mesh> originMesh) : Base_MeshObject(originMesh) {

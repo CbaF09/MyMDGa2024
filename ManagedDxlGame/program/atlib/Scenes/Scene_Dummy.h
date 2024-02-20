@@ -61,6 +61,12 @@ namespace atl {
 
             player_->playerUpdate(deltaTime);
 
+            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
+                EnemyManager::getEnemyManager()->generateEnemy();
+
+            }
+
+
             EnemyManager::getEnemyManager()->processAllEnemy(deltaTime);
 
             return true;
