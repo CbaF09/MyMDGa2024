@@ -85,7 +85,7 @@ namespace atl {
 				return true;
 			}
 			else {
-				tnl::DebugTrace("\ ResourceManagerリソース解放 => %s のメモリ解放に失敗しました \n", filepath.c_str());
+				tnl::DebugTrace("\n ResourceManagerリソース解放 => %s のメモリ解放に失敗しました \n", filepath.c_str());
 				return false;
 			}
 		}

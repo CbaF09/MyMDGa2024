@@ -150,6 +150,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ManagedDxlGame.cpp" />
+    <ClCompile Include="program\atlib\Enemy\Enemy.cpp" />
+    <ClCompile Include="program\atlib\Enemy\EnemyFactory.cpp" />
+    <ClCompile Include="program\atlib\Enemy\EnemyManager.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\Base_MagicRune.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRune.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneWindow.cpp" />
@@ -358,6 +361,9 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="program\atlib\Enemy\Enemy.h" />
+    <ClInclude Include="program\atlib\Enemy\EnemyFactory.h" />
+    <ClInclude Include="program\atlib\Enemy\EnemyManager.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\Base_MagicRune.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRune.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneWindow.h" />

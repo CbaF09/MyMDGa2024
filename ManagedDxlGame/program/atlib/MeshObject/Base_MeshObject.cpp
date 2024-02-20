@@ -9,10 +9,6 @@ namespace atl {
 		setMesh(mesh);
 	}
 
-	void Base_MeshObject::setTexture(const Shared<dxe::Texture> texture) {
-		mesh_->setTexture(texture);
-	}
-
 	void Base_MeshObject::renderObject(const Shared<Atl3DCamera> camera, float deltaTime) {
 		mesh_->render(camera);
 	}

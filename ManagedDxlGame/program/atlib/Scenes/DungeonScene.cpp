@@ -665,7 +665,8 @@ namespace atl {
 	}
 
 	bool DungeonScene::seqMenuWindow(float deltaTime) {
-		if (!player_->getIsMenuOpen()) return true; // メニューウィンドウが有効でない場合、早期リターン
+		// メニューウィンドウが有効でない場合、早期リターン
+		if (!player_->getIsMenuOpen()) { return false; }
 
 		// 右クリックで menuWindowを閉じる
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_RIGHT)) {

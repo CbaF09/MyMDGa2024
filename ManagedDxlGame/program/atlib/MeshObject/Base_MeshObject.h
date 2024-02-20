@@ -30,7 +30,6 @@ namespace atl {
 		// セッター
 		inline void setMesh(const Shared<dxe::Mesh> mesh) { mesh_ = mesh; }
 		inline void set2Dpos(const tnl::Vector2i& mesh2Dpos) { mesh2Dpos_ = mesh2Dpos; }
-		void setTexture(const Shared<dxe::Texture> texture);
 
 		// 2Dpos操作メソッド
 		inline void add2Dpos(tnl::Vector2i addVec) { mesh2Dpos_ += addVec; }

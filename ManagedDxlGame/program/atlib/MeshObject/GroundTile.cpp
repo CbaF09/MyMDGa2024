@@ -6,7 +6,7 @@ namespace atl {
 		auto mesh = dxe::Mesh::CreatePlaneMV(initSize);
 		setMesh(mesh);
 		auto texture = dxe::Texture::CreateFromFile("graphics/Texture/GroundRock.png");
-		setTexture(texture);
+		mesh->setTexture(texture);
 		getMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 1, 0, 0 }, tnl::ToRadian(90));
 	}
 

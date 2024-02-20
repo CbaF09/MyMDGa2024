@@ -60,6 +60,9 @@
     <Filter Include="program\[002] atlib\MagicRuneSystem">
       <UniqueIdentifier>{3a1e38cb-b008-4847-90a2-85b375813fa4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="program\[002] atlib\EnemyManeger">
+      <UniqueIdentifier>{537b7a45-1f55-48e9-bc23-a3dc4c3ed83d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="program\library\tnl_font_texture.cpp">
@@ -328,6 +331,15 @@
     </ClCompile>
     <ClCompile Include="program\atlib\Singletons\CsvManager.cpp">
       <Filter>program\[002] atlib\Singletons</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Enemy\EnemyFactory.cpp">
+      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Enemy\Enemy.cpp">
+      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Enemy\EnemyManager.cpp">
+      <Filter>program\[002] atlib\EnemyManeger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -652,6 +664,15 @@
     </ClInclude>
     <ClInclude Include="program\atlib\Singletons\CsvManager.h">
       <Filter>program\[002] atlib\Singletons</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Enemy\Enemy.h">
+      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Enemy\EnemyFactory.h">
+      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Enemy\EnemyManager.h">
+      <Filter>program\[002] atlib\EnemyManeger</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

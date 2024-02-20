@@ -4,6 +4,8 @@
 #include "Base_Scene.h"
 #include "../Singletons/ResourceManager.h"
 #include "../Singletons/DungeonCreater.h"
+#include "../Enemy/EnemyManager.h"
+#include "../Enemy/EnemyFactory.h"
 #include "../MeshObject/GroundTile.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/PlayerPawn.h"
@@ -22,35 +24,44 @@ namespace atl {
 
     private:
 
+        Shared<PlayerPawn> player_ = nullptr;
+
         void sceneUpdate(float deltaTime) override {
             seq_.update(deltaTime);
             render(deltaTime);
         };
 
         void render(float deltaTime) {
-            
+            auto camera = player_->getPlayerCamera();
+            camera->update();
+
+            player_->render(deltaTime);
+
+            EnemyManager::getEnemyManager()->renderAllEnemy(camera, deltaTime);
+
+            DrawGridGround(camera, 50, 20);
         }
 
         // シーケンス
         SEQUENCE(Scene_Dummy, &Scene_Dummy::seqInit);
 
         bool seqInit(float deltaTime) {
-            DungeonCreater::getDungeonCreater()->createDungeon();
+            player_ = std::make_shared<PlayerPawn>();
+            player_->initialize();
+            player_->playerSpawn2Dpos({ 0,1 });
+
+            EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<SlimeFactory>());
+            EnemyManager::getEnemyManager()->generateEnemy();
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
         }
 
         bool seqProcess(float deltaTime) {
-            DungeonCreater::getDungeonCreater()->debag_DisplayFieldData();
-            DungeonCreater::getDungeonCreater()->debag_DisplayFieldCells(600);
 
-            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
-                DungeonCreater::getDungeonCreater()->createDungeon();
-            }
-            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_ESCAPE)) {
-                exit(0);
-            }
+            player_->playerUpdate(deltaTime);
+
+            EnemyManager::getEnemyManager()->processAllEnemy(deltaTime);
 
             return true;
         }

@@ -7,7 +7,9 @@ namespace atl {
 		auto mesh = dxe::Mesh::CreateHollowOutDiskPlaneMV(FORWARD_ARROW_SIZE);
 		mesh->rot_ *= tnl::Quaternion::RotationAxis({ 1,0,0 }, tnl::ToRadian(90));
 		setMesh(mesh);
-		setTexture(dxe::Texture::CreateFromFile("graphics/Texture/Green.bmp"));
+
+		auto texture = dxe::Texture::CreateFromFile("graphics/Texture/Green.bmp");
+		mesh->setTexture(texture);
 	}
 
 	void ForwardArrow::renderObject(const Shared<Atl3DCamera> camera,float deltaTime) {
