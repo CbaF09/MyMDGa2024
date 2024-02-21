@@ -357,26 +357,6 @@ namespace atl {
 		EnemyManager::getEnemyManager()->generateEnemy(spawnPos);
 	}
 
-	// 未移動のエネミーのアップデートを回す
-	void DungeonScene::enemyMove(float deltaTime) {
-		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
-		for (auto& enemy : enemyList) {
-			// 既に移動終わっているエネミーは早期リターン
-			if (enemy->getIsAlreadyMove()) { continue; }
-			enemy->process(deltaTime);
-		}
-	}
-
-	// 未行動のエネミーのアップデートを回す
-	void DungeonScene::enemyAction(float deltaTime) {
-		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
-		for (auto& enemy : enemyList) {
-			// 既に移動終わっているエネミーは早期リターン
-			if (enemy->getIsAlreadyAction()) { continue; }
-			enemy->process(deltaTime);
-		}
-	}
-
 	void DungeonScene::pickUpItem() {
 		auto& player2Dpos = player_->getPlayer2Dpos();
 		for (auto it = items_.begin(); it != items_.end();) {
@@ -427,16 +407,11 @@ namespace atl {
 
 		// 現在の階層を 初期化
 		currentFloor_ = 0;
+
 		// サウンド調整
 		soundVolumeFix();
 		// BGM再生
 		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg", DX_PLAYTYPE_LOOP);
-
-		/*発表用*/
-		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>(), *shared_from_this());
-		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<StoneRune>(), *shared_from_this());
-		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<FireRune>(), *shared_from_this());
-		/*発表用*/
 
 		// 本シーケンスに遷移
 		seq_.change(&DungeonScene::seqToNextFloor);
@@ -449,8 +424,7 @@ namespace atl {
 		player_->offFlagIsAlreadyTurn();
 		
 		// エネミーの行動フラグをオフ
-		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
-		for (auto& enemy : enemyList) { enemy->offFlagIsAlreadyTurn(); }
+		EnemyManager::getEnemyManager()->allEnemyOffFlagIsAlreadyTurn();
 
 		// ターン開始時処理へ
 		seq_.change(&DungeonScene::seqTurnStart);
@@ -505,40 +479,28 @@ namespace atl {
 	}
 
 	bool DungeonScene::seqPlayerMoveTurn(float deltaTime) {
+		// プレイヤーの移動とエネミーの移動
 		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
-
+			// プレイヤーの処理 ( 移動 )
 			player_->playerUpdate(deltaTime);
 
-			enemyMove(deltaTime);
-
-			// 全エネミー移動完了フラグ
-			bool allEnemyMoved = true;
-			auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
-			for (const auto& enemy : enemyList) {
-				// もし移動が完了していなければ、全エネミー移動完了フラグをオフに
-				if (!enemy->getIsAlreadyMove()) { allEnemyMoved = false; }
-			}
+			// エネミーの移動
+			bool allEnemyMove = EnemyManager::getEnemyManager()->moveAllEnemy(deltaTime);
 
 			// プレイヤーと全てのエネミーの移動が完了していたら、遷移
-			if (player_->getIsAlreadyTurn() && allEnemyMoved) { SEQ_CO_BREAK; }
+			if (player_->getIsAlreadyTurn() && allEnemyMove) { SEQ_CO_BREAK; }
 			});
 
+		// エネミー行動
 		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
-			// 未行動エネミーの行動
-			enemyAction(deltaTime);
 
-			// 全てのエネミーの行動が完了しているか
-			bool allEnemyAction = true;
-			auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
-			for (const auto& enemy : enemyList) {
-				// もし移動が完了していなければ、全エネミー移動完了フラグをオフに
-				if (!enemy->getIsAlreadyAction()) { allEnemyAction = false; }
-			}
+			bool allEnemyAction = EnemyManager::getEnemyManager()->actionAllEnemy(deltaTime);
 
-			// 全てのエネミーの行動が完了していたら、遷移
+			// 全てのエネミーの行動が完了していたら、ターンエンドに遷移
 			if (allEnemyAction) {
 				// ターンエンド処理へ
 				seq_.change(&DungeonScene::seqTurnEnd);
+				SEQ_CO_BREAK;
 			}
 			});
 
@@ -548,49 +510,28 @@ namespace atl {
 	// プレイヤーが攻撃を選択したターン
 	bool DungeonScene::seqPlayerActionTurn(float deltaTime) {
 		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
-			// プレイヤーのターン処理 ( 攻撃 )
-			if (!player_->getIsAlreadyTurn()) {
-				player_->playerUpdate(deltaTime);
-			}
+			// プレイヤーのターン処理 ( 行動 )
+			player_->playerUpdate(deltaTime);
 
-			// 未行動エネミーの行動
-			enemyAction(deltaTime);
+			// エネミーの行動
+			bool allEnemyAction = EnemyManager::getEnemyManager()->actionAllEnemy(deltaTime);
 
-			// 全てのエネミーの行動が完了しているか
-			bool allEnemyAction = true;
-			auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
-			for (const auto& enemy : enemyList) {
-				// もし移動が完了していなければ、全エネミー移動完了フラグをオフに
-				if (!enemy->getIsAlreadyAction()) { allEnemyAction = false; }
-			}
-
-			// 全てのエネミーの行動が完了していたらコルーチン終了
-			if (allEnemyAction) {
-				SEQ_CO_BREAK;
-			}
+			// プレイヤーと全てのエネミーの行動が完了していたらコルーチン終了
+			if (player_->getIsAlreadyTurn() && allEnemyAction) { SEQ_CO_BREAK; }
 			});
 
 		// エネミーの移動
 		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
 			// 未移動のエネミーの移動処理
-			enemyMove(deltaTime);
+			bool allEnemyMove = EnemyManager::getEnemyManager()->moveAllEnemy(deltaTime);
 
-			// 全てのエネミーの移動が完了しているか
-			bool allEnemyMoved = true;
-			auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
-			for (const auto& enemy : enemyList) {
-				// もし移動が完了していなければ、全エネミー移動完了フラグをオフに
-				if (!enemy->getIsAlreadyMove()) { allEnemyMoved = false; }
-			}
-
-			// プレイヤーと全てのエネミーの移動が完了していたら、コルーチン終了
-			if (player_->getIsAlreadyTurn() && allEnemyMoved) {
+			// 全てのエネミーの移動が完了していたら、ターンエンドに遷移
+			if (allEnemyMove) {
+				seq_.change(&DungeonScene::seqTurnEnd);
 				SEQ_CO_BREAK;
 			}
-			});
 
-		// ターンエンド処理へ
-		seq_.change(&DungeonScene::seqTurnEnd);
+			});
 
 		SEQ_CO_END;
 	}
@@ -611,6 +552,9 @@ namespace atl {
 			seq_.change(&DungeonScene::seqGameOver);
 			return true;;
 		}
+
+		// 死亡しているエネミーを消去
+		EnemyManager::getEnemyManager()->deadEnemyErase();
 
 		// 階段に乗った時、階段に乗っているフラグが立っていない場合、階段シーケンスに遷移
 		auto& player2Dpos = player_->getPlayer2Dpos();
@@ -868,6 +812,8 @@ namespace atl {
 
 		// アイテム初期化
 		items_.clear();
+
+		EnemyManager::getEnemyManager()->clearEnemyList();
 	}
 
 	void DungeonScene::generateDungeon() {

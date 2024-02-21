@@ -12,7 +12,7 @@ namespace atl {
 	/// 
 	/// protected で、シーケンサーとシーケンス用関数を継承する。
 	/// 継承先でシーケンス用関数をオーバーライドする事で、モンスター固有の動きを作れる
-	/// 継承クラスを増やしたら、1 対 1 の関係にあるファクトリークラスを作ること。=> EnemyFactory 参照
+	/// 継承クラスを増やしたら、1 対 1 の関係にあるファクトリークラスを作ること => EnemyFactory 参照
 	/// 
 	/// <summary>
 
@@ -23,7 +23,7 @@ namespace atl {
 		// 初期化
 		virtual void initialize() = 0;
 
-		// 毎フレーム行う処理
+		// 毎フレーム行う処理。主にシーケンスのアップデートを想定
 		virtual void process(float deltaTime) = 0;
 
 		// ゲッター ( 既に移動を終えたか )
@@ -34,9 +34,6 @@ namespace atl {
 		inline const bool getIsDead() const { return isDead_; }
 		// ゲッター ( エネミーポーンが持つエネミーデータ )
 		inline const Shared<EnemyData> getEnemyData() const { return enemyData_; }
-
-		// セッター ( ダンジョンシーンへの弱参照を設定 )
-		inline void setWeakDungeonScene(std::weak_ptr<DungeonScene> dungeonScene) { weakDungeonScene_ = dungeonScene; }
 
 		// 行動フラグをオフに
 		inline void offFlagIsAlreadyTurn() {
@@ -62,9 +59,6 @@ namespace atl {
 		bool isAlreadyAction_ = false;
 		// 死亡演出が終わって、死亡したか
 		bool isDead_ = false;
-
-		// ダンジョンシーンへの弱参照
-		std::weak_ptr<DungeonScene> weakDungeonScene_;
 
 		// エネミーはエネミーデータを一つ保持する
 		Shared<EnemyData> enemyData_ = std::make_shared<EnemyData>();
@@ -126,8 +120,20 @@ namespace atl {
 	class SlimeEnemy final : public Base_Enemy {
 	public:
 		void initialize() override;
-		inline void process(float deltaTime) override{ sequenceUpdate(deltaTime); }
+		void process(float deltaTime) override;
+
+		// ふわふわした動きをさせるため、renderObject をオーバーライド
+		void renderObject(Shared<Atl3DCamera> camera, float deltaTime) override;
 
 	private:
+		// 正弦波でふわふわさせる為のタイマー
+		float totalDeltaTimer_ = 0;
+		// sin の振れ幅
+		float amplitude_ = 64;
+		// sin の周波数
+		float frequency_ = 2;
+
+		// ふわふわした時に床に突き抜けるのを防ぐ為の計算用 Y座標
+		const float INIT_POS_Y = amplitude_;
 	};
 }

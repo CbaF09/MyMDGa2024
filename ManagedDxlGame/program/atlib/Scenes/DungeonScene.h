@@ -213,12 +213,9 @@ namespace atl {
         
         // 敵のリスポーン処理
         void enemyResporn();
+
         // アイテムに乗ったら拾う、拾えなかったらアイテムの上に乗る
         void pickUpItem();
-        // エネミーの移動処理
-        void enemyMove(float deltaTime);
-        // エネミーの行動処理
-        void enemyAction(float deltaTime);
 
         // ダンジョンの初期化
         void initDungeon();

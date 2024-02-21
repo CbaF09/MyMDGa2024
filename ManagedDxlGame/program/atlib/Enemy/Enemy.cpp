@@ -3,6 +3,7 @@
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/ResourceManager.h"
+#include "../Singletons/SceneManager.h"
 #include "../Utilities/AtlRandom.h"
 #include "../Utilities/AtlString.h"
 #include "../Object/PlayerData.h"
@@ -57,8 +58,12 @@ namespace atl {
 	}
 
 	bool Base_Enemy::isNeighborPlayer() {
-		// プレイヤーと隣接しているか判定する
-		auto& player2Dpos = weakDungeonScene_.lock()->getPlayerPawn()->getPlayer2Dpos();
+		// ダンジョンシーンを取得
+		auto& dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
+		if (!dungeonScene) { return false; }
+
+		// プレイヤーとエネミーの位置を取得
+		auto& player2Dpos = dungeonScene->getPlayerPawn()->getPlayer2Dpos();
 		auto& enemy2Dpos = get2Dpos();
 
 		// 四近傍にプレイヤーがいるかを判定。いたら true
@@ -70,10 +75,14 @@ namespace atl {
 	}
 
 	bool Base_Enemy::isSameAreaPlayer() {
-		auto& player2Dpos = weakDungeonScene_.lock()->getPlayerPawn()->getPlayer2Dpos();
+		// ダンジョンシーンを取得
+		auto& dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
+		if (!dungeonScene) { return false; }
 
-		auto enemyAreaID = DungeonCreater::getDungeonCreater()->getFieldCellID(get2Dpos());
+		// プレイヤとエネミーのいるエリアのIDを取得
+		auto& player2Dpos = dungeonScene->getPlayerPawn()->getPlayer2Dpos();
 		auto playerAreaID = DungeonCreater::getDungeonCreater()->getFieldCellID(player2Dpos);
+		auto enemyAreaID = DungeonCreater::getDungeonCreater()->getFieldCellID(get2Dpos());
 
 		// 自分のエリアID とプレイヤーのエリア IDが一致した場合、true
 		if (enemyAreaID == playerAreaID) { return true; }
@@ -89,8 +98,8 @@ namespace atl {
 	/// <summary>
 
 	bool Base_Enemy::seqTransition(float deltaTime) {
-		// 既に移動もしくは行動が完了している場合、早期リターン ( 待機状態 )
-		if (isAlreadyAction_ || isAlreadyMove_) { return false; }
+		// 既に移動と行動が完了している場合、早期リターン ( 待機状態 )
+		if (isAlreadyAction_ && isAlreadyMove_) { return false; }
 
 		// HPがゼロになっている場合
 		if (enemyData_->isZeroHP()) { seq_.change(&Base_Enemy::seqDeading); }
@@ -130,7 +139,12 @@ namespace atl {
 
 	// プレイヤーを直線で追う 
 	bool Base_Enemy::seqChasePlayer(float deltaTime) {
-		auto& player2Dpos = weakDungeonScene_.lock()->getPlayerPawn()->getPlayer2Dpos();
+		// ダンジョンシーン取得
+		auto& dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
+		if (!dungeonScene) { return false; }
+
+		// プレイヤーの位置と自身の現在の位置を取得
+		auto& player2Dpos = dungeonScene->getPlayerPawn()->getPlayer2Dpos();
 		auto& currentPos = get2Dpos();
 
 		// X座標 → Y座標、の順でプレイヤーを追いかける。
@@ -176,13 +190,20 @@ namespace atl {
 	}
 
 	bool Base_Enemy::seqPlayerNeighboring(float deltaTime) {
-		auto player = weakDungeonScene_.lock()->getPlayerPawn();
+		// ダンジョンシーン取得
+		auto& dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
+		if (!dungeonScene) { return false; }
+
+		// プレイヤーポーン取得
+		auto player = dungeonScene->getPlayerPawn();
+
+		// プレイヤーの行動が終わってから、プレイヤーの方を向く
 		if (player->getIsAlreadyTurn()) {
-			// プレイヤーの行動が終わってから、プレイヤーの方を向く
 			auto meshPos = getMesh()->pos_;
 			getMesh()->rot_ = tnl::Quaternion::LookAt(meshPos, player->getPlayerPos(), { 0,1,0 });
 			seq_.change(&Base_Enemy::seqMoveNone);
 		}
+		
 		return true;
 	}
 
@@ -190,16 +211,16 @@ namespace atl {
 		// 0.2秒間、くるくる回転
 		SEQ_CO_YIELD_RETURN_TIME(0.2f, deltaTime, [&] {
 			getMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(15));
-		});
+			});
 
 		// 一回音を鳴らし、もう 1 秒間回転
 		SEQ_CO_YIELD_RETURN_TIME(1.0f, deltaTime, [&] {
-			if (SEQ_CO_YIELD_TIME_IS_START) { 
-				ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneEnemyDead.ogg", DX_PLAYTYPE_BACK); 
+			if (SEQ_CO_YIELD_TIME_IS_START) {
+				ResourceManager::getResourceManager()->playSoundRes("sound/SE/DungeonSceneEnemyDead.ogg", DX_PLAYTYPE_BACK);
 			}
 
 			getMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(15));
-		});
+			});
 
 		// 行動済みと死亡フラグをオンに
 		isAlreadyAction_ = true;
@@ -220,9 +241,14 @@ namespace atl {
 	}
 
 	bool Base_Enemy::seqActionAttack(float deltaTime) {
-		auto player = weakDungeonScene_.lock()->getPlayerPawn();
+		// ダンジョンシーン取得
+		auto& dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
+		if (!dungeonScene) { return false; }
 
-		// プレイヤーが行動終了していなければ、早期リターン
+		// プレイヤーポーン取得
+		auto player = dungeonScene->getPlayerPawn();
+
+		// プレイヤーが行動終了していなければ、リターン
 		if (!player->getIsAlreadyTurn()) { return true; }
 
 		// 誰からの攻撃なのかをテキストログに出力し、0.5秒間待機
@@ -260,6 +286,18 @@ namespace atl {
 
 		// マテリアルを設定
 		mesh->loadMaterial(getEnemyData()->getEnemyMaterialPath());
+	}
+
+	void SlimeEnemy::process(float deltaTime) {
+		sequenceUpdate(deltaTime);
+	}
+
+	void SlimeEnemy::renderObject(Shared<Atl3DCamera> camera, float deltaTime) {
+		totalDeltaTimer_ += deltaTime;
+
+		getMesh()->pos_.y = INIT_POS_Y + sin(totalDeltaTimer_ * frequency_) * amplitude_;
+
+		getMesh()->render(camera);
 	}
 
 }

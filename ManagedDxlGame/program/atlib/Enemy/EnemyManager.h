@@ -27,11 +27,27 @@ namespace atl {
 		// 現在のファクトリーサブクラスの createEnemy を実行し、listに加える
 		void generateEnemy(const tnl::Vector2i& generate2Dpos);
 
-		// 全エネミーの毎フレーム処理を実行
-		void processAllEnemy(float deltaTime);
-
 		// 全エネミーの描画を実行
 		void renderAllEnemy(Shared<Atl3DCamera> camera, float deltaTime);
+
+		// 全エネミーの移動を実行
+		// ret ... 全エネミーの移動が完了している => true, 完了していない => false
+		bool moveAllEnemy(float deltaTime);
+
+		// 全エネミーの行動を実行
+		// ret ... 全エネミーの行動が完了している => true, 完了していない => false
+		bool actionAllEnemy(float deltaTime);
+
+		// 死亡フラグがオンのエネミーをリストから消去する
+		void deadEnemyErase();
+
+		// エネミーリストをクリアする
+		inline void clearEnemyList() { enemyList_.clear(); }
+
+		// エネミーのターン完了フラグをオフにする
+		void allEnemyOffFlagIsAlreadyTurn();
+
+		// 移動が完了していないエネミーのprocessを回す
 
 	private:
 		// 現在設定されているサブファクトリー
