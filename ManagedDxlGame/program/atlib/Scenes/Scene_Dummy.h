@@ -37,6 +37,12 @@ namespace atl {
 
             player_->render(deltaTime);
 
+            auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+            for (auto& enemy : enemyList) {
+                enemy->getMesh()->drawGuiMaterialControlloer();
+                enemy->getMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(1));
+            }
+
             EnemyManager::getEnemyManager()->renderAllEnemy(camera, deltaTime);
 
             DrawGridGround(camera, 50, 20);
@@ -48,10 +54,12 @@ namespace atl {
         bool seqInit(float deltaTime) {
             player_ = std::make_shared<PlayerPawn>();
             player_->initialize();
-            player_->playerSpawn2Dpos({ 0,1 });
+            player_->playerSpawn2Dpos({ 0,0 });
 
             EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<SlimeFactory>());
-            EnemyManager::getEnemyManager()->generateEnemy();
+            EnemyManager::getEnemyManager()->generateEnemy({0,1});
+            
+            SetMouseDispFlag(true);
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
@@ -60,14 +68,6 @@ namespace atl {
         bool seqProcess(float deltaTime) {
 
             player_->playerUpdate(deltaTime);
-
-            if (tnl::Input::IsKeyDownTrigger(eKeys::KB_SPACE)) {
-                EnemyManager::getEnemyManager()->generateEnemy();
-
-            }
-
-
-            EnemyManager::getEnemyManager()->processAllEnemy(deltaTime);
 
             return true;
         }

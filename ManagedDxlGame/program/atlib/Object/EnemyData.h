@@ -15,8 +15,8 @@ namespace atl {
 		EnemyData();
 
 		// ゲッター
-		inline Shared<dxe::Texture> getEnemyTexture() { return enemyTexture_; }
 		inline const std::string& getEnemyName() { return enemyName_; }
+		inline const std::string& getEnemyMaterialPath() { return enemyMaterialFilepath_; }
 		inline const int32_t getEnemyExp() { return exp_; }
 
 	private:
@@ -26,8 +26,8 @@ namespace atl {
 		std::string enemyName_ = "";
 		// 敵を倒した時に手に入る経験値
 		int32_t exp_ = 0;
-		// 敵に適用するテクスチャデータ
-		Shared<dxe::Texture> enemyTexture_ = nullptr;
+		// 敵に適用するマテリアルのファイルパス
+		std::string enemyMaterialFilepath_ = "";
 	};
 
 }

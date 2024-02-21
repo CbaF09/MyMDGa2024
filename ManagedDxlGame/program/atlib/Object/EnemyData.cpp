@@ -16,8 +16,7 @@ namespace atl {
 		setAttackPower(csv[rand][3].getInt());
 		exp_ = csv[rand][4].getInt();
 
-		auto& filePath = csv[rand][5].getString();
-		enemyTexture_ = dxe::Texture::CreateFromFile(filePath);
+		enemyMaterialFilepath_ = csv[rand][5].getString();
 	}
 
 }

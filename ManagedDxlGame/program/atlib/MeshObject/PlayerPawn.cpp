@@ -1,5 +1,4 @@
 #include "PlayerPawn.h"
-#include "EnemyPawn.h"
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/ResourceManager.h"
@@ -10,6 +9,7 @@
 #include "../Utilities/AtlString.h"
 #include "../MagicRuneSystem/MagicRune.h"
 #include "../MagicRuneSystem/MagicRuneSystemManager.h"
+#include "../Enemy/EnemyManager.h"
 
 namespace atl {
 
@@ -52,9 +52,9 @@ namespace atl {
 		}
 
 		// エネミーがいたら移動不可
-		auto& enemies = weakDungeonScene_.lock()->getEnemyArray();
-		for (auto& enemy : enemies) {
-			if (newPlayerPos == enemy->get2Dpos()) return false;
+		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+		for (auto& enemy : enemyList) {
+			if (newPlayerPos == enemy->get2Dpos()) { return false; }
 		}
 
 		return true;
@@ -144,10 +144,10 @@ namespace atl {
 		// 停止時間 => 空振り
 		waitTime_ = ATTACK_MISS_TIME;
 
-		auto& enemies = weakDungeonScene_.lock()->getEnemyArray();
+		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
 		tnl::Vector2i attackPos = player2Dpos_ + playerCamera_->getCurrentForwardDirToV2i();
 
-		for (auto& enemy : enemies) {
+		for (auto& enemy : enemyList) {
 			auto& enemyPos = enemy->get2Dpos();
 			if (enemyPos.x == attackPos.x && enemyPos.y == attackPos.y) {
 				// 攻撃ヒット処理
@@ -173,7 +173,7 @@ namespace atl {
 		return true;
 	}
 
-	void PlayerPawn::attackHitEffectAndLog(const Shared<atl::EnemyPawn>& enemy) {
+	void PlayerPawn::attackHitEffectAndLog(const Shared<atl::Base_Enemy> enemy) {
 		auto damage = Base_ActorData::damaged(*playerData_,*enemy->getEnemyData());
 
 		// 爆発パーティクル

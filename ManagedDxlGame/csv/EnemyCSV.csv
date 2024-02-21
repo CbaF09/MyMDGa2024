@@ -1,4 +1,4 @@
-EnemyID,敵名前,HP,攻撃力,経験値,ファイルパス
-1,青スライム,8,4,5,graphics/Texture/EnemyBlue.bmp
-2,緑スライム,10,8,8,graphics/Texture/EnemyGreen.bmp
-3,赤スライム,16,12,10,graphics/Texture/EnemyRed.bmp
+EnemyID,敵名前,HP,攻撃力,経験値,マテリアルファイルパス
+1,青スライム,8,4,5,mesh/material/BlueSlime.bin
+2,緑スライム,10,8,8,mesh/material/GreenSlime.bin
+3,赤スライム,16,12,10,mesh/material/RedSlime.bin

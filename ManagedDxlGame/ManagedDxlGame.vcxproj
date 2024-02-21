@@ -158,7 +158,6 @@
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneWindow.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Base_MeshObject.cpp" />
     <ClCompile Include="program\atlib\MeshObject\Base_MultiMeshObject.cpp" />
-    <ClCompile Include="program\atlib\MeshObject\EnemyPawn.cpp" />
     <ClCompile Include="program\atlib\MeshObject\ForwardArrow.cpp" />
     <ClCompile Include="program\atlib\MeshObject\GroundTile.cpp" />
     <ClCompile Include="program\atlib\MeshObject\ItemPawn.cpp" />
@@ -369,7 +368,6 @@
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneWindow.h" />
     <ClInclude Include="program\atlib\MeshObject\Base_MeshObject.h" />
     <ClInclude Include="program\atlib\MeshObject\Base_MultiMeshObject.h" />
-    <ClInclude Include="program\atlib\MeshObject\EnemyPawn.h" />
     <ClInclude Include="program\atlib\MeshObject\ForwardArrow.h" />
     <ClInclude Include="program\atlib\MeshObject\GroundTile.h" />
     <ClInclude Include="program\atlib\MeshObject\ItemPawn.h" />

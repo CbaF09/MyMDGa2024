@@ -7,6 +7,9 @@ namespace atl {
 	/// <summary>
 	/// 
 	/// 全てのエネミーファクトリーの基底となるクラス
+	/// 継承先で、各エネミー専用サブファクトリーに具象化される
+	/// サブファクトリーは、各エネミーと 1 対 1 の関係
+	/// そのモンスター専用のスポーン時処理 ( 音とか？ ) などは、サブファクトリークラスに記述
 	/// 
 	class Base_EnemyFactory {
 	public:
@@ -20,7 +23,7 @@ namespace atl {
 
 	/// <summary>
 	/// 
-	/// 丸い敵のファクトリーサブクラス
+	/// スライムのファクトリーサブクラス
 	/// 
 	class SlimeFactory : public Base_EnemyFactory {
 		Shared<Base_Enemy> createEnemy() override;

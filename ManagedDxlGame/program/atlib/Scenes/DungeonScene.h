@@ -18,7 +18,6 @@ namespace atl {
     /// </summary>
 
     class Stairs;
-    class EnemyPawn;
     class PlayerPawn;
     class ItemPawn;
     class DungeonCreater;
@@ -32,8 +31,6 @@ namespace atl {
 
         // ゲッター ( 3D上のセル一辺の全長を取得。色々なクラスで取得するので static に )
         inline static const int32_t getCellLength() { return CELL_FULL_LENGTH; }
-        // ゲッター ( 現在存在しているエネミーのリストを取得 )
-        inline const std::list<Shared<EnemyPawn>>& getEnemyArray() const { return enemies_; }
         // ゲッター ( プレイヤーポーンを取得 )
         inline const Shared<PlayerPawn> getPlayerPawn() const { return player_; }
 
@@ -82,7 +79,6 @@ namespace atl {
         const int32_t EVERY_TURN_HEAL = 1; 
 
         // エネミー関連 --------------------------------
-        std::list<Shared<EnemyPawn>> enemies_; 
         // 何ターンごとにリスポーンするか
         const int32_t RESPORN_TURN_COUNT = 30;  
         // リスポーンカウンター
@@ -223,8 +219,6 @@ namespace atl {
         void enemyMove(float deltaTime);
         // エネミーの行動処理
         void enemyAction(float deltaTime);
-        // HP がゼロになり、死亡演出が終わった敵を削除
-        void deadEnemyErase();
 
         // ダンジョンの初期化
         void initDungeon();
@@ -248,7 +242,6 @@ namespace atl {
         bool seqTurnInit(float deltaTime);
         // ターン開始時処理
         bool seqTurnStart(float deltaTime);
-
 
         // キー入力待ち
         bool seqKeyInput(float deltaTime);

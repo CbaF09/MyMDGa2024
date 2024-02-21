@@ -224,9 +224,6 @@
     <ClCompile Include="program\atlib\MeshObject\Base_MultiMeshObject.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
-    <ClCompile Include="program\atlib\MeshObject\EnemyPawn.cpp">
-      <Filter>program\[002] atlib\MeshObject</Filter>
-    </ClCompile>
     <ClCompile Include="program\atlib\MeshObject\GroundTile.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
@@ -552,9 +549,6 @@
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\MeshObject\Base_MultiMeshObject.h">
-      <Filter>program\[002] atlib\MeshObject</Filter>
-    </ClInclude>
-    <ClInclude Include="program\atlib\MeshObject\EnemyPawn.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\MeshObject\GroundTile.h">

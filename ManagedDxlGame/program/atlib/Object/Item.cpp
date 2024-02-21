@@ -4,10 +4,10 @@
 #include "../Singletons/SceneManager.h"
 #include "../Utilities/AtlRandom.h"
 #include "../MeshObject/PlayerPawn.h"
-#include "../MeshObject/EnemyPawn.h"
 #include "../Utilities/AtlString.h"
 #include "../MagicRuneSystem/MagicRuneSystemManager.h"
 #include "../MagicRuneSystem/MagicRune.h"
+#include "../Enemy/EnemyManager.h"
 #include "PlayerData.h"
 
 namespace atl {
@@ -74,18 +74,18 @@ namespace atl {
 	// プレイヤーと同じエリアの敵にダメージ
 	void Item::thunderStoneAction() {
 		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
-		if (dungeonScene) {
-			auto& enemies = dungeonScene->getEnemyArray();
-			auto& player = dungeonScene->getPlayerPawn();
-			auto playerArea = DungeonCreater::getDungeonCreater()->getFieldCellID(player->getPlayer2Dpos());
-			for (auto& enemy : enemies) {
-				auto enemyArea = DungeonCreater::getDungeonCreater()->getFieldCellID(enemy->get2Dpos());
-				auto& enemyName = enemy->getEnemyData()->getEnemyName();
-				// プレイヤーと同じエリアなら
-				if (playerArea == enemyArea) {
-					enemy->getEnemyData()->changeCurrentHP(-THUNDER_STONE_DAMAGE_VALUE);
-					addTextItemUse(enemyName + "に" + convertFullWidthNumber(THUNDER_STONE_DAMAGE_VALUE) + "のダメージ！");
-				}
+		if (!dungeonScene) { return; }
+
+		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+		auto& player = dungeonScene->getPlayerPawn();
+		auto playerArea = DungeonCreater::getDungeonCreater()->getFieldCellID(player->getPlayer2Dpos());
+		for (auto& enemy : enemyList) {
+			auto enemyArea = DungeonCreater::getDungeonCreater()->getFieldCellID(enemy->get2Dpos());
+			auto& enemyName = enemy->getEnemyData()->getEnemyName();
+			// プレイヤーと同じエリアなら
+			if (playerArea == enemyArea) {
+				enemy->getEnemyData()->changeCurrentHP(-THUNDER_STONE_DAMAGE_VALUE);
+				addTextItemUse(enemyName + "に" + convertFullWidthNumber(THUNDER_STONE_DAMAGE_VALUE) + "のダメージ！");
 			}
 		}
 	}
@@ -93,13 +93,13 @@ namespace atl {
 	// フィールドの敵全員にダメージ
 	void Item::thunderScrollAction() {
 		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
-		if (dungeonScene) {
-			auto& enemies = dungeonScene->getEnemyArray();
-			for (auto& enemy : enemies) {
-				enemy->getEnemyData()->changeCurrentHP(-THUNDER_SCROLL_DAMAGE_VALUE);
-				auto& enemyName = enemy->getEnemyData()->getEnemyName();
-				addTextItemUse(enemyName + "に" + convertFullWidthNumber(THUNDER_SCROLL_DAMAGE_VALUE) + "のダメージ！");
-			}
+		if (!dungeonScene) { return; }
+
+		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+		for (auto& enemy : enemyList) {
+			enemy->getEnemyData()->changeCurrentHP(-THUNDER_SCROLL_DAMAGE_VALUE);
+			auto& enemyName = enemy->getEnemyData()->getEnemyName();
+			addTextItemUse(enemyName + "に" + convertFullWidthNumber(THUNDER_SCROLL_DAMAGE_VALUE) + "のダメージ！");
 		}
 	}
 

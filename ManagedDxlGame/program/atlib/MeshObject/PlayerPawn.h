@@ -3,6 +3,7 @@
 #include "../../atlib/Utilities/Atl3DCamera.h"
 #include "../Scenes/DungeonScene.h"
 #include "../Object/PlayerData.h"
+#include "../Enemy/Enemy.h"
 #include "MenuBook.h"
 
 namespace atl {
@@ -135,7 +136,7 @@ namespace atl {
 		// ˆÚ“®æ‚ğw’è ( moveLerp—p ) 
 		void setMoveTarget(const tnl::Vector2i& moveToPos);
 		// UŒ‚–½’†‚Ì‰‰o
-		void attackHitEffectAndLog(const Shared<atl::EnemyPawn>& enemy);
+		void attackHitEffectAndLog(const Shared<atl::Base_Enemy> enemy);
 
 
 		// --------------------------------------------------

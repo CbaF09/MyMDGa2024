@@ -13,19 +13,19 @@
 #include "../MagicRuneSystem/MagicRune.h"
 #include "../MeshObject/Wall.h"
 #include "../MeshObject/Stairs.h"
-#include "../MeshObject/EnemyPawn.h"
 #include "../MeshObject/PlayerPawn.h"
 #include "../MeshObject/ItemPawn.h"
 #include "../Object/SelectWindow.h"
 #include "../Object/MenuWindow.h"
 #include "../Utilities/Atl3DCamera.h"
+#include "../Enemy/EnemyManager.h"
+#include "../Enemy/EnemyFactory.h"
 
 namespace atl {
 
 	DungeonScene::DungeonScene() {
 		walls_.clear();
 		groundTiles_.clear();
-		enemies_.clear();
 		items_.clear();
 
 		player_ = std::make_shared<PlayerPawn>();
@@ -59,16 +59,14 @@ namespace atl {
 		// スカイスフィアのアップデート
 		skysphere_.update(camera);
 
-		// 不透明なもの描画
 		for (const auto& ground : groundTiles_) { ground->renderObject(camera); }
 		for (const auto& wall : walls_) { wall->renderObject(camera); }
 		if (stairs_) { stairs_->renderObjects(camera, deltaTime); }
 		if (player_) { player_->render(deltaTime); };
-		for (const auto& enemy : enemies_) { enemy->renderObjects(camera, deltaTime); }
 		for (const auto& item : items_) { item->renderObject(camera, deltaTime); }
 
-		// 透明なもの描画
-		for (const auto& enemy : enemies_) { enemy->renderTransparentObject(camera, deltaTime); }
+		// 敵描画
+		EnemyManager::getEnemyManager()->renderAllEnemy(camera, deltaTime);
 	}
 
 	void DungeonScene::draw2D(float deltaTime) {
@@ -343,36 +341,39 @@ namespace atl {
 		// スポーン条件を満たしていないなら早期リターン
 		if (!(respornTurnTimer_ > RESPORN_TURN_COUNT)) { return; }
 
-		// プレイヤーと違うエリアにスポーン
+		// スポーン位置を決める ( プレイヤーとは違うエリアの位置が返ってくる ) 
 		auto spawnPos = DungeonCreater::getDungeonCreater()->randomChoiceEnemyRespawnPos(player_->getPlayer2Dpos());
-		for (const auto& enemy : enemies_) {
+
+		// スポーン位置に既に敵がいたら早期リターンする
+		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+		for (const auto& enemy : enemyList) {
+			auto& enemyPos = enemy->get2Dpos();
 			// スポーン先に既に敵がいるかチェック。いたらリターン
-			if (enemy->get2Dpos().x == spawnPos.x && enemy->get2Dpos().y == spawnPos.y) {
-				return;
-			}
+			if (enemyPos.x == spawnPos.x && enemyPos.y == spawnPos.y) { return; }
 		}
 
 		respornTurnTimer_ = 0;
-		auto enemy = std::make_shared<EnemyPawn>(spawnPos);
-		enemy->assignWeakDungeonScene(shared_from_this());
-		enemies_.emplace_back(enemy);
+		EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<SlimeFactory>());
+		EnemyManager::getEnemyManager()->generateEnemy(spawnPos);
 	}
 
 	// 未移動のエネミーのアップデートを回す
 	void DungeonScene::enemyMove(float deltaTime) {
-		for (auto& enemy : enemies_) {
+		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+		for (auto& enemy : enemyList) {
 			// 既に移動終わっているエネミーは早期リターン
 			if (enemy->getIsAlreadyMove()) { continue; }
-			enemy->enemyUpdate(deltaTime);
+			enemy->process(deltaTime);
 		}
 	}
 
 	// 未行動のエネミーのアップデートを回す
 	void DungeonScene::enemyAction(float deltaTime) {
-		for (auto& enemy : enemies_) {
-			// 既に行動終わっているエネミーは早期リターン
+		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+		for (auto& enemy : enemyList) {
+			// 既に移動終わっているエネミーは早期リターン
 			if (enemy->getIsAlreadyAction()) { continue; }
-			enemy->enemyUpdate(deltaTime);
+			enemy->process(deltaTime);
 		}
 	}
 
@@ -444,9 +445,12 @@ namespace atl {
 
 	// 毎ターン初期化処理
 	bool DungeonScene::seqTurnInit(float deltaTime) {
-		// プレイヤーとエネミーの行動フラグをオフに
+		// プレイヤーの行動フラグをオフ
 		player_->offFlagIsAlreadyTurn();
-		for (auto& enemy : enemies_) { enemy->offFlagIsAlreadyTurn(); }
+		
+		// エネミーの行動フラグをオフ
+		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+		for (auto& enemy : enemyList) { enemy->offFlagIsAlreadyTurn(); }
 
 		// ターン開始時処理へ
 		seq_.change(&DungeonScene::seqTurnStart);
@@ -509,11 +513,10 @@ namespace atl {
 
 			// 全エネミー移動完了フラグ
 			bool allEnemyMoved = true;
-			for (auto& enemy : enemies_) {
+			auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+			for (const auto& enemy : enemyList) {
 				// もし移動が完了していなければ、全エネミー移動完了フラグをオフに
-				if (!enemy->getIsAlreadyMove()) {
-					allEnemyMoved = false;
-				}
+				if (!enemy->getIsAlreadyMove()) { allEnemyMoved = false; }
 			}
 
 			// プレイヤーと全てのエネミーの移動が完了していたら、遷移
@@ -526,11 +529,12 @@ namespace atl {
 
 			// 全てのエネミーの行動が完了しているか
 			bool allEnemyAction = true;
-			for (auto& enemy : enemies_) {
-				if (!enemy->getIsAlreadyAction()) {
-					allEnemyAction = false;
-				}
+			auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+			for (const auto& enemy : enemyList) {
+				// もし移動が完了していなければ、全エネミー移動完了フラグをオフに
+				if (!enemy->getIsAlreadyAction()) { allEnemyAction = false; }
 			}
+
 			// 全てのエネミーの行動が完了していたら、遷移
 			if (allEnemyAction) {
 				// ターンエンド処理へ
@@ -554,10 +558,10 @@ namespace atl {
 
 			// 全てのエネミーの行動が完了しているか
 			bool allEnemyAction = true;
-			for (auto& enemy : enemies_) {
-				if (!enemy->getIsAlreadyAction()) {
-					allEnemyAction = false;
-				}
+			auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+			for (const auto& enemy : enemyList) {
+				// もし移動が完了していなければ、全エネミー移動完了フラグをオフに
+				if (!enemy->getIsAlreadyAction()) { allEnemyAction = false; }
 			}
 
 			// 全てのエネミーの行動が完了していたらコルーチン終了
@@ -566,9 +570,6 @@ namespace atl {
 			}
 			});
 
-		// 行動の結果死んだエネミーがいた場合、削除する
-		deadEnemyErase();
-
 		// エネミーの移動
 		SEQ_CO_YIELD_RETURN_FRAME(-1, deltaTime, [&] {
 			// 未移動のエネミーの移動処理
@@ -576,10 +577,10 @@ namespace atl {
 
 			// 全てのエネミーの移動が完了しているか
 			bool allEnemyMoved = true;
-			for (auto& enemy : enemies_) {
-				if (!enemy->getIsAlreadyMove()) {
-					allEnemyMoved = false;
-				}
+			auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+			for (const auto& enemy : enemyList) {
+				// もし移動が完了していなければ、全エネミー移動完了フラグをオフに
+				if (!enemy->getIsAlreadyMove()) { allEnemyMoved = false; }
 			}
 
 			// プレイヤーと全てのエネミーの移動が完了していたら、コルーチン終了
@@ -596,11 +597,6 @@ namespace atl {
 
 	// ターンエンド処理
 	bool DungeonScene::seqTurnEnd(float deltaTime) {
-
-		// HP がゼロになり、死亡演出が終わった敵を探して削除する
-		if (!enemies_.empty()) {
-			deadEnemyErase();
-		}
 
 		// プレイヤーのHPがゼロになっている場合、直接ゲームオーバーシーケンスに遷移
 		if (player_->getPlayerData()->isZeroHP()) {
@@ -646,23 +642,23 @@ namespace atl {
 	}
 
 	// 死んだ敵を配列から削除
-	void DungeonScene::deadEnemyErase() {
-		for (auto it = enemies_.begin(); it != enemies_.end();) {
-			// HP がゼロの敵を発見
-			if ((*it)->getEnemyData()->isZeroHP()) {
-				// 死亡しているかどうか
-				if ((*it)->getIsDead()) {
-					// エネミーが死亡する時、プレイヤーはエネミーの持っていた経験値を得る
-					auto getEXP = (*it)->getEnemyData()->getEnemyExp();
-					player_->getPlayerData()->changeCurrentEXP(getEXP);
-					// 敵へのポインターを配列から削除
-					it = enemies_.erase(it);
-					continue;
-				}
-			}
-			++it;
-		}
-	}
+	//void DungeonScene::deadEnemyErase() {
+	//	for (auto it = enemies_.begin(); it != enemies_.end();) {
+	//		// HP がゼロの敵を発見
+	//		if ((*it)->getEnemyData()->isZeroHP()) {
+	//			// 死亡しているかどうか
+	//			if ((*it)->getIsDead()) {
+	//				// エネミーが死亡する時、プレイヤーはエネミーの持っていた経験値を得る
+	//				auto getEXP = (*it)->getEnemyData()->getEnemyExp();
+	//				player_->getPlayerData()->changeCurrentEXP(getEXP);
+	//				// 敵へのポインターを配列から削除
+	//				it = enemies_.erase(it);
+	//				continue;
+	//			}
+	//		}
+	//		++it;
+	//	}
+	//}
 
 	bool DungeonScene::seqMenuWindow(float deltaTime) {
 		// メニューウィンドウが有効でない場合、早期リターン
@@ -866,12 +862,11 @@ namespace atl {
 	//---------------------
 
 	void DungeonScene::initDungeon() {
-		// 地形
+		// 地形初期化
 		walls_.clear();
 		groundTiles_.clear();
 
-		// エネミー、アイテム
-		enemies_.clear();
+		// アイテム初期化
 		items_.clear();
 	}
 
@@ -907,10 +902,9 @@ namespace atl {
 
 			// エネミー
 			auto& enemySpawnPos = DungeonCreater::getDungeonCreater()->getEnemySpawnPos();
+			EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<SlimeFactory>());
 			for (int i = 0; i < DungeonCreater::getDungeonCreater()->getEnemySpawnNum(); ++i) {
-				auto enemy = std::make_shared<EnemyPawn>(enemySpawnPos[i]);
-				enemy->assignWeakDungeonScene(shared_from_this());
-				enemies_.emplace_back(enemy);
+				EnemyManager::getEnemyManager()->generateEnemy(enemySpawnPos[i]);
 			}
 
 			// アイテム
@@ -982,7 +976,8 @@ namespace atl {
 			}
 		}
 
-		for (const auto& enemy : enemies_) {
+		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
+		for (const auto& enemy : enemyList) {
 			auto& enemyPos = enemy->get2Dpos();
 			DrawStringEx(enemyPos.y * 15, enemyPos.x * 15, GetColor(255, 0, 0), "e");
 		}

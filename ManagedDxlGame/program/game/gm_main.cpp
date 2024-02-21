@@ -41,8 +41,8 @@ void gameStart() {
     LockCursorToWindow();
 
     // デバッグ用ダミーシーン
-    //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>()); 
-
+    //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
+    
     // 本編の初期シーン設定
 	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
 }
