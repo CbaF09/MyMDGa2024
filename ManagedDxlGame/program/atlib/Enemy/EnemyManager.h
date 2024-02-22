@@ -21,11 +21,12 @@ namespace atl {
 		// ゲッター ( エネミーリスト )
 		const std::list<Shared<Base_Enemy>>& getEnemyList() { return enemyList_; }
 
-		// 新しいファクトリーサブクラスを設定 ( 次から作るエネミーのファクトリー )
+		// 新しいファクトリーサブクラスを設定 ( 次作るエネミーのファクトリー )
 		inline void setCurrentFactory(Shared<Base_EnemyFactory> newFactory) { currentFactory_ = newFactory; }
 
 		// 現在のファクトリーサブクラスの createEnemy を実行し、listに加える
-		void generateEnemy(const tnl::Vector2i& generate2Dpos);
+		// arg ... スポーンするエネミーの2D座標上の位置
+		void spawnEnemy(const tnl::Vector2i& generate2Dpos);
 
 		// 全エネミーの描画を実行
 		void renderAllEnemy(Shared<Atl3DCamera> camera, float deltaTime);
@@ -46,8 +47,6 @@ namespace atl {
 
 		// エネミーのターン完了フラグをオフにする
 		void allEnemyOffFlagIsAlreadyTurn();
-
-		// 移動が完了していないエネミーのprocessを回す
 
 	private:
 		// 現在設定されているサブファクトリー

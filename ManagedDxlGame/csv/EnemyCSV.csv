@@ -1,4 +1,4 @@
-EnemyID,敵名前,HP,攻撃力,経験値,マテリアルファイルパス
-1,青スライム,8,4,5,mesh/material/BlueSlime.bin
-2,緑スライム,10,8,8,mesh/material/GreenSlime.bin
-3,赤スライム,16,12,10,mesh/material/RedSlime.bin
+EnemyID,敵名前,HP,攻撃力,防御力,固定攻撃値,固定防御値,経験値,メッシュファイルパス,メッシュスケール ( 1 で元サイズ ),テクスチャファイルパス,マテリアルファイルパス
+1,青スライム,8,4,0,0,0,5,mesh/mv1/slimeMesh.mv1,5,graphics/Texture/EnemyTexture/Albedo.png,mesh/material/BlueSlime.bin
+2,緑スライム,10,8,0,0,0,8,mesh/mv1/slimeMesh.mv1,5,graphics/Texture/EnemyTexture/Albedo.png,mesh/material/GreenSlime.bin
+3,赤スライム,16,12,0,0,0,10,mesh/mv1/slimeMesh.mv1,5,graphics/Texture/EnemyTexture/Albedo.png,mesh/material/RedSlime.bin

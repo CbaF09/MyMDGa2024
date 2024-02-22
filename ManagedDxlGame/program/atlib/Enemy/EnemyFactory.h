@@ -21,11 +21,31 @@ namespace atl {
 
 	};
 
+	
 	/// <summary>
 	/// 
-	/// スライムのファクトリーサブクラス
+	/// 青スライムファクトリー
 	/// 
-	class SlimeFactory : public Base_EnemyFactory {
+	/// </summary>
+	class BlueSlimeFactory : public Base_EnemyFactory {
+		Shared<Base_Enemy> createEnemy() override;
+	};
+
+	/// <summary>
+	/// 
+	/// 緑スライムファクトリー
+	/// 
+	/// </summary>
+	class GreenSlimeFactory : public Base_EnemyFactory {
+		Shared<Base_Enemy> createEnemy() override;
+	};
+
+	/// <summary>
+	/// 
+	/// 赤スライムファクトリー
+	/// 
+	/// </summary>
+	class RedSlimeFactory : public Base_EnemyFactory {
 		Shared<Base_Enemy> createEnemy() override;
 	};
 

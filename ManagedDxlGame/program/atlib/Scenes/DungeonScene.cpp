@@ -353,8 +353,8 @@ namespace atl {
 		}
 
 		respornTurnTimer_ = 0;
-		EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<SlimeFactory>());
-		EnemyManager::getEnemyManager()->generateEnemy(spawnPos);
+		EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<BlueSlimeFactory>());
+		EnemyManager::getEnemyManager()->spawnEnemy(spawnPos);
 	}
 
 	void DungeonScene::pickUpItem() {
@@ -848,9 +848,9 @@ namespace atl {
 
 			// エネミー
 			auto& enemySpawnPos = DungeonCreater::getDungeonCreater()->getEnemySpawnPos();
-			EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<SlimeFactory>());
+			EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<BlueSlimeFactory>());
 			for (int i = 0; i < DungeonCreater::getDungeonCreater()->getEnemySpawnNum(); ++i) {
-				EnemyManager::getEnemyManager()->generateEnemy(enemySpawnPos[i]);
+				EnemyManager::getEnemyManager()->spawnEnemy(enemySpawnPos[i]);
 			}
 
 			// アイテム

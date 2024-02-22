@@ -18,6 +18,23 @@ namespace atl {
 	/// 
 	/// </summary>
 
+	void Base_Enemy::setEnemyVisual(const Shared<EnemyData> enemyData) {
+		// nullptr 早期リターン
+		if (!enemyData) { return; }
+
+		// メッシュを設定
+		auto mesh = dxe::Mesh::CreateFromFileMV(enemyData->getEnemyMeshPath(), enemyData->getEnemySizeScale());
+		mesh->setCullingMode(DX_CULLING_LEFT);
+		setMesh(mesh);
+
+		// テクスチャを設定
+		auto texture = dxe::Texture::CreateFromFile(enemyData->getEnemyTexturePath());
+		mesh->setTexture(texture);
+
+		// マテリアルを設定
+		mesh->loadMaterial(getEnemyData()->getEnemyMaterialPath());
+	}
+
 	bool Base_Enemy::isCanMove(const tnl::Vector2i& moveToPos) {
 		// 移動先の座標
 		auto newPos = get2Dpos() + moveToPos;
@@ -89,6 +106,7 @@ namespace atl {
 
 		return false;
 	}
+
 
 	/// <summary>
 	/// 
@@ -170,7 +188,7 @@ namespace atl {
 		moveLerpTimeCount_ += deltaTime;
 
 		tnl::Vector3 moveVector = moveTarget_ - getMesh()->pos_;
-		float length = moveVector.length();
+		float length = moveVector.xz().length();
 
 		// MOVE_END_BORDER より目的地との距離が近くなった ( ほぼ移動が終了した ) 場合
 		if (length <= MOVE_END_BORDER) {
@@ -271,31 +289,64 @@ namespace atl {
 
 	/// <summary>
 	/// 
-	/// スライム
+	/// 青スライム
 	/// 
 	/// <summary>
 
-	void SlimeEnemy::initialize() {
-		// メッシュを設定
-		auto mesh = dxe::Mesh::CreateFromFileMV("mesh/mv1/SlimeMesh.mv1", 5);
-		setMesh(mesh);
-
-		// テクスチャを設定
-		auto texture = dxe::Texture::CreateFromFile("graphics/Texture/EnemyTexture/Albedo.png");
-		mesh->setTexture(texture);
-
-		// マテリアルを設定
-		mesh->loadMaterial(getEnemyData()->getEnemyMaterialPath());
+	void BlueSlime::initialize() {
+		// エネミーデータを設定
+		setEnemyData(static_cast<int32_t>(e_EnemyName::BLUE_SLIME));
+		// エネミーの見た目設定
+		setEnemyVisual(getEnemyData());
 	}
 
-	void SlimeEnemy::process(float deltaTime) {
-		sequenceUpdate(deltaTime);
-	}
-
-	void SlimeEnemy::renderObject(Shared<Atl3DCamera> camera, float deltaTime) {
+	void BlueSlime::renderObject(Shared<Atl3DCamera> camera, float deltaTime) {
+		// 正弦波でふわふわさせる動き
 		totalDeltaTimer_ += deltaTime;
+		getMesh()->pos_.y = INIT_POS_Y + (sin(totalDeltaTimer_ * FREQUENCY) * AMPLITUDE);
 
-		getMesh()->pos_.y = INIT_POS_Y + sin(totalDeltaTimer_ * frequency_) * amplitude_;
+		getMesh()->render(camera);
+	}
+
+	/// <summary>
+	/// 
+	/// 緑スライム
+	/// 
+	/// </summary>
+
+	void GreenSlime::initialize() {
+		// エネミーデータを設定
+		setEnemyData(static_cast<int32_t>(e_EnemyName::GREEN_SLIME));
+		// エネミーの見た目設定
+		setEnemyVisual(getEnemyData());
+
+	}
+
+	void GreenSlime::renderObject(Shared<Atl3DCamera> camera, float deltaTime) {
+		// 正弦波でふわふわさせる動き
+		totalDeltaTimer_ += deltaTime;
+		getMesh()->pos_.y = INIT_POS_Y + (sin(totalDeltaTimer_ * FREQUENCY) * AMPLITUDE);
+
+		getMesh()->render(camera);
+	}
+
+	/// <summary>
+	/// 
+	/// 赤スライム
+	/// 
+	/// </summary>
+
+	void RedSlime::initialize() {
+		// エネミーデータを設定
+		setEnemyData(static_cast<int32_t>(e_EnemyName::RED_SLIME));
+		// エネミーの見た目設定
+		setEnemyVisual(getEnemyData());
+	}
+
+	void RedSlime::renderObject(Shared<Atl3DCamera> camera, float deltaTime) {
+		// 正弦波でふわふわさせる動き
+		totalDeltaTimer_ += deltaTime;
+		getMesh()->pos_.y = INIT_POS_Y + (sin(totalDeltaTimer_ * FREQUENCY) * AMPLITUDE);
 
 		getMesh()->render(camera);
 	}

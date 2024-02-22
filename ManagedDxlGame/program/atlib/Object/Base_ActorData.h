@@ -27,6 +27,8 @@ namespace atl {
 		inline void setCurrentHP(int32_t currentHP) { currentHP_ = currentHP; calcAndSetCurrentHPpersent(); }
 		inline void setAttackPower(int32_t attackPower) { attackPower_ = attackPower; }
 		inline void setDefencePower(int32_t defencePower) { defencePower_ = defencePower; }
+		inline void setTrueAttackPower(int32_t trueAttackPower) { trueAttackPower_ = trueAttackPower; }
+		inline void setTrueDefencePower(int32_t trueDefencePower) { trueDefencePower_ = trueDefencePower; }
 
 		// ˆø”‚Ì’l‚¾‚¯HP‚ğ‘Œ¸‚·‚é
 		void changeCurrentHP(int32_t addsumValue);

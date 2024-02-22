@@ -11,7 +11,7 @@ namespace atl {
         return p_instance_;
     }
 
-    void EnemyManager::generateEnemy(const tnl::Vector2i& generate2Dpos) {
+    void EnemyManager::spawnEnemy(const tnl::Vector2i& generate2Dpos) {
         // nullptr チェック　早期リターン
         if (!currentFactory_) { return; }
 
@@ -34,11 +34,15 @@ namespace atl {
         }
     }
 
+    // 全エネミーの移動を実行する。移動が完了していないエネミーがいた場合、return false, 全エネミーが移動完了している場合、return true
     bool EnemyManager::moveAllEnemy(float deltaTime) {
         bool retV = true;
 
         for (auto& enemy : enemyList_) {
-            if (enemy->getIsAlreadyMove()) { continue;  }
+            // 既に移動完了済みのエネミーの場合は、何もせず continue
+            if (enemy->getIsAlreadyMove()) { continue; }
+
+            // 移動が完了していないエネミーの場合、processを実行後、retV をfalseにする
             enemy->process(deltaTime);
             retV = false;
         }
@@ -46,11 +50,15 @@ namespace atl {
         return retV;
     }
 
+    // 全エネミーの行動を実行する。行動が完了していないエネミーがいた場合、return false, 全エネミーが行動完了している場合、return true
     bool EnemyManager::actionAllEnemy(float deltaTime) {
         bool retV = true;
 
         for (auto& enemy : enemyList_) {
+            // 既に行動完了済みのエネミーの場合、何もせず continue
             if (enemy->getIsAlreadyAction()) { continue; }
+
+            // 行動が完了していないエネミーの場合、processを実行後、retV を falseにする
             enemy->process(deltaTime);
             retV = false;
         }

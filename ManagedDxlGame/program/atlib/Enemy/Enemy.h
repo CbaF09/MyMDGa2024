@@ -15,6 +15,15 @@ namespace atl {
 	/// 継承クラスを増やしたら、1 対 1 の関係にあるファクトリークラスを作ること => EnemyFactory 参照
 	/// 
 	/// <summary>
+	/// 
+	
+	enum class e_EnemyName {
+		NONE = 0,
+		BLUE_SLIME = 1,
+		GREEN_SLIME = 2,
+		RED_SLIME = 3,
+		ENEMY_MAX,
+	};
 
 	class Base_Enemy : public Base_MeshObject {
 	public:
@@ -23,8 +32,8 @@ namespace atl {
 		// 初期化
 		virtual void initialize() = 0;
 
-		// 毎フレーム行う処理。主にシーケンスのアップデートを想定
-		virtual void process(float deltaTime) = 0;
+		// 計算・処理用関数。主にシーケンスのアップデートを想定
+		virtual void process(float deltaTime) { sequenceUpdate(deltaTime); };
 
 		// ゲッター ( 既に移動を終えたか )
 		inline const bool getIsAlreadyMove() const { return isAlreadyMove_; }
@@ -35,11 +44,17 @@ namespace atl {
 		// ゲッター ( エネミーポーンが持つエネミーデータ )
 		inline const Shared<EnemyData> getEnemyData() const { return enemyData_; }
 
+		// セッター ( エネミーデータ を ID から設定 )
+		inline void setEnemyData(int32_t enemyID) { enemyData_ = std::make_shared<EnemyData>(enemyID); }
+
 		// 行動フラグをオフに
 		inline void offFlagIsAlreadyTurn() {
 			isAlreadyAction_ = false;
 			isAlreadyMove_ = false;
 		}
+
+		// エネミーデータを元に、メッシュ/テクスチャ/マテリアルをまとめて設定する
+		void setEnemyVisual(const Shared<EnemyData> enemyData);
 
 	private:
 		// 移動用
@@ -61,7 +76,7 @@ namespace atl {
 		bool isDead_ = false;
 
 		// エネミーはエネミーデータを一つ保持する
-		Shared<EnemyData> enemyData_ = std::make_shared<EnemyData>();
+		Shared<EnemyData> enemyData_ = nullptr;
 
 		// シーケンサー
 		SEQUENCE(Base_Enemy, &Base_Enemy::seqTransition);
@@ -115,12 +130,12 @@ namespace atl {
 
 	/// <summary>
 	/// 
-	/// スライム
+	/// 青スライム
 	/// 
-	class SlimeEnemy final : public Base_Enemy {
+	/// </summary>
+	class BlueSlime final : public Base_Enemy {
 	public:
 		void initialize() override;
-		void process(float deltaTime) override;
 
 		// ふわふわした動きをさせるため、renderObject をオーバーライド
 		void renderObject(Shared<Atl3DCamera> camera, float deltaTime) override;
@@ -129,11 +144,61 @@ namespace atl {
 		// 正弦波でふわふわさせる為のタイマー
 		float totalDeltaTimer_ = 0;
 		// sin の振れ幅
-		float amplitude_ = 64;
+		const float AMPLITUDE = 64;
 		// sin の周波数
-		float frequency_ = 2;
+		const float FREQUENCY = 2;
 
 		// ふわふわした時に床に突き抜けるのを防ぐ為の計算用 Y座標
-		const float INIT_POS_Y = amplitude_;
+		const float INIT_POS_Y = AMPLITUDE;
 	};
+
+	/// <summary>
+	/// 
+	/// 緑スライム
+	/// 
+	/// </summary>
+	class GreenSlime final : public Base_Enemy {
+	public:
+		void initialize() override;
+
+		// ふわふわした動きをさせるため、renderObject をオーバーライド
+		void renderObject(Shared<Atl3DCamera> camera, float deltaTime) override;
+
+	private:
+		// 正弦波でふわふわさせる為のタイマー
+		float totalDeltaTimer_ = 0;
+		// sin の振れ幅
+		const float AMPLITUDE = 64;
+		// sin の周波数
+		const float FREQUENCY = 2.5f;
+
+		// ふわふわした時に床に突き抜けるのを防ぐ為の計算用 Y座標
+		const float INIT_POS_Y = AMPLITUDE;
+	};
+
+
+	/// <summary>
+	/// 
+	/// 赤スライム
+	/// 
+	/// </summary>
+	class RedSlime final : public Base_Enemy {
+	public:
+		void initialize() override;
+
+		// ふわふわした動きをさせるため、renderObject をオーバーライド
+		void renderObject(Shared<Atl3DCamera> camera, float deltaTime) override;
+
+	private:
+		// 正弦波でふわふわさせる為のタイマー
+		float totalDeltaTimer_ = 0;
+		// sin の振れ幅
+		const float AMPLITUDE = 64;
+		// sin の周波数
+		const float FREQUENCY = 3;
+
+		// ふわふわした時に床に突き抜けるのを防ぐ為の計算用 Y座標
+		const float INIT_POS_Y = AMPLITUDE;
+	};
+
 }
