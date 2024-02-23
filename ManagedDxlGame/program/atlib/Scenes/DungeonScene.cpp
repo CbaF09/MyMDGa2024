@@ -353,8 +353,7 @@ namespace atl {
 		}
 
 		respornTurnTimer_ = 0;
-		EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<BlueSlimeFactory>());
-		EnemyManager::getEnemyManager()->spawnEnemy(spawnPos);
+		EnemyManager::getEnemyManager()->spawnRandomEnemy(spawnPos);
 	}
 
 	void DungeonScene::pickUpItem() {
@@ -403,7 +402,7 @@ namespace atl {
 		FadeInOutManager::getFadeInOutManager()->setFadeAlphaValue(255);
 
 		// プレイヤーの生成と初期化
-		player_->initialize(shared_from_this());
+		player_->initialize();
 
 		// 現在の階層を 初期化
 		currentFloor_ = 0;
@@ -412,6 +411,8 @@ namespace atl {
 		soundVolumeFix();
 		// BGM再生
 		ResourceManager::getResourceManager()->playSoundRes("sound/BGM/DungeonSceneBGM.ogg", DX_PLAYTYPE_LOOP);
+
+
 
 		// 本シーケンスに遷移
 		seq_.change(&DungeonScene::seqToNextFloor);
@@ -665,7 +666,7 @@ namespace atl {
 		// 左クリック で、選んだルーンを削除する
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {
 			auto selectRune = magicRuneWindow_.getCurrentSelectRune_();
-			MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(selectRune, *shared_from_this());
+			MagicRuneSystemManager::getMagicRuneSystemManager()->removeRune(selectRune);
 			magicRuneWindow_.resetIndex();
 			magicRuneWindow_.switchOpenMagicRuneWindow();
 			seq_.change(&DungeonScene::seqMenuWindow);
@@ -848,9 +849,8 @@ namespace atl {
 
 			// エネミー
 			auto& enemySpawnPos = DungeonCreater::getDungeonCreater()->getEnemySpawnPos();
-			EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<BlueSlimeFactory>());
 			for (int i = 0; i < DungeonCreater::getDungeonCreater()->getEnemySpawnNum(); ++i) {
-				EnemyManager::getEnemyManager()->spawnEnemy(enemySpawnPos[i]);
+				EnemyManager::getEnemyManager()->spawnRandomEnemy(enemySpawnPos[i]);
 			}
 
 			// アイテム

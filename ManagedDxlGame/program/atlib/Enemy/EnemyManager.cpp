@@ -1,6 +1,7 @@
 #include "EnemyManager.h"
 #include "../Singletons/SceneManager.h"
 #include "../Utilities/Atl3DCamera.h"
+#include "../Utilities/AtlRandom.h"
 
 namespace atl {
 
@@ -11,21 +12,34 @@ namespace atl {
         return p_instance_;
     }
 
-    void EnemyManager::spawnEnemy(const tnl::Vector2i& generate2Dpos) {
+    void EnemyManager::setRandomEnemyFactory() {
+        // スポーン可能リストが空なら早期リターン
+        if (spawnableEnemyFactoryList_.empty()) { return; }
+
+        int32_t randomIndex = mtRandomRangeInt(0, spawnableEnemyFactoryList_.size() - 1);
+        currentFactory_ = spawnableEnemyFactoryList_[randomIndex];
+    }
+
+    void EnemyManager::spawnEnemy(const tnl::Vector2i& spawn2Dpos) {
         // nullptr チェック　早期リターン
         if (!currentFactory_) { return; }
 
         auto newEnemy = currentFactory_->createEnemy();
         
         // enemy の2D上の位置を設定
-        newEnemy->set2Dpos(generate2Dpos);
+        newEnemy->set2Dpos(spawn2Dpos);
 
         // enemy の3D上の位置を設定
         auto cellLength = DungeonScene::getCellLength();
-        newEnemy->getMesh()->pos_ = tnl::Vector3{ static_cast<float>(generate2Dpos.x * cellLength), 0, static_cast<float>(generate2Dpos.y * cellLength) };
+        newEnemy->getMesh()->pos_ = tnl::Vector3{ static_cast<float>(spawn2Dpos.x * cellLength), 0, static_cast<float>(spawn2Dpos.y * cellLength) };
 
         // リストに追加
         enemyList_.emplace_back(newEnemy);
+    }
+
+    void EnemyManager::spawnRandomEnemy(const tnl::Vector2i spawn2Dpos) {
+        setRandomEnemyFactory();
+        spawnEnemy(spawn2Dpos);
     }
 
     void EnemyManager::renderAllEnemy(Shared<Atl3DCamera> camera,float deltaTime) {

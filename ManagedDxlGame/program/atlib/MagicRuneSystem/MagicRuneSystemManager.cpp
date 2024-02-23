@@ -11,7 +11,7 @@ namespace atl {
 		return p_instance_;
 	}
 
-	bool MagicRuneSystemManager::equipRune(Shared<Base_MagicRune> newRune, DungeonScene& dungeonScene) {
+	bool MagicRuneSystemManager::equipRune(Shared<Base_MagicRune> newRune) {
 		// もし装備可能最大数を超えていなければ、追加
 		if (equipmentMagicRunes_.size() < MAX_EQUIPMENT_RUNE) {
 			equipmentMagicRunes_.emplace_back(newRune);
@@ -23,7 +23,7 @@ namespace atl {
 		}
 	}
 
-	void MagicRuneSystemManager::removeRune(int index, DungeonScene& dungeonScene) {
+	void MagicRuneSystemManager::removeRune(int32_t index) {
 		// 範囲外アクセスチェック、早期リターン
 		if (index < 0 || index >= equipmentMagicRunes_.size()) return;
 

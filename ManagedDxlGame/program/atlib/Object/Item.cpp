@@ -54,21 +54,23 @@ namespace atl {
 	// 回復の草 ... 体力小回復
 	void Item::healHerbAction() {
 		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
-		if (dungeonScene) {
-			dungeonScene->getPlayerPawn()->getPlayerData()->changeCurrentHP(HERB_HEAL_VALUE);
-			addTextItemUse("回復の草を飲んだ");
-			addTextItemUse("体力が" + convertFullWidthNumber(HERB_HEAL_VALUE) + "回復した");
-		}
+		if (!dungeonScene) { return; }
+			
+		dungeonScene->getPlayerPawn()->getPlayerData()->changeCurrentHP(HERB_HEAL_VALUE);
+		addTextItemUse("回復の草を飲んだ");
+		addTextItemUse("体力が" + convertFullWidthNumber(HERB_HEAL_VALUE) + "回復した");
+
 	}
 
 	// 回復薬　... 体力中回復
 	void Item::healPotionAction() {
 		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
-		if (dungeonScene) {
-			dungeonScene->getPlayerPawn()->getPlayerData()->changeCurrentHP(POTION_HEAL_VALUE);
-			addTextItemUse("回復薬を飲んだ");
-			addTextItemUse("体力が" + convertFullWidthNumber(POTION_HEAL_VALUE) + "回復した");
-		}
+		if (!dungeonScene) { return; }
+		
+		dungeonScene->getPlayerPawn()->getPlayerData()->changeCurrentHP(POTION_HEAL_VALUE);
+		addTextItemUse("回復薬を飲んだ");
+		addTextItemUse("体力が" + convertFullWidthNumber(POTION_HEAL_VALUE) + "回復した");
+
 	}
 
 	// プレイヤーと同じエリアの敵にダメージ
@@ -106,37 +108,28 @@ namespace atl {
 	// 招待状の期限 ( 満腹度 ) を伸ばす
 	void Item::magicIncAction() {
 		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
-		if (dungeonScene) {
-			dungeonScene->changeSatiety(MAGIC_INC_HEAL_VALUE);
-			addTextItemUse("招待状の期限が伸びた");
-		}
+		if (!dungeonScene) { return; }
+
+		dungeonScene->changeSatiety(MAGIC_INC_HEAL_VALUE);
+		addTextItemUse("招待状の期限が伸びた");
 
 	}
 
 	// 癒しのルーン装備
 	void Item::healRuneAction() {
-		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
-		if (dungeonScene) {
-			MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>(), *dungeonScene);
-			addTextItemUse("癒しのルーンを装備した");
-		}
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>());
+		addTextItemUse("癒しのルーンを装備した");
 	}
 
 	// 炎のルーン装備
 	void Item::fireRuneAction() {
-		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
-		if (dungeonScene) {
-			MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<FireRune>(), *dungeonScene);
-			addTextItemUse("炎のルーンを装備した");
-		}
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<FireRune>());
+		addTextItemUse("炎のルーンを装備した");
 	}
 
 	// 岩のルーン装備
 	void Item::stoneRuneAction() {
-		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
-		if (dungeonScene) {
-			MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<StoneRune>(), *dungeonScene);
-			addTextItemUse("岩のルーンを装備した");
-		}
+		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<StoneRune>());
+		addTextItemUse("岩のルーンを装備した");
 	}
 }

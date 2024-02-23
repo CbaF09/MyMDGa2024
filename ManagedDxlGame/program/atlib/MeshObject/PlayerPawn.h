@@ -25,7 +25,7 @@ namespace atl {
 		~PlayerPawn();
 
 		// 遅延コンストラクタ。生成後に一回だけ呼ぶ事
-		void initialize(std::weak_ptr<DungeonScene> dungeonScene);
+		void initialize();
 
 		// ゲッター ( カメラ )
 		inline const Shared<Atl3DCamera> getPlayerCamera() const { return playerCamera_; }
@@ -71,10 +71,6 @@ namespace atl {
 
 		// --------------------------------------------------
 		// デバッグ用
-
-		// dungeonSceneへの弱参照を持たないで生成できるinitialize
-		void initialize();
-		
 		// プレイヤーポーンの情報を色々出す
 		void debug_displayPlayerParam(int drawPosX = 0, int drawPosY = 0);
 
@@ -124,9 +120,6 @@ namespace atl {
 
 		// ステータス用
 		Shared<PlayerData> playerData_ = std::make_shared<PlayerData>();
-
-		// ダンジョンシーンへの弱参照
-		std::weak_ptr<DungeonScene> weakDungeonScene_;
 
 		// --------------------------------------------------
 		// メソッド

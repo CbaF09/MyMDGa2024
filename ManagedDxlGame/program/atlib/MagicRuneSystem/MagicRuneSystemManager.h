@@ -34,10 +34,10 @@ namespace atl {
 		inline const std::vector<Shared<Base_MagicRune>>& getEquipmentMagicRunes() const { return equipmentMagicRunes_;}
 
 		// ルーンを追加する
-		bool equipRune(Shared<Base_MagicRune> newRune,DungeonScene& dungeonScene);
+		bool equipRune(Shared<Base_MagicRune> newRune);
 		
 		// ルーンを削除する
-		void removeRune(int index,DungeonScene& dungeonScene);
+		void removeRune(int32_t index);
 
 		// ルーンを発動させる
 		// arg ... 発火させるイベント。Base_MagicRune で定義

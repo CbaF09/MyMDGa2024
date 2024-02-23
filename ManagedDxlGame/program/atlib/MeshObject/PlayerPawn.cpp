@@ -24,6 +24,13 @@ namespace atl {
 		ResourceManager::getResourceManager()->deleteResource("sound/SE/DungeonScenePlayerAttack.ogg");
 	}
 
+	void PlayerPawn::initialize() {
+		playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+		playerHaveMenuBook_ = std::make_shared<MenuBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+		forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
+		player3Dpos_ = playerCamera_->pos_;
+	}
+
 	void PlayerPawn::openMenuBook() {
 		playerHaveMenuBook_->openMenu();
 	}
@@ -82,7 +89,7 @@ namespace atl {
 		// 右 ( D ) => 正面方向と Y+軸 で外積を取る
 		// 左 ( A ) => 右を反転
 
-		auto forwardNormalDir = playerCamera_->getCurrentForwardDir();
+		auto& forwardNormalDir = playerCamera_->getCurrentForwardDir();
 		tnl::Vector2i forwardV2i = { static_cast<int>(forwardNormalDir.x),static_cast<int>(forwardNormalDir.z) };
 		tnl::Vector2i backV2i = -forwardV2i;
 		auto rightNormalDir = tnl::Vector3::Cross({ 0,1,0 }, forwardNormalDir);
@@ -218,24 +225,4 @@ namespace atl {
 		explosion_->render(playerCamera_);
 		dxe::DirectXRenderEnd();
 	}
-
-
-
-	void PlayerPawn::initialize(std::weak_ptr<DungeonScene> dungeonScene) {
-		playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-		playerHaveMenuBook_ = std::make_shared<MenuBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-		forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-		player3Dpos_ = playerCamera_->pos_;
-		weakDungeonScene_ = dungeonScene;
-
-	}
-
-	// 引数無し,デバッグ用
-	void PlayerPawn::initialize() {
-		playerHaveMagicWand_ = std::make_shared<MagicWand>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-		playerHaveMenuBook_ = std::make_shared<MenuBook>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-		forwardArrow_ = std::make_shared<ForwardArrow>(std::weak_ptr<PlayerPawn>(shared_from_this()));
-		player3Dpos_ = playerCamera_->pos_;
-	}
-
 }

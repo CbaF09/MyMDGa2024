@@ -56,7 +56,7 @@ namespace atl {
             player_->initialize();
             player_->playerSpawn2Dpos({ 0,0 });
 
-            EnemyManager::getEnemyManager()->setCurrentFactory(std::make_shared<BlueSlimeFactory>());
+            EnemyManager::getEnemyManager()->setEnemyFactory(std::make_shared<BlueSlimeFactory>());
             EnemyManager::getEnemyManager()->spawnEnemy({0,1});
             
             SetMouseDispFlag(true);

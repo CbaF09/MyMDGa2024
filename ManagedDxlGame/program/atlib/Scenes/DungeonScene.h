@@ -41,7 +41,7 @@ namespace atl {
             if (currentSatiety_ > SATIETY_FULL) { currentSatiety_ = SATIETY_FULL; }
         }
 
-        // 毎ターンのHP回復
+        // 毎ターンのHP回復 ( デバッグ用 )
         void turnHealHP();
 
 
