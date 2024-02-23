@@ -1,7 +1,7 @@
 #include "ItemPawn.h"
-#include "PlayerPawn.h"
 #include "../Scenes/DungeonScene.h"
-#include "../Object/Item.h"
+#include "Item.h"
+#include "ItemFactory.h"
 #include "../Singletons/ResourceManager.h"
 
 namespace atl {
@@ -24,8 +24,8 @@ namespace atl {
 	}
 
 	void ItemPawn::initialize() {
-		// 保持するアイテムのデータを生成
-		item_ = std::make_shared<Item>();
+		// 保持するアイテムデータを生成
+		item_ = ItemFactory::createRandomItem();
 
 		// 立方体を生成
 		auto& spawnPos = get2Dpos();

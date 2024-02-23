@@ -1,7 +1,7 @@
 #include "EnemyManager.h"
-#include "../Singletons/SceneManager.h"
-#include "../Utilities/Atl3DCamera.h"
-#include "../Utilities/AtlRandom.h"
+#include "../SceneManager.h"
+#include "../atlib/Utilities/Atl3DCamera.h"
+#include "../atlib/Utilities/AtlRandom.h"
 
 namespace atl {
 

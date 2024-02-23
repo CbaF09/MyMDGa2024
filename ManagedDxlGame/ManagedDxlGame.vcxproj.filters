@@ -60,8 +60,11 @@
     <Filter Include="program\[002] atlib\MagicRuneSystem">
       <UniqueIdentifier>{3a1e38cb-b008-4847-90a2-85b375813fa4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="program\[002] atlib\EnemyManeger">
+    <Filter Include="program\[002] atlib\Singletons\EnemyManeger">
       <UniqueIdentifier>{537b7a45-1f55-48e9-bc23-a3dc4c3ed83d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="program\[002] atlib\Item">
+      <UniqueIdentifier>{cd148389-129d-4ec6-b31c-9ef766c09355}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -269,14 +272,8 @@
     <ClCompile Include="program\atlib\MeshObject\ForwardArrow.cpp">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClCompile>
-    <ClCompile Include="program\atlib\MeshObject\ItemPawn.cpp">
-      <Filter>program\[002] atlib\MeshObject</Filter>
-    </ClCompile>
     <ClCompile Include="program\atlib\Singletons\TextLogManager.cpp">
       <Filter>program\[002] atlib\Singletons</Filter>
-    </ClCompile>
-    <ClCompile Include="program\atlib\Object\Item.cpp">
-      <Filter>program\[002] atlib\Object</Filter>
     </ClCompile>
     <ClCompile Include="program\atlib\Object\Base_ActorData.cpp">
       <Filter>program\[002] atlib\Object</Filter>
@@ -329,14 +326,26 @@
     <ClCompile Include="program\atlib\Singletons\CsvManager.cpp">
       <Filter>program\[002] atlib\Singletons</Filter>
     </ClCompile>
-    <ClCompile Include="program\atlib\Enemy\EnemyFactory.cpp">
-      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    <ClCompile Include="program\atlib\Singletons\EnemyManager\Enemy.cpp">
+      <Filter>program\[002] atlib\Singletons\EnemyManeger</Filter>
     </ClCompile>
-    <ClCompile Include="program\atlib\Enemy\Enemy.cpp">
-      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    <ClCompile Include="program\atlib\Singletons\EnemyManager\EnemyFactory.cpp">
+      <Filter>program\[002] atlib\Singletons\EnemyManeger</Filter>
     </ClCompile>
-    <ClCompile Include="program\atlib\Enemy\EnemyManager.cpp">
-      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    <ClCompile Include="program\atlib\Singletons\EnemyManager\EnemyManager.cpp">
+      <Filter>program\[002] atlib\Singletons\EnemyManeger</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Item\Item.cpp">
+      <Filter>program\[002] atlib\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Item\ItemPawn.cpp">
+      <Filter>program\[002] atlib\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Item\ItemFactory.cpp">
+      <Filter>program\[002] atlib\Item</Filter>
+    </ClCompile>
+    <ClCompile Include="program\atlib\Item\ItemAction.cpp">
+      <Filter>program\[002] atlib\Item</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -593,9 +602,6 @@
     <ClInclude Include="program\atlib\MeshObject\MagicWand.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\MeshObject\ItemPawn.h">
-      <Filter>program\[002] atlib\MeshObject</Filter>
-    </ClInclude>
     <ClInclude Include="program\atlib\MeshObject\MenuBook.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
     </ClInclude>
@@ -604,9 +610,6 @@
     </ClInclude>
     <ClInclude Include="program\atlib\MeshObject\ForwardArrow.h">
       <Filter>program\[002] atlib\MeshObject</Filter>
-    </ClInclude>
-    <ClInclude Include="program\atlib\Object\Item.h">
-      <Filter>program\[002] atlib\Object</Filter>
     </ClInclude>
     <ClInclude Include="program\atlib\Utilities\AtlString.h">
       <Filter>program\[002] atlib\Utilities</Filter>
@@ -659,14 +662,26 @@
     <ClInclude Include="program\atlib\Singletons\CsvManager.h">
       <Filter>program\[002] atlib\Singletons</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\Enemy\Enemy.h">
-      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    <ClInclude Include="program\atlib\Singletons\EnemyManager\Enemy.h">
+      <Filter>program\[002] atlib\Singletons\EnemyManeger</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\Enemy\EnemyFactory.h">
-      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    <ClInclude Include="program\atlib\Singletons\EnemyManager\EnemyFactory.h">
+      <Filter>program\[002] atlib\Singletons\EnemyManeger</Filter>
     </ClInclude>
-    <ClInclude Include="program\atlib\Enemy\EnemyManager.h">
-      <Filter>program\[002] atlib\EnemyManeger</Filter>
+    <ClInclude Include="program\atlib\Singletons\EnemyManager\EnemyManager.h">
+      <Filter>program\[002] atlib\Singletons\EnemyManeger</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Item\Item.h">
+      <Filter>program\[002] atlib\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Item\ItemPawn.h">
+      <Filter>program\[002] atlib\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Item\ItemFactory.h">
+      <Filter>program\[002] atlib\Item</Filter>
+    </ClInclude>
+    <ClInclude Include="program\atlib\Item\ItemAction.h">
+      <Filter>program\[002] atlib\Item</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

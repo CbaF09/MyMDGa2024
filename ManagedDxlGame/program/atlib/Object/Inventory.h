@@ -1,6 +1,6 @@
 #pragma once
 #include "../../dxlib_ext/dxlib_ext.h"
-#include "Item.h"
+#include "../atlib/Item/Item.h"
 
 namespace atl {
 
@@ -12,6 +12,7 @@ namespace atl {
 
 		// ゲッター ( アイテムのvector配列を取得 )
 		const std::vector<Shared<Item>>& getItemList() const { return itemList_; }
+
 		// ゲッター ( インデックスを指定する事で、リストから直接アイテムを取得する )
 		const Shared<Item> getItem(int index) const;
 		

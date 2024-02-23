@@ -1,9 +1,17 @@
 #pragma once
 #include "../dxlib_ext/dxlib_ext.h"
 #include "EnemyFactory.h"
+#include "Enemy.h"
 
 namespace atl {
 
+	
+	/// <summary>
+	/// 
+	/// ダンジョンへのエネミーの生成・存在しているエネミーの制御・削除を行う
+	/// 生成 ... エネミー生成用サブファクトリークラスを、ストラテジーパターンで入れ替えてスポーンさせる
+	/// 
+	/// </summary>
 	class Atl3DCamera;
 
 	class EnemyManager final {

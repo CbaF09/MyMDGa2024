@@ -2,6 +2,7 @@
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/ResourceManager.h"
 #include "../MagicRuneSystem/MagicRuneSystemManager.h"
+#include "../atlib/Item/Item.h"
 
 namespace atl {
 

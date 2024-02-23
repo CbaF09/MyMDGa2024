@@ -1,13 +1,13 @@
 #include "Enemy.h"
-#include "../Enemy/EnemyManager.h"
-#include "../Singletons/DungeonCreater.h"
-#include "../Singletons/TextLogManager.h"
-#include "../Singletons/ResourceManager.h"
-#include "../Singletons/SceneManager.h"
-#include "../Utilities/AtlRandom.h"
-#include "../Utilities/AtlString.h"
-#include "../Object/PlayerData.h"
-#include "../MeshObject/PlayerPawn.h"
+#include "../EnemyManager/EnemyManager.h"
+#include "../DungeonCreater.h"
+#include "../TextLogManager.h"
+#include "../ResourceManager.h"
+#include "../SceneManager.h"
+#include "../atlib/Utilities/AtlRandom.h"
+#include "../atlib/Utilities/AtlString.h"
+#include "../atlib/Object/PlayerData.h"
+#include "../atlib/MeshObject/PlayerPawn.h"
 
 namespace atl {
 
@@ -35,7 +35,7 @@ namespace atl {
 		mesh->loadMaterial(getEnemyData()->getEnemyMaterialPath());
 	}
 
-	bool Base_Enemy::isCanMove(const tnl::Vector2i& moveToPos) {
+	bool Base_Enemy::isCanMove(const tnl::Vector2i& moveToPos) const {
 		// 移動先の座標
 		auto newPos = get2Dpos() + moveToPos;
 
@@ -74,7 +74,7 @@ namespace atl {
 		}
 	}
 
-	bool Base_Enemy::isNeighborPlayer() {
+	bool Base_Enemy::isNeighborPlayer() const {
 		// ダンジョンシーンを取得
 		auto& dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
 		if (!dungeonScene) { return false; }
@@ -91,7 +91,7 @@ namespace atl {
 		else return false;
 	}
 
-	bool Base_Enemy::isSameAreaPlayer() {
+	bool Base_Enemy::isSameAreaPlayer()const {
 		// ダンジョンシーンを取得
 		auto& dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
 		if (!dungeonScene) { return false; }
@@ -221,7 +221,7 @@ namespace atl {
 			getMesh()->rot_ = tnl::Quaternion::LookAt(meshPos, player->getPlayerPos(), { 0,1,0 });
 			seq_.change(&Base_Enemy::seqMoveNone);
 		}
-		
+
 		return true;
 	}
 

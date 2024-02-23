@@ -191,7 +191,7 @@ namespace atl {
         // 2D ミニマップ描画のヘルパー関数
         // ret ... マップに描画すべき中心位置
         // arg ... 二次元座標
-        const tnl::Vector2i calcDrawMinimapPos(int32_t x, int32_t y);
+        const tnl::Vector2i calcDrawMinimapPos(int32_t x, int32_t y) const;
         // 次の階層に遷移中に、現在の階層を表示する
         void drawNextFloorTransition();
 

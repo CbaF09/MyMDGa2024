@@ -1,8 +1,7 @@
 #pragma once
-#include "../MeshObject/Base_MeshObject.h"
-#include "../../dxlib_ext/dxlib_ext.h"
-#include "../Object/EnemyData.h"
-#include "../Scenes/DungeonScene.h"
+#include "../dxlib_ext/dxlib_ext.h"
+#include "../atlib/Object/EnemyData.h"
+#include "../atlib/Scenes/DungeonScene.h"
 
 namespace atl {
 
@@ -16,7 +15,7 @@ namespace atl {
 	/// 
 	/// <summary>
 	/// 
-	
+
 	enum class e_EnemyName {
 		NONE = 0,
 		BLUE_SLIME = 1,
@@ -90,18 +89,18 @@ namespace atl {
 		// 移動できるかどうかの判定
 		// ret ... 移動できる => true , 移動できない => false
 		// arg ... 現在位置からの移動先
-		bool isCanMove(const tnl::Vector2i& moveToPos);
+		bool isCanMove(const tnl::Vector2i& moveToPos) const;
 
 		// 移動先の設定 ( シーケンスのseqMoveToTargetで移動する )
 		void setMoveTarget(const tnl::Vector2i& moveToPos);
 
 		// プレイヤーと前後左右で隣接しているか
 		// ret ... 隣接している => true, 隣接していない => false
-		bool isNeighborPlayer();
+		bool isNeighborPlayer() const;
 
 		// プレイヤーと同じエリアにいるか
 		// ret ... プレイヤーと同じエリアにいる => true, いない => false
-		bool isSameAreaPlayer();
+		bool isSameAreaPlayer() const;
 
 		// シーケンスの遷移を確認する
 		virtual bool seqTransition(float deltaTime);

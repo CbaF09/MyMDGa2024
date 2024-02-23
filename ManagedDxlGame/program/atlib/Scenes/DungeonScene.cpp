@@ -9,17 +9,16 @@
 #include "../Singletons/ResourceManager.h"
 #include "../Singletons/FadeInOutManager.h"
 #include "../Singletons/SceneManager.h"
+#include "../Singletons/EnemyManager/EnemyManager.h"
 #include "../MagicRuneSystem/MagicRuneSystemManager.h"
 #include "../MagicRuneSystem/MagicRune.h"
 #include "../MeshObject/Wall.h"
 #include "../MeshObject/Stairs.h"
 #include "../MeshObject/PlayerPawn.h"
-#include "../MeshObject/ItemPawn.h"
 #include "../Object/SelectWindow.h"
 #include "../Object/MenuWindow.h"
 #include "../Utilities/Atl3DCamera.h"
-#include "../Enemy/EnemyManager.h"
-#include "../Enemy/EnemyFactory.h"
+#include "../atlib/Item/ItemPawn.h"
 
 namespace atl {
 
@@ -232,7 +231,7 @@ namespace atl {
 		}
 	}
 
-	const tnl::Vector2i DungeonScene::calcDrawMinimapPos(int32_t x, int32_t y) {
+	const tnl::Vector2i DungeonScene::calcDrawMinimapPos(int32_t x, int32_t y) const {
 		// Y と X が逆になっているのは、三次元空間との整合性を取る為なので、問題ないです。
 		int32_t drawPosX = (y * MINIMAP_CELL_SIZE) + MINIMAP_LEFTUP_POSITION.x;
 		int32_t drawPosY = (x * MINIMAP_CELL_SIZE) + MINIMAP_LEFTUP_POSITION.y;

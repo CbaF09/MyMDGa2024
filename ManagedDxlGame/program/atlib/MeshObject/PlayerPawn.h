@@ -1,9 +1,8 @@
 #pragma once
 #include "../../dxlib_ext/dxlib_ext.h"
-#include "../../atlib/Utilities/Atl3DCamera.h"
+#include "../Utilities/Atl3DCamera.h"
 #include "../Scenes/DungeonScene.h"
 #include "../Object/PlayerData.h"
-#include "../Enemy/Enemy.h"
 #include "MenuBook.h"
 
 namespace atl {
@@ -18,6 +17,7 @@ namespace atl {
 	class DungeonScene;
 	class MagicWand;
 	class ForwardArrow;
+	class Base_Enemy;
 
 	class PlayerPawn final : public std::enable_shared_from_this<PlayerPawn> {
 	public:

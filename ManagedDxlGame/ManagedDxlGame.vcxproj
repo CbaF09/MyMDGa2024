@@ -150,9 +150,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ManagedDxlGame.cpp" />
-    <ClCompile Include="program\atlib\Enemy\Enemy.cpp" />
-    <ClCompile Include="program\atlib\Enemy\EnemyFactory.cpp" />
-    <ClCompile Include="program\atlib\Enemy\EnemyManager.cpp" />
+    <ClCompile Include="program\atlib\Item\Item.cpp" />
+    <ClCompile Include="program\atlib\Item\ItemAction.cpp" />
+    <ClCompile Include="program\atlib\Item\ItemFactory.cpp" />
+    <ClCompile Include="program\atlib\Item\ItemPawn.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\Base_MagicRune.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRune.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneWindow.cpp" />
@@ -160,7 +161,6 @@
     <ClCompile Include="program\atlib\MeshObject\Base_MultiMeshObject.cpp" />
     <ClCompile Include="program\atlib\MeshObject\ForwardArrow.cpp" />
     <ClCompile Include="program\atlib\MeshObject\GroundTile.cpp" />
-    <ClCompile Include="program\atlib\MeshObject\ItemPawn.cpp" />
     <ClCompile Include="program\atlib\MeshObject\MenuBook.cpp" />
     <ClCompile Include="program\atlib\MeshObject\MagicWand.cpp" />
     <ClCompile Include="program\atlib\MeshObject\PlayerPawn.cpp" />
@@ -170,7 +170,6 @@
     <ClCompile Include="program\atlib\Object\Base_ActorData.cpp" />
     <ClCompile Include="program\atlib\Object\EnemyData.cpp" />
     <ClCompile Include="program\atlib\Object\Inventory.cpp" />
-    <ClCompile Include="program\atlib\Object\Item.cpp" />
     <ClCompile Include="program\atlib\Object\MenuWindow.cpp" />
     <ClCompile Include="program\atlib\Object\PlayerData.cpp" />
     <ClCompile Include="program\atlib\Object\SelectWindow.cpp" />
@@ -181,6 +180,9 @@
     <ClCompile Include="program\atlib\Scenes\TitleScene.cpp" />
     <ClCompile Include="program\atlib\Singletons\CsvManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\DungeonCreater.cpp" />
+    <ClCompile Include="program\atlib\Singletons\EnemyManager\Enemy.cpp" />
+    <ClCompile Include="program\atlib\Singletons\EnemyManager\EnemyFactory.cpp" />
+    <ClCompile Include="program\atlib\Singletons\EnemyManager\EnemyManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\FadeInOutManager.cpp" />
     <ClCompile Include="program\atlib\MagicRuneSystem\MagicRuneSystemManager.cpp" />
     <ClCompile Include="program\atlib\Singletons\ResourceManager.cpp" />
@@ -360,9 +362,10 @@
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="program\atlib\Enemy\Enemy.h" />
-    <ClInclude Include="program\atlib\Enemy\EnemyFactory.h" />
-    <ClInclude Include="program\atlib\Enemy\EnemyManager.h" />
+    <ClInclude Include="program\atlib\Item\Item.h" />
+    <ClInclude Include="program\atlib\Item\ItemAction.h" />
+    <ClInclude Include="program\atlib\Item\ItemFactory.h" />
+    <ClInclude Include="program\atlib\Item\ItemPawn.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\Base_MagicRune.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRune.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneWindow.h" />
@@ -370,7 +373,6 @@
     <ClInclude Include="program\atlib\MeshObject\Base_MultiMeshObject.h" />
     <ClInclude Include="program\atlib\MeshObject\ForwardArrow.h" />
     <ClInclude Include="program\atlib\MeshObject\GroundTile.h" />
-    <ClInclude Include="program\atlib\MeshObject\ItemPawn.h" />
     <ClInclude Include="program\atlib\MeshObject\MenuBook.h" />
     <ClInclude Include="program\atlib\MeshObject\MagicWand.h" />
     <ClInclude Include="program\atlib\MeshObject\PlayerPawn.h" />
@@ -380,7 +382,6 @@
     <ClInclude Include="program\atlib\Object\Base_ActorData.h" />
     <ClInclude Include="program\atlib\Object\EnemyData.h" />
     <ClInclude Include="program\atlib\Object\Inventory.h" />
-    <ClInclude Include="program\atlib\Object\Item.h" />
     <ClInclude Include="program\atlib\Object\MenuWindow.h" />
     <ClInclude Include="program\atlib\Object\PlayerData.h" />
     <ClInclude Include="program\atlib\Object\SelectWindow.h" />
@@ -393,6 +394,9 @@
     <ClInclude Include="program\atlib\Scenes\TitleScene.h" />
     <ClInclude Include="program\atlib\Singletons\CsvManager.h" />
     <ClInclude Include="program\atlib\Singletons\DungeonCreater.h" />
+    <ClInclude Include="program\atlib\Singletons\EnemyManager\Enemy.h" />
+    <ClInclude Include="program\atlib\Singletons\EnemyManager\EnemyFactory.h" />
+    <ClInclude Include="program\atlib\Singletons\EnemyManager\EnemyManager.h" />
     <ClInclude Include="program\atlib\Singletons\FadeInOutManager.h" />
     <ClInclude Include="program\atlib\MagicRuneSystem\MagicRuneSystemManager.h" />
     <ClInclude Include="program\atlib\Singletons\ResourceManager.h" />

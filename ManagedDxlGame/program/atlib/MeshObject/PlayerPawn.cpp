@@ -2,6 +2,7 @@
 #include "../Singletons/DungeonCreater.h"
 #include "../Singletons/TextLogManager.h"
 #include "../Singletons/ResourceManager.h"
+#include "../Singletons/EnemyManager/EnemyManager.h"
 #include "../Scenes/DungeonScene.h"
 #include "../MeshObject/MagicWand.h"
 #include "../MeshObject/MenuBook.h"
@@ -9,7 +10,6 @@
 #include "../Utilities/AtlString.h"
 #include "../MagicRuneSystem/MagicRune.h"
 #include "../MagicRuneSystem/MagicRuneSystemManager.h"
-#include "../Enemy/EnemyManager.h"
 
 namespace atl {
 

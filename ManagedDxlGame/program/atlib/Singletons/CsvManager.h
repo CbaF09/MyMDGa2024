@@ -31,12 +31,19 @@ namespace atl {
 		// ゲッター ( 敵データ用 )
 		inline std::vector<std::vector<tnl::CsvCell>>& getEnemyDataCSV() { return enemyDataCSV_; }
 
+		// ゲッター ( アイテムデータ用 )
+		inline std::vector<std::vector<tnl::CsvCell>>& getItemDataCSV() { return itemDataCSV_; }
+
+
 	private:
-		// ルーン用 CSV 配列
+		// ルーン用 CSV
 		std::vector<std::vector<tnl::CsvCell>> magicRuneCSV_ = tnl::LoadCsv("csv/MagicRuneCSV.csv");
 
-		// 敵データ用 CSV 配列
+		// 敵データ用 CSV
 		std::vector<std::vector<tnl::CsvCell>> enemyDataCSV_ = tnl::LoadCsv("csv/EnemyCSV.csv");
+
+		// アイテムデータ用 CSV
+		std::vector<std::vector<tnl::CsvCell>> itemDataCSV_ = tnl::LoadCsv("csv/ItemCSV.csv");
 
 	};
 
