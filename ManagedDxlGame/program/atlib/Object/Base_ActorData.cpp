@@ -35,8 +35,8 @@ namespace atl {
 	// 実ダメージ ... 最小ダメージと最大ダメージの間で乱数を得た後、固定値の補正が入る
 	int32_t Base_ActorData::calcDecideActualyDamage(const Base_ActorData& attackingActor, const Base_ActorData& defencingActor) {
 		// 計算は float 型で行う
-		float attackPower = attackingActor.getAttackPower();
-		float defencePower = defencingActor.getDefencePower();
+		float attackPower = static_cast<float>(attackingActor.getAttackPower());
+		float defencePower = static_cast<float>(defencingActor.getDefencePower());
 
 		// 基本ダメージ
 		float baseAttack = attackPower * pow((15.0f / 16.0f), defencePower);
@@ -49,8 +49,8 @@ namespace atl {
 		float randomDamage = mtRandomRangeFloat(smallerDamage, biggerDamage);
 
 		// 固定値によるダメージの増減計算
-		float trueAttack = attackingActor.getTrueAttackPower();
-		float trueDefence = defencingActor.getTrueDefencePower();
+		float trueAttack = static_cast<float>(attackingActor.getTrueAttackPower());
+		float trueDefence = static_cast<float>(defencingActor.getTrueDefencePower());
 
 		// 固定ダメージ値の補正
 		float fixedDamage = randomDamage + trueAttack - trueDefence;
@@ -59,10 +59,6 @@ namespace atl {
 		int32_t retV = static_cast<int32_t>(fixedDamage);
 
 		return retV;
-	}
-
-	bool Base_ActorData::isZeroHP() {
-		return currentHP_ == 0;
 	}
 
 	void Base_ActorData::calcAndSetCurrentHPpersent() {

@@ -30,6 +30,9 @@ namespace atl {
 		inline void setTrueAttackPower(int32_t trueAttackPower) { trueAttackPower_ = trueAttackPower; }
 		inline void setTrueDefencePower(int32_t trueDefencePower) { trueDefencePower_ = trueDefencePower; }
 
+		// 現在HPがゼロ => true , ゼロではない => false
+		inline bool isZeroHP() const { return currentHP_ == 0; }
+
 		// 引数の値だけHPを増減する
 		void changeCurrentHP(int32_t addsumValue);
 
@@ -51,9 +54,6 @@ namespace atl {
 		// 最大ダメージ ... 基本ダメージ * ( 143/128 )
 		// 実ダメージ ... 最小ダメージと最大ダメージの間で乱数を得た後、固定値の補正が入る
 		static int32_t calcDecideActualyDamage(const Base_ActorData& attackingActor, const Base_ActorData& attakedActor);
-
-		// HPがゼロ => true , ゼロではない => false
-		bool isZeroHP();
 
 		// 現在HPと最大HPの割合を計算する
 		void calcAndSetCurrentHPpersent();

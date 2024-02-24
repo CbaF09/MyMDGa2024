@@ -1,5 +1,5 @@
 #include "ItemFactory.h"
-#include "../atlib/Utilities/AtlRandom.h"
+#include "../Utilities/AtlRandom.h"
 #include "ItemAction.h"
 
 namespace atl {
@@ -47,9 +47,6 @@ namespace atl {
             break;
         case e_ItemList::MagicInc:
             returnItemAction = std::make_shared<MagicIncAction>();
-            break;
-        case e_ItemList::HealRune:
-            returnItemAction = std::make_shared<HealRuneAction>();
             break;
         case e_ItemList::FireRune:
             returnItemAction = std::make_shared<FireRuneAction>();

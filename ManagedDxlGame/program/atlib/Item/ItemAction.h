@@ -83,16 +83,6 @@ namespace atl {
 
 	/// <summary>
 	/// 
-	/// 癒しのルーン ... 癒しのルーンを装備する
-	/// 
-	/// </summary>
-	class HealRuneAction : public IE_ItemAction {
-	public:
-		void execute() override;
-	};
-
-	/// <summary>
-	/// 
 	/// 炎のルーン ... 炎のルーンを装備する
 	/// 
 	/// </summary>

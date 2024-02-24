@@ -16,12 +16,12 @@ namespace atl {
 		explicit EnemyData(int32_t enemyID);
 
 		// ゲッター
-		inline const std::string& getEnemyName() { return enemyName_; }
-		inline const std::string& getEnemyMeshPath() { return enemyMeshFilepath_; }
-		inline const int32_t getEnemySizeScale() { return enemySizeScale_; }
-		inline const std::string& getEnemyTexturePath() { return enemyTextureFilepath_; }
-		inline const std::string& getEnemyMaterialPath() { return enemyMaterialFilepath_; }
-		inline const int32_t getEnemyExp() { return exp_; }
+		inline const std::string& getEnemyName() const { return enemyName_; }
+		inline const std::string& getEnemyMeshPath() const { return enemyMeshFilepath_; }
+		inline const float getEnemySizeScale() const { return enemySizeScale_; }
+		inline const std::string& getEnemyTexturePath() const { return enemyTextureFilepath_; }
+		inline const std::string& getEnemyMaterialPath() const { return enemyMaterialFilepath_; }
+		inline const int32_t getEnemyExp() const { return exp_; }
 
 	private:
 		// 敵の名前
@@ -31,7 +31,7 @@ namespace atl {
 		// メッシュのファイルパス	
 		std::string enemyMeshFilepath_ = "";
 		// メッシュのサイズスケール
-		int32_t enemySizeScale_ = 0;
+		float enemySizeScale_ = 0;
 		// テクスチャのファイルパス
 		std::string enemyTextureFilepath_ = "";
 		// マテリアルのファイルパス

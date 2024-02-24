@@ -85,7 +85,7 @@ namespace atl {
 			++currentTopLogIndex_;
 			// インデックスが範囲上限を超えたら範囲内にクランプ
 			if (currentTopLogIndex_ > epilogueString_.size() - 1) {
-				currentTopLogIndex_ = epilogueString_.size() - 1;
+				currentTopLogIndex_ = static_cast<int32_t>(epilogueString_.size() - 1);
 			}
 		}
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "../atlib/Item/Item.h"
+#include "../Item/Item.h"
 
 namespace atl {
 
@@ -11,7 +11,6 @@ namespace atl {
 	/// </summary>
 
 	class PlayerPawn;
-	class Item;
 	class DungeonScene;
 
 	class ItemPawn final : public Base_MeshObject {
@@ -27,7 +26,6 @@ namespace atl {
 		void renderObject(const Shared<Atl3DCamera> camera,float deltaTime) override;
 
 		// 遅延コンストラクタ
-		// arg ... ダンジョンシーンへの弱参照を設定する為に引数で渡す
 		void initialize();
 
 	private:

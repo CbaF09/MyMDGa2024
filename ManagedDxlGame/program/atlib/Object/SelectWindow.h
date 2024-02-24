@@ -33,7 +33,7 @@ namespace atl {
 		// 使用例： // 毎フレーム呼び出される所で
 		// if (selectWindow_.windowChoice() == e_SelectChoice::YES) { // イエスを選んだ時の処理 }
 		// else if (selectWindow_.windowChoice() == e_SelectChoice::NO) { // ノーを選んだ時の処理 }
-		const e_SelectChoice windowChoice();
+		const e_SelectChoice windowChoice() const ;
 
 	private:
 		// 質問のUI位置

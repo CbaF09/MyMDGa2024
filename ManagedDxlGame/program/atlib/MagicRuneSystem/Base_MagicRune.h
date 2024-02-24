@@ -22,7 +22,6 @@ namespace atl {
 	// –¼‘O‚ÆCSVã‚ÌID‚ğ•ª‚©‚è‚â‚·‚­‚³‚¹‚éˆ×‚Ì enum
 	enum class e_RuneID {
 		NONE,
-		HealRune,
 		FireRune,
 		StoneRune,
 	};

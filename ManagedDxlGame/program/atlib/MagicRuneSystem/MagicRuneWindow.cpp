@@ -23,7 +23,7 @@ namespace atl {
 		if (tnl::Input::IsKeyDownTrigger(eKeys::KB_A)) {
 			--currentSelectIndex_;
 			if (currentSelectIndex_ < 0) {
-				currentSelectIndex_ = runes.size() - 1;
+				currentSelectIndex_ = static_cast<int32_t>(runes.size() - 1);
 			}
 		}
 		else if (tnl::Input::IsKeyDownTrigger(eKeys::KB_D)) {
@@ -53,7 +53,7 @@ namespace atl {
 
 		// 空ルーンの背景になるオーバーレイを描画
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, RUNE_BACK_OVERLAY_ALPHA);
-		DrawOvalAA(RUNE_BACK_OVERLAY_POSITION.x, RUNE_BACK_OVERLAY_POSITION.y, RUNE_BACK_OVERLAY_SIZE.x, RUNE_BACK_OVERLAY_SIZE.y, 10,GetColor(128, 128, 200),true);
+		DrawOvalAA(static_cast<float>(RUNE_BACK_OVERLAY_POSITION.x), static_cast<float>(RUNE_BACK_OVERLAY_POSITION.y), static_cast<float>(RUNE_BACK_OVERLAY_SIZE.x), static_cast<float>(RUNE_BACK_OVERLAY_SIZE.y), 10,GetColor(128, 128, 200),true);
 		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
 		// 空ルーンを描画
@@ -109,7 +109,7 @@ namespace atl {
 		auto& runeName = runes[currentSelectIndex_]->getRuneName();
 
 		// ルーンの名前を描画
-		DrawStringToHandleEx(RUNE_NAME_STRING_POSITION.x, RUNE_NAME_STRING_POSITION.y, -1, RUNE_NAME_FONT, "%s", runeName.c_str());
+		DrawStringToHandleEx(static_cast<float>(RUNE_NAME_STRING_POSITION.x), static_cast<float>(RUNE_NAME_STRING_POSITION.y), -1, RUNE_NAME_FONT, "%s", runeName.c_str());
 
 		// ルーンの説明文を描画 ( 中央揃え )
 

@@ -1,7 +1,7 @@
 #include "EnemyManager.h"
 #include "../SceneManager.h"
-#include "../atlib/Utilities/Atl3DCamera.h"
-#include "../atlib/Utilities/AtlRandom.h"
+#include "../../Utilities/Atl3DCamera.h"
+#include "../../Utilities/AtlRandom.h"
 
 namespace atl {
 
@@ -16,7 +16,7 @@ namespace atl {
         // スポーン可能リストが空なら早期リターン
         if (spawnableEnemyFactoryList_.empty()) { return; }
 
-        int32_t randomIndex = mtRandomRangeInt(0, spawnableEnemyFactoryList_.size() - 1);
+        int32_t randomIndex = mtRandomRangeInt(0, static_cast<int32_t>(spawnableEnemyFactoryList_.size() - 1));
         currentFactory_ = spawnableEnemyFactoryList_[randomIndex];
     }
 

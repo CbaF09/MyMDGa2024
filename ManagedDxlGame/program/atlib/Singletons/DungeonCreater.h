@@ -36,7 +36,7 @@ namespace atl {
 		class Area {
 		public:
 			int32_t posX_ = 0, posY_ = 0, width_ = 0, height_ = 0;
-			int32_t areaID_;
+			int32_t areaID_ = -1;
 
 			// ƒGƒŠƒA‚Íˆê‚Â‚Ì•”‰®‚ğ‚Â
 			Room room_;
@@ -62,8 +62,8 @@ namespace atl {
 		inline const std::vector<std::vector<FieldCell>>& getFieldCells() const { return fieldCells_; }
 		inline const tnl::Vector2i& getPlayerSpawnPos() const { return playerSpawnPos_; }
 		inline const tnl::Vector2i& getStairsSpawnPos() const { return stairsSpawnPos_; }
-		inline const int32_t getEnemySpawnNum() { return ENEMY_SPAWN_NUM; }
-		inline const int32_t getItemSpawnNum() { return ITEM_SPAWN_NUM; }
+		inline const int32_t getEnemySpawnNum() const { return ENEMY_SPAWN_NUM; }
+		inline const int32_t getItemSpawnNum() const { return ITEM_SPAWN_NUM; }
 		inline const std::vector<tnl::Vector2i>& getEnemySpawnPos() const { return enemySpawnPosArray_; }
 		inline const std::vector<tnl::Vector2i>& getItemSpawnPos() const { return itemSpawnPosArray_; }
 

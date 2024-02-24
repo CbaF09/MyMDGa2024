@@ -25,9 +25,10 @@ namespace atl {
 		void switchOpenMagicRuneWindow() { isOpen_ = !isOpen_; }
 
 		// ゲッター ( 現在選択中のルーン )
-		int32_t getCurrentSelectRune_() { return currentSelectIndex_; }
+		inline int32_t getCurrentSelectRune_() const { return currentSelectIndex_; }
+
 		// ゲッター ( 現在、ルーン選択画面かどうか )
-		bool IsOpenMagicRuneWindow() { return isOpen_; }
+		inline bool IsOpenMagicRuneWindow() const { return isOpen_; }
 
 		// 現在選択中のルーン用インデックスを 0 に設定する
 		void resetIndex() { currentSelectIndex_ = 0; }
@@ -46,7 +47,7 @@ namespace atl {
 		// オーバーレイ ( 楕円 ) の大きさ
 		const tnl::Vector2i RUNE_BACK_OVERLAY_SIZE{ 200,50 };
 		// オーバーレイ ( 楕円 ) の透明度
-		const float RUNE_BACK_OVERLAY_ALPHA = 200;
+		const int RUNE_BACK_OVERLAY_ALPHA = 200;
 		// ルーン名を描画する位置
 		const tnl::Vector2i RUNE_NAME_STRING_POSITION{ 200 ,250 };
 		// ルーンの説明文を描画するY位置 ( X は文字列の大きさに合わせて中央揃えするので必要無し )

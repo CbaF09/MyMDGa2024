@@ -10,19 +10,6 @@
 namespace atl {
 
 	/// <summary>
-	/// 癒しのルーン
-	/// </summary>
-	void HealRune::onNotify(e_EventType eventType) {
-		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
-		// ダンジョンシーンでないなら早期リターン
-		if (!dungeonScene) return;
-
-		if (eventType == e_EventType::TurnStart) {
-			dungeonScene->turnHealHP();
-		}
-	}
-
-	/// <summary>
 	/// 炎のルーン
 	/// </summary>
 	void FireRune::onEquipMomentNotify() {

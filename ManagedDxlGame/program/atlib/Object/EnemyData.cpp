@@ -26,7 +26,7 @@ namespace atl {
 
 		// “G‚ÌŒ©‚½–Ú ( ƒƒbƒVƒ…“™ ) ŠÖ˜A
 		enemyMeshFilepath_ = csv[enemyID][8].getString();
-		enemySizeScale_ = csv[enemyID][9].getInt();
+		enemySizeScale_ = csv[enemyID][9].getFloat();
 		enemyTextureFilepath_ = csv[enemyID][10].getString();
 		enemyMaterialFilepath_ = csv[enemyID][11].getString();
 	}

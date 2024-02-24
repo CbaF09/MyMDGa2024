@@ -18,15 +18,6 @@ namespace atl {
 	/// </summary>
 
 	/// <summary>
-	/// –ü‚µ‚Ìƒ‹[ƒ“
-	/// </summary>
-	class HealRune : public Base_MagicRune {
-	public:
-		HealRune() { setRuneData(e_RuneID::HealRune); }
-		void onNotify(e_EventType eventType) override;
-	};
-
-	/// <summary>
 	/// ‰Š‚Ìƒ‹[ƒ“
 	/// </summary>
 	class FireRune : public Base_MagicRune {

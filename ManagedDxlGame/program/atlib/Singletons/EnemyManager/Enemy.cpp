@@ -4,10 +4,10 @@
 #include "../TextLogManager.h"
 #include "../ResourceManager.h"
 #include "../SceneManager.h"
-#include "../atlib/Utilities/AtlRandom.h"
-#include "../atlib/Utilities/AtlString.h"
-#include "../atlib/Object/PlayerData.h"
-#include "../atlib/MeshObject/PlayerPawn.h"
+#include "../../Utilities/AtlRandom.h"
+#include "../../Utilities/AtlString.h"
+#include "../../Object/PlayerData.h"
+#include "../../MeshObject/PlayerPawn.h"
 
 namespace atl {
 

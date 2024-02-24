@@ -1,6 +1,6 @@
 #pragma once
 #include "../../dxlib_ext/dxlib_ext.h"
-#include "../atlib/Item/Item.h"
+#include "../Item/Item.h"
 
 namespace atl {
 

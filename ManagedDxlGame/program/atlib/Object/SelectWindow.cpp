@@ -81,7 +81,7 @@ namespace atl {
 
 	// 左クリックを押した時、currentSelectedChoice == YES なら YES を返す。NO なら NO を返す。
 	// 右クリックを押した時は、NOを選んだ判定
-	const SelectWindow::e_SelectChoice SelectWindow::windowChoice() {
+	const SelectWindow::e_SelectChoice SelectWindow::windowChoice() const {
 		
 		// 左クリックを押した時
 		if (tnl::Input::IsMouseTrigger(tnl::Input::eMouseTrigger::IN_LEFT)) {

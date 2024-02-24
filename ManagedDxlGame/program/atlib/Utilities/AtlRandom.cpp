@@ -9,7 +9,7 @@ namespace atl {
         mtRandom.seed(rd());
     }
 
-    void mtRandomSetSeed(int64_t seed) {
+    void mtRandomSetSeed(uint32_t seed) {
         mtRandom.seed(seed);
     }
 

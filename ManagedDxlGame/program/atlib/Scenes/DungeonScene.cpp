@@ -18,7 +18,7 @@
 #include "../Object/SelectWindow.h"
 #include "../Object/MenuWindow.h"
 #include "../Utilities/Atl3DCamera.h"
-#include "../atlib/Item/ItemPawn.h"
+#include "../Item/ItemPawn.h"
 
 namespace atl {
 

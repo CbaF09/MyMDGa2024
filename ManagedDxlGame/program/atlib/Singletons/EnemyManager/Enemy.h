@@ -1,7 +1,7 @@
 #pragma once
-#include "../dxlib_ext/dxlib_ext.h"
-#include "../atlib/Object/EnemyData.h"
-#include "../atlib/Scenes/DungeonScene.h"
+#include "../../../dxlib_ext/dxlib_ext.h"
+#include "../../Scenes/DungeonScene.h"
+#include "../../Object/EnemyData.h"
 
 namespace atl {
 

@@ -5,6 +5,16 @@
 
 namespace atl {
 
+	/// <summary>
+	/// 
+	/// アイテムの増やし方
+	/// ① ItemCSVにアイテムの情報を入力
+	/// ② e_ItemListを追加 ( アイテム名と関係はないが、可読性の面から気を遣った方が良い )
+	/// ③ ItemAction .h .cpp に、IE_ItemActionを継承させ、アイテムの処理を実装する
+	/// ④ ItemFactory .cpp の createItemActionFromItemName 関数の switch-case に、新しいアイテムのe_ItemList列挙子名と新しいItemActionのstd::make_sharedを対応させて書く
+	/// 
+	/// </summary>
+
 	// アイテム名とIDを一致させるためのenum
 	enum class e_ItemList {
 		NONE = 0,
@@ -13,7 +23,6 @@ namespace atl {
 		ThunderStone,
 		ThunderScroll,
 		MagicInc,
-		HealRune,
 		FireRune,
 		StoneRune,
 		ITEM_MAX,
@@ -45,7 +54,7 @@ namespace atl {
 		inline void setItemAction(Shared<IE_ItemAction> itemAction) { itemExecutePerform_ = itemAction; }
 
 		// itemExecutePerform_ の execute が実行される。Inventoryクラス の useItem() から呼び出される
-		inline void executeItemPerformAction() { if(itemExecutePerform_) itemExecutePerform_->execute(); }
+		void executeItemPerformAction();
 
 	private:
 		// アイテムID

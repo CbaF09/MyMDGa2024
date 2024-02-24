@@ -207,7 +207,7 @@ namespace atl {
 			std::shuffle(possiblePathwayFuncs.begin(), possiblePathwayFuncs.end(), mtRandom);
 
 			// 1 ~ Å‘å‚Åì‚ê‚é’Ê˜H‚Ì•ûŒüA‚Å—”‚ğæ‚èA‚»‚Ì”‚¾‚¯’Ê˜H‚ğì‚é ( Å’áˆê–{‚Í’Ê˜H‚ğì‚é )
-			int pathwaysToCreate = mtRandomRangeInt(1, possiblePathwayFuncs.size()); 
+			auto pathwaysToCreate = mtRandomRangeInt(1, static_cast<int32_t>(possiblePathwayFuncs.size())); 
 			for (int i = 0; i < pathwaysToCreate; ++i) {
 				possiblePathwayFuncs[i]();
 			}
@@ -353,7 +353,7 @@ namespace atl {
 			}
 		}
 
-		const tnl::Vector2i returnPos = canSpawnCellsPos[static_cast<int>(mtRandomRangeInt(0, canSpawnCellsPos.size() - 1))];
+		const tnl::Vector2i returnPos = canSpawnCellsPos[static_cast<int>(mtRandomRangeInt(0, static_cast<int32_t>(canSpawnCellsPos.size() - 1)))];
 		fieldCells_[returnPos.x][returnPos.y].isAlreadySpawnSomething = true;
 		return returnPos;
 	}
@@ -370,7 +370,7 @@ namespace atl {
 				}
 		}
 
-		tnl::Vector2i returnPos = canSpawnCellsPos[static_cast<int>(mtRandomRangeInt(0, canSpawnCellsPos.size() - 1))];
+		tnl::Vector2i returnPos = canSpawnCellsPos[static_cast<int>(mtRandomRangeInt(0, static_cast<int32_t>(canSpawnCellsPos.size() - 1)))];
 		return returnPos;
 	}
 

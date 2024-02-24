@@ -25,7 +25,7 @@
 void gameStart() {
 	atl::mtRandomInit();
 
-    // フォグのオンオフは、Skyboxクラスで行われています
+    // フォグのオンオフは、Skysphereクラスで行われています
 	SetFogColor(32, 32, 32);
 	SetFogStartEnd(4000.0f, 5000.0f);
 
@@ -44,7 +44,7 @@ void gameStart() {
     //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
     
     // 本編の初期シーン設定
-	atl::SceneManager::getSceneManager(std::make_shared<atl::DungeonScene>());
+	atl::SceneManager::getSceneManager(std::make_shared<atl::TitleScene>());
 }
 
 // ゲームメインループ

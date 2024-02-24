@@ -1,20 +1,21 @@
 #include "ItemAction.h"
-#include "../atlib/Singletons/TextLogManager.h"
-#include "../atlib/Singletons/SceneManager.h"
-#include "../atlib/Singletons/DungeonCreater.h"
-#include "../atlib/Singletons/EnemyManager/EnemyManager.h"
-#include "../atlib/Utilities/AtlString.h"
-#include "../atlib/MagicRuneSystem/MagicRuneSystemManager.h"
-#include "../atlib/MagicRuneSystem/MagicRune.h"
-#include "../atlib/MeshObject/PlayerPawn.h"
+#include "../Singletons/TextLogManager.h"
+#include "../Singletons/SceneManager.h"
+#include "../Singletons/DungeonCreater.h"
+#include "../Singletons/EnemyManager/EnemyManager.h"
+#include "../Utilities/AtlString.h"
+#include "../MagicRuneSystem/MagicRuneSystemManager.h"
+#include "../MagicRuneSystem/MagicRune.h"
+#include "../MeshObject/PlayerPawn.h"
+#include "../Object/EnemyData.h"
 
 namespace atl {
 
 	/// <summary>
-/// 
-/// ‰ñ•œ‚Ì‘
-/// 
-/// </summary>
+	/// 
+	/// ‰ñ•œ‚Ì‘
+	///	
+	/// </summary>
 	void HealHerbAction::execute() {
 		auto dungeonScene = SceneManager::getSceneManager()->tryGetScene<DungeonScene>();
 		if (!dungeonScene) { return; }
@@ -50,6 +51,7 @@ namespace atl {
 		auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
 		auto& player = dungeonScene->getPlayerPawn();
 		auto playerArea = DungeonCreater::getDungeonCreater()->getFieldCellID(player->getPlayer2Dpos());
+
 		for (auto& enemy : enemyList) {
 			auto enemyArea = DungeonCreater::getDungeonCreater()->getFieldCellID(enemy->get2Dpos());
 			auto& enemyName = enemy->getEnemyData()->getEnemyName();
@@ -89,16 +91,6 @@ namespace atl {
 
 		dungeonScene->changeSatiety(MAGIC_INC_HEAL_VALUE);
 		TextLogManager::getTextLogManager()->addTextLog("µ‘Òó‚ÌŠúŒÀ‚ªL‚Ñ‚½");
-	}
-
-	/// <summary>
-	/// 
-	/// –ü‚µ‚Ìƒ‹[ƒ“
-	/// 
-	/// </summary>
-	void HealRuneAction::execute() {
-		MagicRuneSystemManager::getMagicRuneSystemManager()->equipRune(std::make_shared<HealRune>());
-		TextLogManager::getTextLogManager()->addTextLog("–ü‚µ‚Ìƒ‹[ƒ“‚ğ‘•”õ‚µ‚½");
 	}
 
 	/// <summary>

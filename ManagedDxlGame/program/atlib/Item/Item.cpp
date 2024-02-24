@@ -32,5 +32,13 @@ namespace atl {
 		descString_ = csv[itemID][3].getString();
 	}
 
+	void Item::executeItemPerformAction() {
+		// nullptr チェック 早期リターン
+		if (!itemExecutePerform_) { return; }
+
+		// アイテムの効果発動
+		itemExecutePerform_->execute();
+	}
+
 
 }
