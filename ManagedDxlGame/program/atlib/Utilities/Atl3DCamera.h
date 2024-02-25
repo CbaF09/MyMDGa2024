@@ -20,6 +20,9 @@ namespace atl {
 		// マウスでカメラを回転・制御
 		void cameraControl();
 
+		// カメラの位置から3Dサウンドリスナーを設定
+		void set3Dlistner();
+
 		// カメラをX,Y,Z軸で回転させる
 		// arg1 ... 回転軸 ( 例 : X+軸 ... {1,0,0} )
 		// arg2 ... 回転角度 ( 度数法 )

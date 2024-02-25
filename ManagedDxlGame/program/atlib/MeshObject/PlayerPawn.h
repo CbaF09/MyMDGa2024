@@ -19,6 +19,22 @@ namespace atl {
 	class ForwardArrow;
 	class Base_Enemy;
 
+	// 定数系
+	namespace {
+		// プレイヤーのY高さ（カメラ・目線の高さ, 0 で地面と同じ）
+		const float PLAYER_HEAD_LINE = 500;
+
+		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
+		const float MOVE_TIME = 0.35f;
+		// 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
+		const float MOVE_END_BORDER = 0.1f;
+
+		// 攻撃した時の停止時間
+		const float ATTACK_TIME = 0.5f;
+		// 攻撃を空振りした時の停止時間
+		const float ATTACK_MISS_TIME = 0.05f;
+	}
+
 	class PlayerPawn final : public std::enable_shared_from_this<PlayerPawn> {
 	public:
 		PlayerPawn();
@@ -76,25 +92,18 @@ namespace atl {
 
 	private:
 		// --------------------------------------------------
-		// メンバー変数
+		// 変数
 		
 		// プレイヤーの2D上の座標
 		tnl::Vector2i player2Dpos_{ 0,0 };
 		// プレイヤーの3D上の位置
 		tnl::Vector3 player3Dpos_{ 0,0,0 };
-		// プレイヤーのY高さ（カメラ・目線の高さ, 0 で地面と同じ）
-		const float PLAYER_HEAD_LINE = 500;
 
 		// seqMoveLerp用
  		// タイマー
 		float moveLerpTimeCount_ = 0;
 		// 目標地点
 		tnl::Vector3 moveTarget_{ 0,0,0 };
-		// 1マス移動にかかる速度 ( 値が大きいほど、時間がかかる )
-		const float MOVE_TIME = 0.35f;		
-		// 目標地点と現在位置の差がこの値以下であれば、移動は終了したと判定される
-		const float MOVE_END_BORDER = 0.1f; 
-
 
 		// 既に行動したか
 		bool isAlreadyTurn_ = false;
@@ -102,10 +111,6 @@ namespace atl {
 		float totalDeltaTimer_ = 0.0f; 
 		// 実際の停止時間設定用
 		float waitTime_ = 0.0f; 
-		// 攻撃した時の停止時間
-		const float ATTACK_TIME = 0.5f;	
-		// 攻撃を空振りした時の停止時間
-		const float ATTACK_MISS_TIME = 0.05f; 
 
 		// カメラ
 		Shared<Atl3DCamera> playerCamera_ = std::make_shared<Atl3DCamera>(DXE_WINDOW_WIDTH, DXE_WINDOW_HEIGHT);
@@ -117,7 +122,7 @@ namespace atl {
 		Shared<ForwardArrow> forwardArrow_ = nullptr;
 		// 攻撃時のパーティクル ( 爆発 )
 		Shared<dxe::Particle> explosion_ = std::make_shared<dxe::Particle>("graphics/particle/explosion.bin");
-
+		
 		// ステータス用
 		Shared<PlayerData> playerData_ = std::make_shared<PlayerData>();
 
@@ -130,7 +135,6 @@ namespace atl {
 		void setMoveTarget(const tnl::Vector2i& moveToPos);
 		// 攻撃命中時の演出
 		void attackHitEffectAndLog(const Shared<atl::Base_Enemy> enemy);
-
 
 		// --------------------------------------------------
 		// シーケンス用

@@ -338,7 +338,7 @@ namespace atl {
 		++respornTurnTimer_;
 
 		// スポーン条件を満たしていないなら早期リターン
-		if (!(respornTurnTimer_ > RESPORN_TURN_COUNT)) { return; }
+		if (!(respornTurnTimer_ > ENEMY_RESPORN_TURN_COUNT)) { return; }
 
 		// スポーン位置を決める ( プレイヤーとは違うエリアの位置が返ってくる ) 
 		auto spawnPos = DungeonCreater::getDungeonCreater()->randomChoiceEnemyRespawnPos(player_->getPlayer2Dpos());

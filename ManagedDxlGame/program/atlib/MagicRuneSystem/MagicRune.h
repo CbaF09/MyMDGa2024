@@ -18,7 +18,9 @@ namespace atl {
 	/// </summary>
 
 	/// <summary>
+	/// 
 	/// ‰Š‚Ìƒ‹[ƒ“
+	/// 
 	/// </summary>
 	class FireRune : public Base_MagicRune {
 	public:
@@ -31,7 +33,9 @@ namespace atl {
 	};
 
 	/// <summary>
+	/// 
 	/// Šâ‚Ìƒ‹[ƒ“
+	/// 
 	/// </summary>
 	class StoneRune : public Base_MagicRune {
 	public:

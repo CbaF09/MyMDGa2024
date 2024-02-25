@@ -7,6 +7,18 @@ namespace atl {
 	// ゲームクリア時のシーン
 	// エピローグとタイトルに戻る処理のみ
 	
+	// 定数系
+	namespace {
+		// 背景の明るさ ( 0 で元と同じ、255 で真っ黒 )
+		const int32_t EPILOGUE_BACKGROUND_BRIGHT = 126;	
+		// 「スペースキーでタイトルに戻れます」を表示する位置
+		const tnl::Vector2i CAN_BACK_TEXT_POSITION{ 10,10 }; 
+		// 一番上の行の表示位置
+		const tnl::Vector2i EPILOGUE_TEXT_POSITION{ 25,150 };
+		// 一行ごとにオフセットされる量
+		const tnl::Vector2i EPILOGUE_TEXT_OFFSET{ 0,45 };
+	}
+
 	class GameClearScene final : public Base_Scene{
 	public:
 		GameClearScene();
@@ -16,13 +28,8 @@ namespace atl {
 		// -------------------------------------
 		// 変数
 
-		// プロローグ関連
-		const int EPILOGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
-
-		const int32_t EPILOGUE_BACKGROUND_BRIGHT = 126;	// 背景の明るさ ( 0 で元と同じ、255 で真っ黒 )
-		const tnl::Vector2i CAN_BACK_TEXT_POSITION{ 10,10 }; // 「スペースキーでタイトルに戻れます」を表示する位置
-		const tnl::Vector2i TEXT_POSITION{ 25,150 };	// 一番上の行の表示位置
-		const tnl::Vector2i TEXT_OFFSET{ 0,45 };		// 一行ごとにオフセットされる量
+		// フォント
+		int EPILOGUE_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
 
 		// エピローグの文字列
 		std::vector<std::string> epilogueString_{};

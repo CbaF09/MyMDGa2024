@@ -31,7 +31,10 @@ namespace atl {
 		// 現在蓄積中の経験値
 		int32_t currentExp_ = 0;
 		// レベルアップに必要な経験値
+		// TODO : 将来的に外部データから変化させるつもりなので一旦変数宣言
 		int32_t needExp_ = 15;
+
+		// レベルアップした時に上昇するHP
 		const int32_t LEVEL_UP_HP_UP_VALUE = 5;
 
 		// プレイヤーのインベントリ

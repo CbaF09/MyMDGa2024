@@ -3,8 +3,8 @@
 #include "../Object/Inventory.h"
 #include "../Singletons/ResourceManager.h"
 
-namespace atl {
 
+namespace atl {
 	MenuWindow::~MenuWindow() {
 		DeleteFontToHandle(MENU_FONT);
 		DeleteFontToHandle(DESC_FONT);

@@ -4,6 +4,5 @@ ItemID,アイテム名,画像ファイルパス,descString
 3,雷神の石,graphics/ItemIllust/ThunderStone.png,同じ部屋の敵全てにダメージを与える
 4,雷神の巻物,graphics/ItemIllust/ThunderScroll.png,フロアの敵全てにダメージを与える
 5,魔法のインク,graphics/ItemIllust/MagicInc.png,招待状の状態を回復する
-6,癒しのルーン,graphics/ItemIllust/HealRune.png,癒しのルーン装備。自動HP回復量が上がる
-7,炎のルーン,graphics/ItemIllust/FireRune.png,炎のルーン装備。攻撃力が少し上がる
-8,岩のルーン,graphics/ItemIllust/StoneRune.png,岩のルーン装備。防御力が少し上がる
+6,炎のルーン,graphics/ItemIllust/FireRune.png,炎のルーン装備。攻撃力が少し上がる
+7,岩のルーン,graphics/ItemIllust/StoneRune.png,岩のルーン装備。防御力が少し上がる

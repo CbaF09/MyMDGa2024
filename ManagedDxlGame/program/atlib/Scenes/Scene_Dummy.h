@@ -11,6 +11,11 @@
 #include "../MagicRuneSystem/MagicRune.h"
 #include "../MagicRuneSystem/MagicRuneWindow.h"
 #include "../MagicRuneSystem/MagicRuneSystemManager.h"
+#include "../Object/MenuWindow.h"
+#include "../Object/SelectWindow.h"
+#include "../Scenes/GameClearScene.h"
+#include "../Scenes/GameOverScene.h"
+#include "../Scenes/TitleScene.h"
 
 namespace atl {
 
@@ -24,6 +29,8 @@ namespace atl {
     private:
 
         Shared<PlayerPawn> player_ = nullptr;
+        int soundHandle = -1;
+        VECTOR EmitterPos{ 0,0,0 };
 
         void sceneUpdate(float deltaTime) override {
             seq_.update(deltaTime);
@@ -31,20 +38,9 @@ namespace atl {
         };
 
         void render(float deltaTime) {
-            auto camera = player_->getPlayerCamera();
-            camera->update();
+            player_->getPlayerCamera()->update();
 
             player_->render(deltaTime);
-
-            auto& enemyList = EnemyManager::getEnemyManager()->getEnemyList();
-            for (auto& enemy : enemyList) {
-                enemy->getMesh()->drawGuiMaterialControlloer();
-                enemy->getMesh()->rot_ *= tnl::Quaternion::RotationAxis({ 0,1,0 }, tnl::ToRadian(1));
-            }
-
-            EnemyManager::getEnemyManager()->renderAllEnemy(camera, deltaTime);
-
-            DrawGridGround(camera, 50, 20);
         }
 
         // シーケンス
@@ -53,20 +49,36 @@ namespace atl {
         bool seqInit(float deltaTime) {
             player_ = std::make_shared<PlayerPawn>();
             player_->initialize();
-            player_->playerSpawn2Dpos({ 0,0 });
 
-            EnemyManager::getEnemyManager()->setEnemyFactory(std::make_shared<BlueSlimeFactory>());
-            EnemyManager::getEnemyManager()->spawnEnemy({0,1});
-            
-            SetMouseDispFlag(true);
+            SetCreate3DSoundFlag(TRUE);
+            soundHandle = LoadSoundMem("sound/SE/PlayerFootStep.ogg");
+            SetCreate3DSoundFlag(FALSE);
+
+            auto cameraPos = player_->getPlayerCamera()->pos_;
+            EmitterPos = { cameraPos.x,cameraPos.y,cameraPos.z };
+            Set3DPositionSoundMem(EmitterPos, soundHandle);
+
+            Set3DRadiusSoundMem(500.0f, soundHandle);
+
+            PlaySoundMem(soundHandle, DX_PLAYTYPE_LOOP);
+
 
             seq_.change(&Scene_Dummy::seqProcess);
             return true;
         }
 
         bool seqProcess(float deltaTime) {
-
             player_->playerUpdate(deltaTime);
+            
+
+            if (tnl::Input::IsKeyDown(eKeys::KB_W)) {
+                EmitterPos.z += 5;
+            }
+            if (tnl::Input::IsKeyDown(eKeys::KB_S)) {
+                EmitterPos.z -= 5;
+            }
+
+            Set3DPositionSoundMem(EmitterPos, soundHandle);
 
             return true;
         }

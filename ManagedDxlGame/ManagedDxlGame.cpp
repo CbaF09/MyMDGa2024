@@ -54,6 +54,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     SetWaitVSyncFlag(TRUE);
 
+    //3Dサウンドを拡張
+    //SetEnableXAudioFlag(TRUE);
+
     // ＤＸライブラリ初期化処理
     if (DxLib_Init() == -1)
     {

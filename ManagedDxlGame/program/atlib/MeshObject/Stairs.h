@@ -10,16 +10,19 @@ namespace atl {
 	/// 
 	/// </summary>
 	
+	// ’è”Œn
+	namespace {
+		// ŠK’i‚Ì‘å‚«‚³
+		const tnl::Vector3 stairsSize_ = { 300,300,300 };
+
+	}
+
 	class Stairs final : public Base_MultiMeshObject {
 	public:
 		explicit Stairs(const tnl::Vector2i& spawnPos);
 
 		// ŠK’i‚Í‰ñ“]‚µ‚½‚è‚µ‚È‚¢‚Ì‚ÅAqƒƒbƒVƒ…‚Ì•â³‚Í‹óÀ‘•
 		void adjustChildsMeshes(float deltaTime) override {};
-
-	private:
-		// ŠK’i‚Ì‘å‚«‚³
-		const tnl::Vector3 stairsSize_ = { 300,300,300 };
 	};
 
 }

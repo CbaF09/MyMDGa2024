@@ -22,7 +22,7 @@ namespace atl {
 		// アイテムの使用効果を処理した後、配列から削除する
 		// arg ... 使うアイテムをインデックスで指定
 		void useItem(int32_t index);
-
+		
 	private:
 		// 持てるアイテムの最大数
 		const int32_t INVENTORY_MAX = 6;

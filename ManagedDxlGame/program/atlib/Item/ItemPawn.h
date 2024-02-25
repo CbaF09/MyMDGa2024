@@ -13,6 +13,16 @@ namespace atl {
 	class PlayerPawn;
 	class DungeonScene;
 
+	// 定数系
+	namespace {
+		// アイテムポーン ( 立方体 ) の大きさ
+		const float ITEM_PAWN_SIZE = 200;
+		// アイテムポーンのY高さ ( 地面 は -500 )
+		const float ITEM_POSITION_Y = 250;
+		// アイテムポーンの回転速度
+		const float ITEM_ROT_SPEED = 0.5f;
+	}
+
 	class ItemPawn final : public Base_MeshObject {
 	public:
 		~ItemPawn() { itemParticle_.reset(); }
@@ -29,17 +39,11 @@ namespace atl {
 		void initialize();
 
 	private:
-		// 立方体の大きさ
-		const float ITEM_PAWN_SIZE = 200;
-		// アイテムのY高さ ( 地面 は -500 )
-		const float ITEM_POSITION_Y = 250;
-		// アイテムの回転速度
-		const float ITEM_ROT_SPEED = 0.5f; 
-
 		// アイテムポーンは、アイテムデータを持つ
 		Shared<Item> item_ = nullptr;
 		// アイテムの周りに浮かぶパーティクル用
 		Shared<dxe::Particle> itemParticle_ = nullptr;
+
 	};
 
 }

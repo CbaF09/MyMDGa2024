@@ -22,7 +22,7 @@ namespace atl {
 		void update(const Shared<Atl3DCamera> camera);
 
 	private:
-		Shared<dxe::Mesh> skysphere_;
+		Shared<dxe::Mesh> skysphere_ = nullptr;
 	};
 
 }

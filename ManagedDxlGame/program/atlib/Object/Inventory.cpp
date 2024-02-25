@@ -31,6 +31,7 @@ namespace atl {
 		// Å‘å”‚ğ’´‚¦‚Ä‚¢‚éê‡
 			return false;
 		}
+
 	}
 
 	void Inventory::useItem(int32_t index) {

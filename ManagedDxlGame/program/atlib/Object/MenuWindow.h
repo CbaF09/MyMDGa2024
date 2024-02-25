@@ -14,6 +14,29 @@ namespace atl {
 
 	class Inventory;
 
+	// 定数系
+	namespace {
+		// 一番上の行の描画位置
+		const tnl::Vector2i TOP_STRINGS_POSITION{ 50,130 }; 
+		// 行間
+		const int32_t STRINGS_OFFSET = 40;		
+		// アイテム一覧とシステム選択肢の間の行間
+		const int32_t ITEM_SYSTEM_OFFSET = 90;  
+		// 選択中のカラーの色
+		const int SELECTED_COLOR = GetColor(255, 0, 0); 
+		// 選択中のカラーの色
+		const int UN_SELECTED_COLOR = GetColor(200, 200, 200); 
+
+		// 説明文を描画する 背景UI の位置 ( 左上座標 )
+		const tnl::Vector2i DESC_UI_POSITION{ 70,380 }; 
+		// 説明文を描画する 背景UI のサイズ
+		const tnl::Vector2i DESC_UI_SIZE{ 420,60 }; 
+		// 説明文を描画する 背景UI の透明度
+		const int32_t DESC_UI_ALPHA = 128; 
+		// 説明文を描画する位置
+		const tnl::Vector2i DESC_STRING_POSITION{ 80,400 }; 
+	}
+
 	class MenuWindow final {
 	public:
 		~MenuWindow();
@@ -42,20 +65,9 @@ namespace atl {
 
 
 	private:
-		const int MENU_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING_EDGE);	// フォント
-		const int DESC_FONT = CreateFontToHandle(NULL, 18, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
-
-		const tnl::Vector2i TOP_STRINGS_POSITION{ 50,130 }; // 一番上の行の描画位置
-		const int32_t STRINGS_OFFSET = 40;		// 行間
-		const int32_t ITEM_SYSTEM_OFFSET = 90;  // アイテム一覧とシステム選択肢の間の行間
-		const int SELECTED_COLOR = GetColor(255, 0, 0); // 選択中のカラーの色
-		const int UN_SELECTED_COLOR = GetColor(200, 200, 200); // 選択中のカラーの色
-
-
-		const tnl::Vector2i DESC_UI_POSITION{ 70,380 }; // 説明文を記述する UI の位置 ( 左上座標 )
-		const tnl::Vector2i DESC_UI_SIZE{ 420,60 }; // 説明文を記述する UI のサイズ
-		const int32_t DESC_UI_ALPHA = 128; // 説明文を記述する UI の透明度
-		const tnl::Vector2i DESC_STRING_POSITION{ 80,400 }; // 説明文を記述する位置
+		// フォント
+		int MENU_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
+		int DESC_FONT = CreateFontToHandle(NULL, 18, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
 
 		// インベントリへの弱参照
 		std::weak_ptr<Inventory> weakInventory_;

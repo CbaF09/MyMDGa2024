@@ -10,6 +10,8 @@ namespace atl {
 		auto rManager = ResourceManager::getResourceManager();
 		rManager->deleteResource("sound/SE/GameOver.ogg");
 		rManager->deleteResource("sound/SE/GameOverContinue.ogg");
+
+		DeleteFontToHandle(GAMEOVER_FONT);
 	}
 
 	void GameOverScene::sceneUpdate(float deltaTime) {

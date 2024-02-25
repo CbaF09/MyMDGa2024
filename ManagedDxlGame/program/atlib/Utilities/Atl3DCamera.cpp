@@ -5,6 +5,7 @@ namespace atl {
 	// 毎フレーム呼び出す
 	void Atl3DCamera::update() {
 		cameraControl();
+//		set3Dlistner();
 		dxe::Camera::update();
 	};
 
@@ -31,9 +32,18 @@ namespace atl {
 
 				// 現在向いている方角を計算
 				calcCurrentFowardNormalDir();
+
 			}
 		}
     }
+
+	void Atl3DCamera::set3Dlistner() {
+		Set3DSoundListenerPosAndFrontPos_UpVecY(
+			{ pos_.x,pos_.y,pos_.z },
+			{ target_.x,target_.y,target_.z }
+		);
+	}
+	
 	void Atl3DCamera::cameraRotateAxis(tnl::Vector3 rotateAxis, float rotateDegree) {
 		cameraRot_ *= tnl::Quaternion::RotationAxis({ rotateAxis }, tnl::ToRadian(rotateDegree));
 	}

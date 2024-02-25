@@ -41,10 +41,10 @@ void gameStart() {
     LockCursorToWindow();
 
     // デバッグ用ダミーシーン
-    //atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
+    atl::SceneManager::getSceneManager(std::make_shared<atl::Scene_Dummy>());
     
     // 本編の初期シーン設定
-	atl::SceneManager::getSceneManager(std::make_shared<atl::TitleScene>());
+	//atl::SceneManager::getSceneManager(std::make_shared<atl::TitleScene>());
 }
 
 // ゲームメインループ
@@ -76,18 +76,18 @@ void LockCursorToWindow() {
     RECT rect;
     GetClientRect(hwnd, &rect); // クライアント領域のサイズを取得
 
-    POINT ul;
+    POINT ul{};
     ul.x = rect.left;
     ul.y = rect.top;
 
-    POINT lr;
+    POINT lr{};
     lr.x = rect.right;
     lr.y = rect.bottom;
 
     MapWindowPoints(hwnd, nullptr, &ul, 1); // クライアント領域の左上のスクリーン座標への変換
     MapWindowPoints(hwnd, nullptr, &lr, 1); // クライアント領域の右下のスクリーン座標への変換
 
-    RECT clipRect;
+    RECT clipRect{};
     clipRect.left = ul.x;
     clipRect.top = ul.y;
     clipRect.right = lr.x;

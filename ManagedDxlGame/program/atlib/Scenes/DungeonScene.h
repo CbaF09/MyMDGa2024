@@ -23,6 +23,62 @@ namespace atl {
     class DungeonCreater;
     class Atl3DCamera;
 
+    // 定数系
+    namespace {
+        // 最上階 ( 到達したらクリア階 )
+        const int32_t MAX_FLOOR = 4;
+        // 次階層に進む時、黒画面のままの待機する時間
+        const float nextFloorTransitionTime = 2.5f;
+
+        // HPバーの枠の位置 ( 左上頂点 )
+        const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 };
+        // HPバーの枠の位置 ( 右下頂点 )
+        const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 };
+        // HPバーの枠とバー自体の間の隙間
+        const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 };
+        // HP数値表示の位置
+        const tnl::Vector2i HP_STRING_POSITION{ 50,15 };
+
+        // レベルの文字列を描画する位置
+        const tnl::Vector2i LEVEL_STRING_POSITION{ 60,390 };
+
+        // 操作説明の画像を描画する位置
+        const tnl::Vector2i INSTRUCTION_POSITION{ DXE_WINDOW_WIDTH / 2 + 100,600 };
+        // 操作説明の画像の大きさ
+        const float INSTRUCTION_SIZE = 0.45f;
+        // 操作説明の画像の背景に描画するオーバーレイの大きさ
+        const tnl::Vector2i INSTRUCTION_BACK_BOX_SIZE{ 575,160 };
+
+        // テキストログを描画する位置 ( 一番上の行 )
+        const tnl::Vector2i TEXT_LOG_POSITION{ 20,550 };
+
+        // ミニマップの一番左上に位置する座標
+        const tnl::Vector2i MINIMAP_LEFTUP_POSITION{ 600,130 };
+        // ミニマップの1マスの大きさ
+        const int32_t MINIMAP_CELL_SIZE = 12;
+        // ミニマップのプレイヤーの大きさ
+        const int32_t MINIMAP_PLAYER_SIZE = MINIMAP_CELL_SIZE / 3;
+        // ミニマップの透過度
+        const int32_t MINIMAP_ALPHA = 128;
+
+        // 敵が何ターンごとにリスポーンするか
+        const int32_t ENEMY_RESPORN_TURN_COUNT = 30;
+
+        // 満腹度UI を描画する位置 ( 中心座標 )
+        const tnl::Vector2i INVATATION_POSITION{ 250,500 };
+        // 「招待状」という文字を描画する位置 ( 中心座標 )
+        const tnl::Vector2i INVATATION_STRING_POSITION{ 60,480 };
+        // ターンごとに減る空腹度
+        const int32_t SATIETY_SUB_VALUE = 3;
+        // 画像サイズ ( 1 で画像元サイズ )
+        const float INVATATION_SIZE = 0.15f;
+        // 回転量,画像元が縦向きなので横向きにする
+        const float INVATATION_ANGLE = 90;
+        // 最大満腹度
+        const int32_t SATIETY_FULL = 2550;
+
+    }
+
     class DungeonScene final : public Base_Scene, public std::enable_shared_from_this<DungeonScene> {
 
     public:
@@ -43,7 +99,6 @@ namespace atl {
 
         // 毎ターンのHP回復 ( デバッグ用 )
         void turnHealHP();
-
 
     private: 
         //----------------------------------------------
@@ -78,57 +133,18 @@ namespace atl {
         // ターンごとのHP回復量
         const int32_t EVERY_TURN_HEAL = 1; 
 
-        // エネミー関連 --------------------------------
-        // 何ターンごとにリスポーンするか
-        const int32_t RESPORN_TURN_COUNT = 30;  
         // リスポーンカウンター
         int32_t respornTurnTimer_ = 0;           
 
         // アイテム関連 --------------------------------
-        std::list<Shared<ItemPawn>> items_;
+        std::list<Shared<ItemPawn>> items_{};
 
         // 階層管理用 ----------------------------------
         // 現在階層
         int32_t currentFloor_ = 1;
-        // 最上階 ( 到達したらクリア階 )
-        const int32_t MAX_FLOOR = 4;
-        // 次階層に進む時、黒画面のままの待機する時間
-        const float nextFloorTransitionTime = 2.5f;
+
         // 次階層に遷移中か
         bool isNextFloorTransition = false;
-
-        // UI 関連 -------------------------------------
-        
-        // HPバーの枠の位置 ( 左上頂点 )
-        const tnl::Vector2i HP_BAR_LEFT_UP_POINT{ 5,5 }; 
-        // HPバーの枠の位置 ( 右下頂点 )
-        const tnl::Vector2i HP_BAR_RIGHT_DOWN_POINT{ 355,55 };
-        // HPバーの枠とバー自体の間の隙間
-        const tnl::Vector2i HP_BAR_ADJUST_VALUE{ 8,5 }; 
-        // HP数値表示の位置
-        const tnl::Vector2i HP_STRING_POSITION{ 50,15 }; 
-
-        // レベルの文字列を描画する位置
-        const tnl::Vector2i LEVEL_STRING_POSITION{ 60,390 }; 
-        
-        // 操作説明の画像を描画する位置
-        const tnl::Vector2i INSTRUCTION_POSITION{ DXE_WINDOW_WIDTH/2 + 100,600 }; 
-        // 操作説明の画像の大きさ
-        const float INSTRUCTION_SIZE = 0.45f;
-        // 操作説明の画像の背景に描画するオーバーレイの大きさ
-        const tnl::Vector2i INSTRUCTION_BACK_BOX_SIZE{ 575,160 }; 
-
-        // テキストログを描画する位置 ( 一番上の行 )
-        const tnl::Vector2i TEXT_LOG_POSITION{ 20,550 };  
-
-        // ミニマップの一番左上に位置する座標
-        const tnl::Vector2i MINIMAP_LEFTUP_POSITION{ 600,130 }; 
-        // ミニマップの1マスの大きさ
-        const int32_t MINIMAP_CELL_SIZE = 12;    
-        // ミニマップのプレイヤーの大きさ
-        const int32_t MINIMAP_PLAYER_SIZE = MINIMAP_CELL_SIZE / 3;
-        // ミニマップの透過度
-        const int32_t MINIMAP_ALPHA = 128;
 
         // 選択肢ウィンドウ関連 ------------------------
         SelectWindow selectWindow_;
@@ -147,24 +163,12 @@ namespace atl {
         Skysphere skysphere_;
 
         // 満腹度 ( 招待状 ) 関連 ----------------------
-        // UI を描画する位置 ( 中心座標 )
-        const tnl::Vector2i INVATATION_POSITION{ 250,500 }; 
-        // 「招待状」という文字を描画する位置 ( 中心座標 )
-        const tnl::Vector2i INVATATION_STRING_POSITION{ 60,480 };
-        // 画像サイズ ( 1 で画像元サイズ )
-        const float INVATATION_SIZE = 0.15f; 
-        // 回転量,画像元が縦向きなので横向きにする
-        const float INVATATION_ANGLE = 90; 
-        // 最大満腹度
-        const int32_t SATIETY_FULL = 2550;      
         // 現在満腹度
         int32_t currentSatiety_ = 2550;         
-        // ターンごとに減る空腹度
-        const int32_t SATIETY_SUB_VALUE = 3;   
 
         // フォント-------------------------------------
-        const int LEVEL_STRING_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
-        const int NEXT_FLOOR_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
+        int LEVEL_STRING_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING_EDGE);
+        int NEXT_FLOOR_FONT = CreateFontToHandle(NULL, 30, -1, DX_FONTTYPE_ANTIALIASING);
 
         //----------------------------------------------
         // メソッド

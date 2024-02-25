@@ -13,8 +13,8 @@ namespace atl {
 		~GameOverScene();
 
 	private:
-
-		const int GAMEOVER_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
+		// フォント
+		int GAMEOVER_FONT = CreateFontToHandle(NULL, 25, -1, DX_FONTTYPE_ANTIALIASING);
 
 		const int FONT_SIZE = 25;		// フォントサイズ
 		const tnl::Vector2i STRING_POSITION{ 200,200 };	// 文字列の位置

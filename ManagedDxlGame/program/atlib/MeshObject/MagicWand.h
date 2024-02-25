@@ -12,6 +12,12 @@ namespace atl {
 
 	class PlayerPawn;
 
+	// 定数系
+	namespace {
+		// 杖の大きさ
+		const float WAND_SIZE = 25.0f;
+	}
+
 	class MagicWand final : public Base_MultiMeshObject {
 	public:
 		// コンストラクタ
@@ -21,9 +27,6 @@ namespace atl {
 		void adjustChildsMeshes(float deltaTime) override;
 
 	private:
-		// 杖の大きさ
-		const float WAND_SIZE = 25.0f;
-
 		// RootMesh の最初の回転状態を保存
 		tnl::Quaternion initRot_;
 

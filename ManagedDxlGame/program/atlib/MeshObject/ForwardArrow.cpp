@@ -3,7 +3,7 @@
 
 namespace atl {
 	
-	ForwardArrow::ForwardArrow(std::weak_ptr<const PlayerPawn> player): weakPlayerPawn(player) {
+	ForwardArrow::ForwardArrow(std::weak_ptr<const PlayerPawn> player): weakPlayerPawn_(player) {
 		auto mesh = dxe::Mesh::CreateHollowOutDiskPlaneMV(FORWARD_ARROW_SIZE);
 		mesh->rot_ *= tnl::Quaternion::RotationAxis({ 1,0,0 }, tnl::ToRadian(90));
 		setMesh(mesh);
@@ -13,16 +13,17 @@ namespace atl {
 	}
 
 	void ForwardArrow::renderObject(const Shared<Atl3DCamera> camera,float deltaTime) {
-		auto player = weakPlayerPawn.lock();
-		if (player) {
-			
-			// カメラの向いている向きに、セット
-			auto& forward = player->getPlayerCamera()->getCurrentForwardDir();
-			auto& cameraPos = player->getPlayerCamera()->pos_;
-			auto cellLength = DungeonScene::getCellLength();
-			getMesh()->pos_ = cameraPos + tnl::Vector3{static_cast<float>(forward.x * cellLength), FORWARD_ARROW_Y, static_cast<float>(forward.z * cellLength)};
-
+		auto player = weakPlayerPawn_.lock();
+		if (!player) { 
+			return; 
 		}
+
+		// カメラの向いている向きに、セット
+		auto& forward = player->getPlayerCamera()->getCurrentForwardDir();
+		auto& cameraPos = player->getPlayerCamera()->pos_;
+		auto cellLength = DungeonScene::getCellLength();
+		getMesh()->pos_ = cameraPos + tnl::Vector3{static_cast<float>(forward.x * cellLength), FORWARD_ARROW_Y, static_cast<float>(forward.z * cellLength)};
+
 		getMesh()->render(camera);
 	}
 }
